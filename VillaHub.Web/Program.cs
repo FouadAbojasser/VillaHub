@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using VillaHub.Infrastructure.Data;
+
 namespace VillaHub.Web
 {
     public class Program
@@ -8,6 +11,10 @@ namespace VillaHub.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Register ApplicationDbContext Service
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
