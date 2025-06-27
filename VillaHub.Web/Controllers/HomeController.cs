@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using VillaHub.Application.Common.Utility;
 using VillaHub.Web.Models;
 
 namespace VillaHub.Web.Controllers
@@ -9,10 +10,12 @@ namespace VillaHub.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
+
 
         public IActionResult Index()
         {

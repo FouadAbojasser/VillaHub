@@ -6,7 +6,7 @@ namespace VillaHub.Web.ViewModels
     {
         public string ApplicationUserId { get; set; } = null!;
         [Required(ErrorMessage = "OTP is required!")]
-        [Display(Name ="Received OTP via Email")]
+        [Display(Name ="Received OTP")]
         public int? OTP { get; set; } 
         public string Token { get; set; } = null!;
         [Required]

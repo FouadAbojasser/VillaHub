@@ -22,7 +22,9 @@ namespace VillaHub.Web.ViewModels
         [Required]
         [Display(Name="Phone Number")]
         public string PhoneNumber {  get; set; }= string.Empty;
+        [Required(ErrorMessage = "Please select a country")]
         public string Country { get; set; } = string.Empty;
+        public List<SelectListItem>? CountryList { get; set; }
         [ValidateNever]
         public string RedirectUrl { get; set; } = string.Empty;
         public string? Role { get; set; }

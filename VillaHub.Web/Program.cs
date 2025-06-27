@@ -53,7 +53,7 @@ namespace VillaHub.Web
                 facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
             });
 
-
+            builder.Services.AddTransient<TwilioService>();
 
             // Modifying Default Login and Access denied paths
             builder.Services.ConfigureApplicationCookie(option =>

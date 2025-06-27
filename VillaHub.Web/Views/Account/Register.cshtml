@@ -45,6 +45,14 @@
                             <select asp-for="Role" asp-items="@Model.RoleList" class="form-select">
                                 <option disabled selected>-Select Role-</option>
                             </select>
+                            <label asp-for="Role" class="ms-2 text-muted"></label>
+                        </div>
+                        <div class="form-floating mb-3 col-md-6">
+                            <select asp-for="Country" asp-items="@Model.CountryList" class="form-select">
+                                <option disabled selected>-Select Country-</option>
+                            </select>
+                            <label asp-for="Country" class="ms-2 text-muted"></label>
+                            <span asp-validation-for="Country" class="text-danger" />
                         </div>
                         <div class="d-grid gap-3">
                             <button type="submit" class="w-100 btn btn-lg btn-outline-success">Register</button>

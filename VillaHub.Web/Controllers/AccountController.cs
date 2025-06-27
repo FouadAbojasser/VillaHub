@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace VillaHub.Web.Controllers
@@ -23,24 +25,27 @@ namespace VillaHub.Web.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly IUnitOfWork _unitOfWork;
-
+        private readonly TwilioService _twilioService;
 
         public AccountController(
                         UserManager<ApplicationUser> userManager,
                         SignInManager<ApplicationUser> signInManager,
                         RoleManager<IdentityRole> roleManager,
-                        IEmailSender emailSender, IUnitOfWork unitOfWork)
+                        IEmailSender emailSender, IUnitOfWork unitOfWork,
+                        TwilioService twilioService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
+            _twilioService = twilioService;
         }
+
 
         public async Task<IActionResult> RegisterAsync(string returnUrl = null!)
         {
-            if (returnUrl.IsNullOrEmpty())
+            if (returnUrl == null)
                 returnUrl = Url.Content("~/");
 
             //must be in dB initializer not in any action
@@ -58,7 +63,15 @@ namespace VillaHub.Web.Controllers
                     Text = x.Name,
                     Value = x.Name
                 }),
-                RedirectUrl = returnUrl
+                RedirectUrl = returnUrl,
+
+                CountryList = SD.CountryList.Select(c => new SelectListItem
+                {
+                    Text = c.Text,
+                    Value = c.Text 
+
+                }).ToList()
+
             };
 
             return View(registerVM);
@@ -73,12 +86,15 @@ namespace VillaHub.Web.Controllers
                 return View(registerVM);
             }
 
+            var countryPrefix = SD.CountryList
+            .FirstOrDefault(c => c.Text == registerVM.Country)?.Value ?? "";
+
             ApplicationUser applicationUser = new ApplicationUser()
             {
                 Name = registerVM.Name,
                 UserName=registerVM.Email,
                 Email = registerVM.Email,
-                PhoneNumber = registerVM.PhoneNumber,
+                PhoneNumber = countryPrefix + registerVM.PhoneNumber,
                 Country = registerVM.Country,
                 CreatedAt= DateTime.UtcNow,
             };
@@ -126,7 +142,7 @@ namespace VillaHub.Web.Controllers
                     ModelState.AddModelError(string.Empty, err.Description);
                 }
             }
-
+            registerVM.CountryList = SD.CountryList;
             return View(registerVM);
 
         }
@@ -134,7 +150,7 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Login(string returnUrl = null!)
         {
-            if(returnUrl.IsNullOrEmpty())
+            if(returnUrl == null)
             returnUrl = Url.Content("~/");
 
             LoginVM loginVM = new()
@@ -224,7 +240,7 @@ namespace VillaHub.Web.Controllers
                 return BadRequest();
             }
 
-            if (!confirmEmailVM.Email.IsNullOrEmpty())
+            if (confirmEmailVM.Email is not null)
             {
                 ApplicationUser applicationUser = await _userManager.FindByEmailAsync(confirmEmailVM.Email);
 
@@ -253,8 +269,7 @@ namespace VillaHub.Web.Controllers
                     }
                     else
                     {
-                        TempData["error"] = "You Have Perviuosly Confirmed Your Email!!";
-
+                        TempData["error"] = "You Email is Already Confirmed!";
                     }
                 }
                 else
@@ -263,7 +278,7 @@ namespace VillaHub.Web.Controllers
                 }
             }
 
-            return RedirectToActionPermanent("Index", "Home");
+            return RedirectToAction(nameof(Login));
         }
 
         public async Task<IActionResult> ConfirmEmailAsync(string Id, string UserToken)
@@ -330,7 +345,7 @@ namespace VillaHub.Web.Controllers
             }
             else
             {
-                if (resetPasswordRequestVM.ResetMethod == "OTP")
+                if (resetPasswordRequestVM.ResetMethod.Contains("OTP"))
                 {
                     var userLastOTP = _unitOfWork.OTP.Get(e => e.ApplicationUserId == applicationUser.Id).LastOrDefault();
 
@@ -351,17 +366,28 @@ namespace VillaHub.Web.Controllers
 
                         });
                         await _unitOfWork.OTP.CommitAsync();
-                        //Generating HTML OTP Message
-                        string templatePathOTP = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "PasswordResetOTP.html");
-                        string emailBodyOTP = await System.IO.File.ReadAllTextAsync(templatePathOTP);
-                        emailBodyOTP = emailBodyOTP.Replace("{{UserName}}", applicationUser.Name)
-                                             .Replace("{{YourOTP}}", GenOTP.ToString());
 
-                        //Sending Confirmation Email
-                        await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBodyOTP);
+                        if(resetPasswordRequestVM.ResetMethod.Contains("WhatsApp")){
 
-                        TempData["success"] = "Password Reset has been requested successfully!";
+                            var WhatsAppMessage = $"Your OTP is {GenOTP.ToString()}";
+                            await _twilioService.SendWhatsAppMessage(applicationUser.PhoneNumber!, WhatsAppMessage);
 
+                            TempData["success"] = "Password Reset has been requested successfully. Please check your WhatsApp for OTP.";
+                        }
+                        else
+                        {
+                            //Generating HTML OTP Message
+                            string templatePathOTP = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "PasswordResetOTP.html");
+                            string emailBodyOTP = await System.IO.File.ReadAllTextAsync(templatePathOTP);
+                            emailBodyOTP = emailBodyOTP.Replace("{{UserName}}", applicationUser.Name)
+                                                 .Replace("{{YourOTP}}", GenOTP.ToString());
+
+                            //Sending Confirmation Email
+                            await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBodyOTP);
+
+                            TempData["success"] = "Password Reset has been requested successfully!";
+                        }
+                        
                         TempData["_validationToken"] = Guid.NewGuid().ToString();
 
                         return RedirectToAction("NewPasswordOTP", "Account", new {Token = token, ApplicationUserId = applicationUser.Id });
@@ -384,16 +410,29 @@ namespace VillaHub.Web.Controllers
 
                         });
                         await _unitOfWork.OTP.CommitAsync();
-                        //Generating HTML OTP Message
-                        string templatePathOTP = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "PasswordResetOTP.html");
-                        string emailBodyOTP = await System.IO.File.ReadAllTextAsync(templatePathOTP);
-                        emailBodyOTP = emailBodyOTP.Replace("{{UserName}}", applicationUser.UserName)
-                                             .Replace("{{YourOTP}}", GenOTP.ToString());
 
-                        //Sending Confirmation Email
-                        await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBodyOTP);
+                        //Sending WhatsApp OTP
+                        if (resetPasswordRequestVM.ResetMethod.Contains("WhatsApp"))
+                        {
+                            var WhatsAppMessage = $"Your OTP is {GenOTP.ToString()}";
+                            await _twilioService.SendWhatsAppMessage(applicationUser.PhoneNumber!, WhatsAppMessage);
 
-                        TempData["success"] = "Password Reset has been requested successfully!";
+                            TempData["success"] = "Password Reset has been requested successfully. Please check your WhatsApp for OTP.";
+                        }
+                        else
+                        {
+                            //Sending OTP via Email
+                            //Generating HTML OTP Message
+                            string templatePathOTP = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "PasswordResetOTP.html");
+                            string emailBodyOTP = await System.IO.File.ReadAllTextAsync(templatePathOTP);
+                            emailBodyOTP = emailBodyOTP.Replace("{{UserName}}", applicationUser.UserName)
+                                                 .Replace("{{YourOTP}}", GenOTP.ToString());
+
+                            await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBodyOTP);
+
+                            TempData["success"] = "Password Reset has been requested successfully. Please check your Email for OTP.";
+
+                        }
 
                         TempData["_validationToken"] = Guid.NewGuid().ToString();
 
@@ -406,7 +445,7 @@ namespace VillaHub.Web.Controllers
 
                         var remainingTime = TimeSpan.FromMinutes(30) - (DateTime.UtcNow - userLastOTP!.RequestDateTime);
 
-                        ModelState.AddModelError(string.Empty, $"You can use OTP after {remainingTime.ToString("mm\\:ss")} minutes!");
+                        ModelState.AddModelError(string.Empty, $"You can use OTP after {remainingTime.ToString("mm\\:ss")} mm:ss!");
 
                         return View(resetPasswordRequestVM);
                     }
@@ -427,7 +466,6 @@ namespace VillaHub.Web.Controllers
 
                     //Sending Confirmation Email
                     await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBody);
-
 
                     TempData["success"] = "Password Reset has been requested successfully!";
 
@@ -522,10 +560,12 @@ namespace VillaHub.Web.Controllers
                         TempData["success"] = "Yor Password has been reset Successfully!";
 
                         OTPinDB.UsedByUser = true;
+
                         _unitOfWork.OTP.Update(OTPinDB);
+
                         await _unitOfWork.OTP.CommitAsync();
 
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction(nameof(Login));
                     }
                     else
                     {
