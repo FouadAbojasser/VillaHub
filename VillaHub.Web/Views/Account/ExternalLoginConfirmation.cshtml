@@ -1,0 +1,49 @@
+﻿@using VillaHub.Web.ViewModels
+@model ExternalLoginConfirmationVM
+
+<div class="container pt-5">
+    <div class="card shadow border">
+        <div class="card-header bg-success bg-gradient ml-0 py-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="py-2 text-white">Confirm External Login</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <section>
+                        <form asp-action="ExternalLoginConfirmation" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Email" class="form-control" />
+                                <label asp-for="Email" class="form-label"></label>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="w-100 btn btn-lg btn-outline-success">Confirm</button>
+                                <a href="/" class="btn btn-lg btn-outline-secondary">Cancel</a>
+                            </div>
+                            
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

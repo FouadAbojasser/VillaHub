@@ -1,0 +1,81 @@
+﻿@using VillaHub.Web.ViewModels
+@model LoginVM
+
+<div class="container pt-5">
+    <div class="card shadow border">
+        <div class="card-header bg-success bg-gradient ml-0 py-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="py-2 text-white">Login</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <section>
+                        <!-- ✅ Login Form -->
+                        <form asp-action="Login" method="post">
+                            <input asp-for="RedirectUrl" hidden />
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="UserNameOrEmail" class="form-control" aria-required="true" />
+                                <label asp-for="UserNameOrEmail" class="form-label"></label>
+                                <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Password" class="form-control" aria-required="true" />
+                                <label asp-for="Password" class="form-label"></label>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="checkbox mb-3">
+                                <input class="form-check-input" asp-for="RememberMe" />
+                                <label class="form-label">Remember Me</label>
+                            </div>
+
+                            <div class="mb-3">
+                                <button type="submit" class="w-100 btn btn-lg btn-outline-success">Log in</button>
+                            </div>
+                        </form>
+
+                        <!-- ✅ Social Login Buttons -->
+                        <div class="d-flex justify-content-between mb-4">
+                            <form asp-action="ExternalLogin" asp-controller="Account" method="post" class="w-50 me-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="provider" value="Google" />
+                                <input type="hidden" name="returnUrl" value="@Model.RedirectUrl" />
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-google"></i> Google
+                                </button>
+                            </form>
+
+                            <form asp-action="ExternalLogin" asp-controller="Account" method="post" class="w-50 ms-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="provider" value="Facebook" />
+                                <input type="hidden" name="returnUrl" value="@Model.RedirectUrl" />
+                                <button type="submit" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-facebook"></i> Facebook
+                                </button>
+                            </form>
+                            
+                        </div>
+
+                        <!-- ✅ Bottom Links -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="ForgotPassword" asp-controller="Account">Forgot your password?</a>
+                            <a asp-action="Register" asp-route-returnUrl="@Model.RedirectUrl">Register as a new user</a>
+                            <a asp-action="ResendConfirmEmail" asp-controller="Account">Resend Email Confirmation?</a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
