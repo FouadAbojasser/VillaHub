@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace VillaHub.Web.ViewModels
+namespace VillaHub.Web.ViewModels.Identity
 {
     public class RegisterVM
     {

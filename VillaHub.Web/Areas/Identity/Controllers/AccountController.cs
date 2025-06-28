@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using static System.Net.WebRequestMethods;
-using VillaHub.Web.ViewModels;
 using VillaHub.Domain.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using VillaHub.Application.Common.Interfaces;
@@ -13,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VillaHub.Web.ViewModels.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 
 namespace VillaHub.Web.Areas.Identity.Controllers
@@ -126,7 +127,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     // Give the user Default Role 
                     await _userManager.AddToRoleAsync(applicationUser, SD.Role_Customer);
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Home", new { area = "" });
                 }
                 else
                 {
@@ -194,13 +195,13 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         TempData["success"] = "Login Successfully";
 
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Home", new { area = "" });
                     }
                     else
                     {
                         TempData["error"] = "Please Confirm Your Email First!";
 
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Home", new { area = "" });
                     }
 
                 }
@@ -225,7 +226,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
             TempData["success"] = "Logout Successfully!";
 
-            return RedirectToActionPermanent("Index", "Home");
+            return RedirectToAction("Index", "Home", new {area = "" });
         }
 
         public IActionResult ResendConfirmEmail()
@@ -253,7 +254,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                         string userToken = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
 
                         //Generating Confirmation Link
-                        var link = Url.Action("ConfirmEmail", "Account", new { applicationUser.Id, userToken }, Request.Scheme);
+                        var link = Url.Action("ConfirmEmail", "Account", new {applicationUser.Id, userToken}, Request.Scheme);
 
                         //Generating HTML Confirmation Message
                         string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "confirm.html");
@@ -262,11 +263,11 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                                              .Replace("{{ConfirmationLink}}", link);
 
                         //Sending Confirmation Email
-                        await _emailSender.SendEmailAsync(confirmEmailVM.Email, "Confirmation Email", emailBody);
+                        await _emailSender.SendEmailAsync(confirmEmailVM.Email, "Resend Confirmation Email", emailBody);
 
                         TempData["success"] = "Confirmation Emial Sent Successfully!, Please Check Your Email";
 
-                       return RedirectToAction("Index", "Home");
+                       return RedirectToAction("Index", "Home" , new { area = "" });
                     }
                     else
                     {
@@ -282,6 +283,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             return RedirectToAction(nameof(Login));
         }
 
+
         public async Task<IActionResult> ConfirmEmailAsync(string Id, string UserToken)
         {
             var applicationUser = await _userManager.FindByIdAsync(Id);
@@ -289,7 +291,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             if (applicationUser is null)
             {
                 //User Not Found
-                return RedirectToAction("NotFoundPage", "Home");
+                return RedirectToAction("Index", "Home", new { area = "" });
 
             }
 
@@ -297,7 +299,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             {
                 TempData["info"] = "Your Email is Already Confirmed!";
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home", new { area = "" });
 
             }
             var result = await _userManager.ConfirmEmailAsync(applicationUser, UserToken);
@@ -306,7 +308,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             {
                 TempData["success"] = "Email Confirmed Successfully!";
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home", new { area = "" });
 
             }
             else
@@ -371,6 +373,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                         if(resetPasswordRequestVM.ResetMethod.Contains("WhatsApp")){
 
                             var WhatsAppMessage = $"Your OTP is {GenOTP.ToString()}";
+
                             await _twilioService.SendWhatsAppMessage(applicationUser.PhoneNumber!, WhatsAppMessage);
 
                             TempData["success"] = "Password Reset has been requested successfully. Please check your WhatsApp for OTP.";
@@ -391,7 +394,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                         
                         TempData["_validationToken"] = Guid.NewGuid().ToString();
 
-                        return RedirectToAction("NewPasswordOTP", "Account", new {Token = token, ApplicationUserId = applicationUser.Id });
+                        return RedirectToAction("NewPasswordOTP", "Account", new { area = "Identity", Token = token, ApplicationUserId = applicationUser.Id});
                     }
 
                     else if ((DateTime.UtcNow - userLastOTP.RequestDateTime).TotalMinutes > 30)
@@ -426,7 +429,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                             //Generating HTML OTP Message
                             string templatePathOTP = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "PasswordResetOTP.html");
                             string emailBodyOTP = await System.IO.File.ReadAllTextAsync(templatePathOTP);
-                            emailBodyOTP = emailBodyOTP.Replace("{{UserName}}", applicationUser.UserName)
+                            emailBodyOTP = emailBodyOTP.Replace("{{UserName}}", applicationUser.Name)
                                                  .Replace("{{YourOTP}}", GenOTP.ToString());
 
                             await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBodyOTP);
@@ -437,7 +440,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         TempData["_validationToken"] = Guid.NewGuid().ToString();
 
-                        return RedirectToAction("NewPasswordOTP", "Account", new { area = "Identity", Token = token, ApplicationUserId = applicationUser.Id });
+                        return RedirectToAction("NewPasswordOTP", "Account", new { area = "Identity", Token = token, ApplicationUserId = applicationUser.Id});
 
                     }
 
@@ -457,13 +460,14 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     //Using Token
                     string token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
 
-                    var ResetPasswordConfirmationLink = Url.Action("NewPasswordLink", "Account", new {Token = token, ApplicationUserId = applicationUser.Id }, Request.Scheme);
+                    var ResetPasswordLink = Url.Action("NewPasswordLink", "Account", new {area = "Identity", Token = token, ApplicationUserId = applicationUser.Id}, Request.Scheme);
+
 
                     //Generating HTML Confirmation Message
                     string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "PasswordResetLink.html");
                     string emailBody = await System.IO.File.ReadAllTextAsync(templatePath);
                     emailBody = emailBody.Replace("{{UserName}}", applicationUser.Name)
-                                         .Replace("{{ConfirmationLink}}", ResetPasswordConfirmationLink);
+                                         .Replace("{{ConfirmationLink}}", ResetPasswordLink);
 
                     //Sending Confirmation Email
                     await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBody);
@@ -487,14 +491,16 @@ namespace VillaHub.Web.Areas.Identity.Controllers
         }
 
 
-        public IActionResult NewPasswordLink()
+        public IActionResult NewPasswordLink(NewPasswordLinkVM newPasswordLinkVM)
         {
+           
             if (TempData["_validationToken"] is not null)
             {
-                return View();
+                return View(newPasswordLinkVM);
             }
             return BadRequest();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> NewPasswordLinkAsync(NewPasswordLinkVM newPasswordLinkVM)
@@ -514,7 +520,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                 {
                     TempData["success"] = "Yor Password has been reset Successfully!";
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Home", new { area = "" });
 
                 }
                 else
@@ -528,14 +534,16 @@ namespace VillaHub.Web.Areas.Identity.Controllers
         }
 
 
-        public IActionResult NewPasswordOTP()
+        public IActionResult NewPasswordOTP(NewPasswordOTPVM newPasswordOTPVM)
         {
+            ModelState.Remove("OTP");
             if (TempData["_validationToken"] is not null)
             {
-                return View();
+                return View(newPasswordOTPVM);
             }
             return BadRequest();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> NewPasswordOTPAsync(NewPasswordOTPVM newPasswordOTPVM)
@@ -566,7 +574,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         await _unitOfWork.OTP.CommitAsync();
 
-                        return RedirectToAction(nameof(Login));
+                        return RedirectToAction(nameof(Login), "Account", new {area = "Identity"});
                     }
                     else
                     {

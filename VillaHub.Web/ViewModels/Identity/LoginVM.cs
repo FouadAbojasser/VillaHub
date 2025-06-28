@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
 
-namespace VillaHub.Web.ViewModels
+namespace VillaHub.Web.ViewModels.Identity
 {
     public class LoginVM
     {

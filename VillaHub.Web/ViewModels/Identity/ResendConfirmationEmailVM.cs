@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VillaHub.Web.ViewModels
+namespace VillaHub.Web.ViewModels.Identity
 {
     public class ResendConfirmationEmailVM
     {
