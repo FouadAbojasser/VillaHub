@@ -15,8 +15,9 @@ using static System.Net.Mime.MediaTypeNames;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
-namespace VillaHub.Web.Controllers
+namespace VillaHub.Web.Areas.Identity.Controllers
 {
+    [Area("Identity")]
     public class AccountController : Controller
     {
         // Injecting Identity Helpers
@@ -619,26 +620,35 @@ namespace VillaHub.Web.Controllers
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
-
             if (info == null)
             {
                 return RedirectToAction(nameof(Login));
             }
 
-            // Sign in the user with this external login provider if the user already has a login.
+            // Sign in if user already exists
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true);
             if (result.Succeeded)
             {
-                TempData["success"] = $"Login Successfull Using {info.LoginProvider}";
+                TempData["success"] = $"Login Successful Using {info.LoginProvider}";
                 return LocalRedirect(returnUrl ?? "/");
             }
-            else
+
+            // User does not exist, ask for confirmation
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+            var model = new ExternalLoginConfirmationVM
             {
-                // If the user does not have an account, we can prompt them to create one.
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationVM { Email = email! });
-            }
+                Email = email!,
+                CountryList = SD.CountryList.Select(c => new SelectListItem
+                {
+                    Text = c.Text,
+                    Value = c.Text
+                }).ToList()
+            };
+
+            return View("ExternalLoginConfirmation", model);
         }
+
 
 
         [HttpPost]
@@ -647,7 +657,6 @@ namespace VillaHub.Web.Controllers
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationVM model, string returnUrl = null!)
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
-
             if (info == null)
             {
                 return View("Error");
@@ -655,14 +664,18 @@ namespace VillaHub.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                //build the application user
-                var applicationUser = new ApplicationUser { 
+                // Get the selected country's phone prefix
+                var countryPrefix = SD.CountryList.FirstOrDefault(c => c.Text == model.Country)?.Value ?? "";
+
+                var applicationUser = new ApplicationUser
+                {
                     UserName = model.Email,
-                    Name=info.Principal.Identity!.Name!,
+                    Name = info.Principal.Identity!.Name!,
                     Email = model.Email,
-                    PhoneNumber=model.PhoneNumber,
-                    CreatedAt=DateTime.UtcNow,
-                    EmailConfirmed=true
+                    Country = model.Country,
+                    PhoneNumber = countryPrefix + model.PhoneNumber,
+                    CreatedAt = DateTime.UtcNow,
+                    EmailConfirmed = true
                 };
 
                 var result = await _userManager.CreateAsync(applicationUser);
@@ -677,14 +690,23 @@ namespace VillaHub.Web.Controllers
                         return LocalRedirect(returnUrl ?? "/");
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
+            // Repopulate CountryList if something failed
+            model.CountryList = SD.CountryList.Select(c => new SelectListItem
+            {
+                Text = c.Text,
+                Value = c.Text
+            }).ToList();
+
             return View(model);
         }
+
 
 
     }

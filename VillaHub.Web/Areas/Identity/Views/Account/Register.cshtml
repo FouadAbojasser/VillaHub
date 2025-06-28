@@ -13,7 +13,7 @@
         <div class="card-body p-4">
             <div class="row pt-3">
                 <div class="col-md-12">
-                    <form class="row" method="post">
+                    <form class="row" asp-area="Identity" method="post">
                         <input asp-for="RedirectUrl" hidden />
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="form-floating mb-3 col-md-12">

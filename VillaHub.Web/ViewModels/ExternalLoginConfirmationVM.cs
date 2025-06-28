@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace VillaHub.Web.ViewModels
 {
@@ -11,5 +12,8 @@ namespace VillaHub.Web.ViewModels
         [Required]
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; } = string.Empty;
+        [Required]
+        public string Country { get; set; } = string.Empty;
+        public List<SelectListItem>? CountryList { get; set; }
     }
 }

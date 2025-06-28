@@ -14,8 +14,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <section>
-                        <!-- ✅ Login Form -->
-                        <form asp-action="Login" method="post">
+                        <!-- Login Form -->
+                        <form asp-area="Identity" asp-action="Login" method="post">
                             <input asp-for="RedirectUrl" hidden />
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -41,9 +41,9 @@
                             </div>
                         </form>
 
-                        <!-- ✅ Social Login Buttons -->
+                        <!-- Social Login Buttons -->
                         <div class="d-flex justify-content-between mb-4">
-                            <form asp-action="ExternalLogin" asp-controller="Account" method="post" class="w-50 me-2">
+                            <form asp-area="Identity" asp-action="ExternalLogin" asp-controller="Account" method="post" class="w-50 me-2">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="provider" value="Google" />
                                 <input type="hidden" name="returnUrl" value="@Model.RedirectUrl" />
@@ -52,7 +52,7 @@
                                 </button>
                             </form>
 
-                            <form asp-action="ExternalLogin" asp-controller="Account" method="post" class="w-50 ms-2">
+                            <form asp-area="Identity" asp-action="ExternalLogin" asp-controller="Account" method="post" class="w-50 ms-2">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="provider" value="Facebook" />
                                 <input type="hidden" name="returnUrl" value="@Model.RedirectUrl" />
@@ -63,11 +63,11 @@
                             
                         </div>
 
-                        <!-- ✅ Bottom Links -->
+                        <!-- Bottom Links -->
                         <div class="d-flex justify-content-between">
-                            <a asp-action="ForgotPassword" asp-controller="Account">Forgot your password?</a>
-                            <a asp-action="Register" asp-route-returnUrl="@Model.RedirectUrl">Register as a new user</a>
-                            <a asp-action="ResendConfirmEmail" asp-controller="Account">Resend Email Confirmation?</a>
+                            <a asp-area="Identity" asp-action="ForgotPassword" asp-controller="Account">Forgot your password?</a>
+                            <a asp-area="Identity" asp-action="Register" asp-route-returnUrl="@Model.RedirectUrl">Register as a new user</a>
+                            <a asp-area="Identity" asp-action="ResendConfirmEmail" asp-controller="Account">Resend Email Confirmation?</a>
                         </div>
                     </section>
                 </div>
