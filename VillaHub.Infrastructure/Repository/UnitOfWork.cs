@@ -14,12 +14,14 @@ namespace VillaHub.Infrastructure.Repository
         
         public IOTPRepository OTP { get; private set; }
         public IApplicationUserRepository ApplicationUser { get; private set; }
+        public IVillageRepository Village { get; private set; }
         
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbcontext = dbContext;
             OTP = new OTPRepository(_dbcontext);
             ApplicationUser = new ApplicationUserRepository(_dbcontext);
+            Village = new VillageRepository(_dbcontext);
         }
 
     }

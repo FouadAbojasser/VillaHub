@@ -578,7 +578,10 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     }
                     else
                     {
-                        TempData["error"] = string.Join(", ", result.Errors.Select(e => e.Description));
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
                     }
 
 

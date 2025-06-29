@@ -1,0 +1,107 @@
+﻿@using VillaHub.Domain.Entities
+@model Village
+
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Create Village</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <div class="p-3">
+                @* <div asp-validation-summary="All"></div>  *@
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Name" class="form-control border shadow" />
+                    <label asp-for="Name" class="ms-2"></label>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Description" class="form-control border shadow" />
+                    <label asp-for="Description" class="ms-2"></label>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="latitude" class="form-control border shadow" />
+                    <label asp-for="latitude" class="ms-2"></label>
+                    <span asp-validation-for="latitude" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="longitude" class="form-control border shadow" />
+                    <label asp-for="longitude" class="ms-2"></label>
+                    <span asp-validation-for="longitude" class="text-danger"></span>
+                </div>
+
+
+                <div class="py-1 col-12">
+                    <label asp-for="ImgUrl" class="form-label ms-2 mb-1"></label>
+                    <input asp-for="ImgUrl" id="ImgUrl" type="file" accept="image/*" class="form-control border shadow"
+                           onchange="previewImage(event)" />
+                    <span asp-validation-for="ImgUrl" class="text-danger"></span>
+                </div>
+
+
+
+                <!-- Image preview -->
+                <div class="col-12 mt-2 position-relative" style="max-width: 300px;">
+                    <img id="imagePreview" src="#" alt="Image Preview" class="img-fluid border shadow w-100" style="display: none; max-height: 300px;" />
+
+                    <!-- Remove (X) button -->
+                    <button type="button" id="removeImageBtn" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1" style="display: none; z-index: 1;"
+                            onclick="removeImage()">
+                        &times;
+                    </button>
+                </div>
+
+
+                <div class="row pt-2">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-check-circle"></i> Create
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Village" asp-action="Index" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById("imagePreview");
+            const removeBtn = document.getElementById("removeImageBtn");
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    removeBtn.style.display = "block";
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage() {
+            const input = document.getElementById("ImgUrl");
+            const preview = document.getElementById("imagePreview");
+            const removeBtn = document.getElementById("removeImageBtn");
+
+            input.value = ""; // clear the file input
+            preview.src = "#";
+            preview.style.display = "none";
+            removeBtn.style.display = "none";
+        }
+    </script>
+}
+

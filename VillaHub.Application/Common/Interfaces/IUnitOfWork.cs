@@ -10,5 +10,6 @@ namespace VillaHub.Application.Common.Interfaces
     {
         IOTPRepository OTP { get; }
         IApplicationUserRepository ApplicationUser { get; }
+        IVillageRepository Village { get; }
     }
 }
