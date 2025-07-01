@@ -80,7 +80,7 @@ namespace VillaHub.Web.Controllers
             {
                 return View(village);
             }
-            return RedirectToAction("NotFoundPage", "Home");
+            return RedirectToAction("Error", "Home");
         }
 
 
@@ -158,7 +158,12 @@ namespace VillaHub.Web.Controllers
         {
             var villageInDb = _unitOfWork.Village.GetOne(a => a.Id == id);
 
-            return View(villageInDb);
+            if (villageInDb is not null)
+            {
+                return View(villageInDb);
+            }
+
+            return RedirectToAction("Error", "Home");
         }
 
 
@@ -168,9 +173,9 @@ namespace VillaHub.Web.Controllers
 
             var villageInDb = _unitOfWork.Village.GetOne(a => a.Id == village.Id,null,true);
 
-            if (villageInDb == null)
+            if (villageInDb is null)
             {
-                return RedirectToAction("NotFoundPage", "Home");
+                return RedirectToAction("Error", "Home");
             }
 
             if (!string.IsNullOrEmpty(villageInDb.ImgUrl))

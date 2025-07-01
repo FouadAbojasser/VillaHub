@@ -34,8 +34,14 @@
                         <td>
                             @if (!string.IsNullOrEmpty(village.ImgUrl))
                             {
-                                <img src="~/images/villages/@village.ImgUrl" alt="Village Image"
-                                     style="width: 100px; height: auto;" class="img-thumbnail" />
+                                var imagePath = Url.Content("~/images/villages/" + village.ImgUrl);
+                                <img src="@imagePath"
+                                     alt="Village Image"
+                                     style="width: 100px; height: auto; cursor: pointer;"
+                                     class="img-thumbnail"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#imageModal"
+                                     onclick="showFullImage('@imagePath')" />
                             }
                             else
                             {
@@ -75,3 +81,25 @@
         </table>
     </div>
 </div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark border-0">
+            <div class="modal-body p-0">
+                <img id="modalImage" src="#" class="w-100" style="object-fit: contain;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        function showFullImage(imgSrc) {
+            document.getElementById('modalImage').src = imgSrc;
+        }
+    </script>
+}
+
