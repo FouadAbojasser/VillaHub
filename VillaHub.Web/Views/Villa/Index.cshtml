@@ -1,42 +1,47 @@
-﻿@model IEnumerable<VillaHub.Domain.Entities.Village>
+﻿@using VillaHub.Domain.Entities
+@model IEnumerable<Villa>
 
 <div class="w-100 card border-0 p-4">
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Villages List</h2>
+                <h2 class="text-white py-2">Villas List</h2>
             </div>
         </div>
     </div>
     <div class="card-body border p-4">
         <div class="row pb-3">
             <div class="col-6 offset-6 text-end">
-                <a asp-controller="Village" asp-action="Create" class="btn btn-secondary">
-                    <i class="bi bi-plus-circle"></i> Create New Village
+                <a asp-controller="Villa" asp-action="Create" class="btn btn-secondary">
+                    <i class="bi bi-plus-circle"></i> Create New Villa
                 </a>
             </div>
         </div>
 
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Location</th>
-                    <th class="text-center">Actions</th>
+                    <th class ="align-content-center">Image</th>
+                    <th class="align-content-center">Name</th>
+                    <th class ="align-content-center">Village</th>
+                    <th class ="align-content-center">Description</th>
+                    <th class ="align-content-center">Number Of Floors</th>
+                    <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
+                    <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
+                    <th class="align-content-center">Location</th>
+                    <th class="align-content-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var village in Model)
+                @foreach (var villa in Model)
                 {
                     <tr>
                         <td class="align-content-center">
-                            @if (!string.IsNullOrEmpty(village.ImgUrl))
+                            @if (!string.IsNullOrEmpty(villa.MainImg))
                             {
-                                var imagePath = Url.Content("~/images/villages/" + village.ImgUrl);
+                                var imagePath = Url.Content($"~/images/villas/" + villa.MainImg);
                                 <img src="@imagePath"
-                                     alt="Village Image"
+                                     alt="Villa Image"
                                      style="width: 100px; height: auto; cursor: pointer;"
                                      class="img-thumbnail"
                                      data-bs-toggle="modal"
@@ -48,12 +53,16 @@
                                 <span class="text-muted">No image</span>
                             }
                         </td>
-                        <td>@village.Name</td>
-                        <td>@village.Description</td>
+                        <td>@villa.Name</td>
+                        <td>@villa.Village!.Name</td>
+                        <td>@villa.Description</td>
+                        <td>@villa.NumberOfFloors</td>
+                        <td>@villa.Area</td>
+                        <td>@villa.Capacity</td>
                         <td class="align-content-center">
-                            @if (village.Latitude != 0 && village.Longitude != 0)
+                            @if (villa.Latitude != 0 && villa.Longitude != 0)
                             {
-                                <a href="https://www.google.com/maps?q=@village.Latitude,@village.Longitude"
+                                <a href="https://www.google.com/maps?q=@villa.Latitude,@villa.Longitude"
                                    target="_blank" class="btn btn-sm btn-outline-primary">
                                     View on Map
                                 </a>
@@ -65,11 +74,11 @@
                         </td>
                         <td class="align-content-center">
                             <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Village" asp-action="Update" asp-route-id="@village.Id"
+                                <a asp-controller="Villa" asp-action="Update" asp-route-id="@villa.Id"
                                    class="btn btn-success mx-2">
                                     <i class="bi bi-pencil-square"></i> Update
                                 </a>
-                                <a asp-controller="Village" asp-action="Delete" asp-route-id="@village.Id"
+                                <a asp-controller="Villa" asp-action="Delete" asp-route-id="@villa.Id"
                                    class="btn btn-danger mx-2">
                                     <i class="bi bi-trash-fill"></i> Delete
                                 </a>

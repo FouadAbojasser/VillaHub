@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VillaHub.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using VillaHub.Infrastructure.Data;
 namespace VillaHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250703100717_RemoveColumnsFromVillaTable")]
+    partial class RemoveColumnsFromVillaTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,12 +321,7 @@ namespace VillaHub.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VillaId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("VillaId");
 
                     b.ToTable("Images");
                 });
@@ -494,17 +492,6 @@ namespace VillaHub.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VillaHub.Domain.Entities.Image", b =>
-                {
-                    b.HasOne("VillaHub.Domain.Entities.Villa", "Villa")
-                        .WithMany("Images")
-                        .HasForeignKey("VillaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Villa");
-                });
-
             modelBuilder.Entity("VillaHub.Domain.Entities.OTP", b =>
                 {
                     b.HasOne("VillaHub.Domain.Entities.ApplicationUser", "applicationUser")
@@ -525,11 +512,6 @@ namespace VillaHub.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Village");
-                });
-
-            modelBuilder.Entity("VillaHub.Domain.Entities.Villa", b =>
-                {
-                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.Village", b =>

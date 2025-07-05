@@ -1,0 +1,299 @@
+﻿@using VillaHub.Web.ViewModels.Villa
+@model VillaWithVillagesVM
+
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Create Villa</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <div class="p-3">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-floating py-1 col-12">
+                    <select asp-for="@Model.Villa.VillageId" asp-items="@Model.Villages"
+                            class="form-select border shadow">
+                        <option disabled selected>--Select Village--</option>
+                    </select>
+                    <label asp-for="Villa.VillageId" class="ms-2"></label>
+                    <span asp-validation-for="Villa.VillageId" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa.Name" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa.Name" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.Name" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa.Description" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa.Description" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.Description" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa.NumberOfFloors" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa.NumberOfFloors" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.NumberOfFloors" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa.Area" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa.Area" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.Area" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa.Capacity" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa.Capacity" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.Capacity" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa.Latitude" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa.Latitude" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.Latitude" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa.Longitude" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa.Longitude" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.Longitude" class="text-danger"></span>
+                </div>
+                <div class="py-1 col-12">
+                    <label asp-for="@Model.Villa.MainImg" class="form-label ms-2 mb-1"></label>
+                    <input asp-for="@Model.Villa.MainImg" id="MainImg" name="MainImg" type="file" accept="image/*" class="form-control border shadow"
+                            onchange="previewImage(event)" />
+                    <span asp-validation-for="@Model.Villa!.MainImg" class="text-danger"></span>
+                </div>
+
+
+
+                <!-- Main Image Thumbnail Style Preview -->
+                <div class="row mt-2" id="mainImagePreviewContainer" style="max-width: 150px; display: none;">
+                    <div class="position-relative w-100">
+                        <img id="mainImageThumb" src="#" alt="Main Image Preview"
+                             class="img-thumbnail shadow w-100"
+                             style="height: 100px; object-fit: cover; cursor: pointer;"
+                             onclick="openMainImageModal()" />
+                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
+                                onclick="removeImage()">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Image Modal Preview -->
+                <div class="modal fade" id="mainImageModal" tabindex="-1" aria-labelledby="mainImageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content bg-dark border-0">
+                            <div class="modal-body p-0">
+                                <img id="mainImageModalImg" src="#" class="w-100" style="object-fit: contain; max-height: 500px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+                <!-- Villa Images Upload -->
+                <div class="py-1 col-12">
+                    <label asp-for="@Model.Villa.Images" class="form-label ms-2 mb-1"></label>
+                    <input asp-for="@Model.Villa.Images" type="file" multiple accept="image/*" name="VillaImages"
+                    class="form-control border shadow" onchange="handleVillaImages(event)" />
+                    <span id="galleryError" class="text-danger d-block pt-1" style="display: none;">You can upload up to 5 images only.</span>
+                    <span asp-validation-for="@Model.Villa.Images" class="text-danger"></span>
+                </div>
+
+                <!-- Preview Thumbnails -->
+                <div class="row mt-3" id="galleryPreview" style="gap: 15px;"></div>
+
+                <!-- Fullscreen Modal Carousel -->
+                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content bg-dark border-0">
+                            <div class="modal-body p-0">
+                                <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner" id="imageCarouselInner"></div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+                <!-- Actions -->
+                <div class="row pt-2">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-check-circle"></i> Create
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Villa" asp-action="Index" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // =============================
+        // 🔷 MAIN IMAGE (THUMBNAIL STYLE)
+        // =============================
+        function previewImage(event) {
+            const input = event.target;
+            const thumb = document.getElementById("mainImageThumb");
+            const container = document.getElementById("mainImagePreviewContainer");
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    thumb.src = e.target.result;
+                    container.style.display = "flex";
+                    thumb.dataset.full = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage() {
+            const input = document.getElementById("MainImg");
+            const container = document.getElementById("mainImagePreviewContainer");
+            const thumb = document.getElementById("mainImageThumb");
+
+            input.value = "";
+            container.style.display = "none";
+            thumb.src = "#";
+            thumb.dataset.full = "";
+        }
+
+        function openMainImageModal() {
+            const fullSrc = document.getElementById("mainImageThumb").dataset.full;
+            const modalImg = document.getElementById("mainImageModalImg");
+
+            if (fullSrc) {
+                modalImg.src = fullSrc;
+                new bootstrap.Modal(document.getElementById("mainImageModal")).show();
+            }
+        }
+
+        // =============================
+        // 🔷 GALLERY UPLOAD + PREVIEW + MODAL
+        // =============================
+        let galleryImages = [];
+
+                function handleVillaImages(event) {
+            const files = event.target.files;
+            const galleryPreview = document.getElementById("galleryPreview");
+            const galleryError = document.getElementById("galleryError");
+
+            // Clear previous previews
+            galleryPreview.innerHTML = "";
+
+            if (files.length > 5) {
+                galleryError.style.display = "block";
+                event.target.value = "";
+                return;
+            }
+
+            galleryError.style.display = "none";
+            galleryImages = []; // Reset the array
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imageData = {
+                        id: Date.now() + index,
+                        src: e.target.result,
+                        file: file // Keep reference to the actual file
+                    };
+                    galleryImages.push(imageData);
+
+                    // Create thumbnail preview
+                    const col = document.createElement("div");
+                    col.className = "position-relative";
+                    col.style = "max-width: 150px;";
+                    col.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail shadow w-100"
+                             style="height: 100px; object-fit: cover; cursor: pointer;"
+                             onclick="showFullImage(${index})" />
+                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
+                                onclick="removeVillaImage(${imageData.id})">
+                            &times;
+                        </button>
+                    `;
+                    galleryPreview.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateThumbnails() {
+            const previewContainer = document.getElementById("galleryPreview");
+            previewContainer.innerHTML = "";
+
+            galleryImages.forEach((img, index) => {
+                const col = document.createElement("div");
+                col.className = "position-relative";
+                col.style = "max-width: 150px;";
+
+                col.innerHTML = `
+                    <img src="${img.src}" class="img-thumbnail shadow w-100" style="height: 100px; object-fit: cover; cursor: pointer;"
+                         onclick="showFullImage(${index})" />
+                    <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
+                            onclick="removeVillaImage(${img.id})">
+                        &times;
+                    </button>
+                `;
+                previewContainer.appendChild(col);
+            });
+        }
+
+        function removeVillaImage(id) {
+            galleryImages = galleryImages.filter(img => img.id !== id);
+            updateThumbnails();
+        }
+
+        function showFullImage(startIndex) {
+            const carouselInner = document.getElementById("imageCarouselInner");
+            carouselInner.innerHTML = "";
+
+            galleryImages.forEach((img, i) => {
+                const div = document.createElement("div");
+                div.className = "carousel-item" + (i === startIndex ? " active" : "");
+                div.innerHTML = `<img src="${img.src}" class="d-block w-100" style="object-fit: contain; height: 500px;" />`;
+                carouselInner.appendChild(div);
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
+
+            const carousel = bootstrap.Carousel.getOrCreateInstance(document.getElementById('imageCarousel'));
+            carousel.to(startIndex);
+        }
+    </script>
+
+    <style>
+        /* Make carousel controls white & bold */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(1);
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+        }
+    </style>
+}
+
+
+
+

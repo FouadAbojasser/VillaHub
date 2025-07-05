@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace VillaHub.Domain.Entities
 {
-    public class Village
+    public class Floor
     {
-        public int Id { get; set; }
+        [Key]
+        public int FoolrNumber { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
+        public double Price { get; set; }
+        public int Capacity { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        [Display(Name = "Village Image")]
-        public string? ImgUrl { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
 
-        // ===> Relations
-        public ICollection<Villa> Villas { get; set; } = [];  // Navigation property: One Village has many Villas
+        //===> Relations
 
     }
 }

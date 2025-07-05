@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VillaHub.Domain.Entities;
 
 namespace VillaHub.Application.Common.Interfaces
 {
-    public interface IVillaRepository
+    public interface IVillaRepository : IRepository<Villa>
     {
     }
 }
