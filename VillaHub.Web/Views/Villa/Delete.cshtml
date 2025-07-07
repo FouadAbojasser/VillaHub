@@ -1,11 +1,11 @@
 ﻿@using VillaHub.Domain.Entities
-@model Village
+@model Villa
 
 <div class="w-100 card border-0 p-4">
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Delete Village</h2>
+                <h2 class="text-white py-2">Delete Villa</h2>
             </div>
         </div>
     </div>
@@ -24,6 +24,18 @@
                         <label asp-for="Description" class="ms-2"></label>
                     </div>
                     <div class="form-floating py-1 col-12">
+                        <input asp-for="NumberOfFloors" disabled class="form-control border shadow" />
+                        <label asp-for="NumberOfFloors" class="ms-2"></label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input asp-for="Area" disabled class="form-control border shadow" />
+                        <label asp-for="Area" class="ms-2"></label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input asp-for="Capacity" disabled class="form-control border shadow" />
+                        <label asp-for="Capacity" class="ms-2"></label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
                         <input asp-for="Latitude" disabled class="form-control border shadow" />
                         <label asp-for="Latitude" class="ms-2"></label>
                     </div>
@@ -32,8 +44,8 @@
                         <label asp-for="Longitude" class="ms-2"></label>
                     </div>
                     <div class="form-floating py-1 col-12">
-                        <input asp-for="ImgUrl" disabled class="form-control border shadow" />
-                        <label asp-for="ImgUrl" class="ms-2"></label>
+                        <input asp-for="MainImg" disabled class="form-control border shadow" />
+                        <label asp-for="MainImg" class="ms-2"></label>
                     </div>
                     <div class="row pt-2">
                         <div class="col-6 col-md-3">
@@ -42,7 +54,7 @@
                             </button>
                         </div>
                         <div class="col-6 col-md-3">
-                            <a asp-controller="Village" asp-action="Index" class="btn btn-secondary w-100">
+                            <a asp-controller="Villa" asp-action="Index" class="btn btn-secondary w-100">
                                 <i class="bi bi-x-circle"></i> Cancel
                             </a>
                         </div>
@@ -50,9 +62,15 @@
                 </div>
             </div>
             <div class="col-2">
-                <img src="~/images/villages/@Model.ImgUrl" width="100%"
-                     style="border-radius:5px; border:1px solid #bbb9b9" />
-            </div>
+                <img src="~/images/villas/@Model.MainImg" width="100%"
+                    style="border-radius:5px; border:1px solid #bbb9b9" />
+                @foreach(var img in Model.Images)
+                {
+                    <img src="~/images/villas/@img.Name" width="100%"
+                        style="border-radius:5px;  margin-top:10px; border:1px solid #bbb9b9" />
+                }
+            </div> 
+          
         </form>
     </div>
 </div>

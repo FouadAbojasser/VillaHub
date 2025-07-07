@@ -158,7 +158,7 @@ namespace VillaHub.Web.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> UpdateAsync(VillaWithVillagesVM villaWithVillages, IFormFile? newMainImg, string removeMainImg, List<IFormFile>? newVillaImages, string removeVillaImages)
+        public async Task<IActionResult> UpdateAsync(VillaWithVillagesVM villaWithVillages, IFormFile newMainImg, string removeMainImg, List<IFormFile>? newVillaImages, string removeVillaImages)
         {
 
             var removedImagesList = JsonConvert.DeserializeObject<List<string>>(removeVillaImages ?? "[]");
@@ -314,7 +314,7 @@ namespace VillaHub.Web.Controllers
                         villaInDb.Images.Add(new Image
                         {
                             Name = fileName,
-                            Type = "slider",
+                            Type = "VillaImage",
                             Url = filePath,
                             CreateDate = DateTime.UtcNow
 
@@ -326,18 +326,9 @@ namespace VillaHub.Web.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
         public IActionResult Delete(int id)
         {
-            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == id);
+            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == id, [m=>m.Images]);
 
             if (villaInDb is not null)
             {
@@ -352,7 +343,7 @@ namespace VillaHub.Web.Controllers
         public async Task<IActionResult> Delete(Villa villa)
         {
 
-            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == villa.Id, null, true);
+            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == villa.Id, [m=>m.Images], true);
 
             if (villaInDb is null)
             {
@@ -375,6 +366,30 @@ namespace VillaHub.Web.Controllers
                 {
                     // Log exception
                     Console.WriteLine($"Error deleting file: {ex.Message}");
+                }
+            }
+
+            
+
+            if (villaInDb.Images is not null && villaInDb.Images.Count > 0) 
+            {
+                foreach (var image in villaInDb.Images) 
+                {
+                    string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
+
+                    string oldFilePath = Path.Combine(folderPath, image.Name!);
+                    try
+                    {
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log exception
+                        Console.WriteLine($"Error deleting file: {ex.Message}");
+                    }
                 }
             }
 
