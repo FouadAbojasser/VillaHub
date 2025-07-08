@@ -22,5 +22,6 @@ namespace VillaHub.Domain.Entities
 
         //===> Relations
 
+
     }
 }

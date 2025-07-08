@@ -1,0 +1,89 @@
+﻿@using VillaHub.Domain.Entities
+@model IEnumerable<Village>
+
+<div id="VillasList">
+
+    <div class="row px-lg-5 m-lg-4 m-sm-0 px-sm-0" style="--bs-gutter-x:0">
+
+        @foreach (var village in Model)
+        {
+
+            <div class="p-4 col-md-12 col-lg-6">
+                <div class="row g-0 border rounded shadow-sm h-100" style="overflow: hidden;">
+
+                    <!-- Village Image -->
+                    <div class="col-md-4">
+                        <img src="~/images/villages/@village.ImgUrl"
+                             alt="@village.Name"
+                             class="img-fluid w-100"
+                             style="height: 200px; object-fit: cover; border-radius: 5px 0 0 5px;" />
+                    </div>
+
+
+                    <!-- Village Info -->
+                    <div class="col-md-8 d-flex flex-column justify-content-between p-3">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="text-warning mb-0" style="font-size: 1.5rem;">@village.Name</h5>
+                                <button type="button" class="btn btn-sm btn-outline-success"
+                                        data-bs-toggle="modal" data-bs-target='#exampleModal-@(village.Id)'>
+                                    Details
+                                </button>
+                            </div>
+
+                            <div class="mb-2 text-muted" style="font-size: 0.9rem;">
+                                @Html.Raw(village.Description)
+                            </div>
+                        </div>
+
+                        <!-- Metrics and Price -->
+                        <div class="row align-items-end pt-2">
+                            <div class="col-6">
+                                @if (village.Villas != null && village.Villas.Any())
+                                {
+                                    <div class="small">
+                                        <div>No. of Villas: <strong>@village.Villas.Count</strong></div>
+                                        <div>Capacity (Avg): <strong>@village.Villas.Average(v => v.Capacity)</strong> persons</div>
+                                        <div>Area (Avg): <strong>@village.Villas.Average(v => v.Area)</strong> sqm</div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-6 text-end">
+                                <div class="text-warning fw-bold text-end" style="font-size: 1rem; line-height: 1.4;">
+                                    Average Price / Night <br />
+                                    <span style="border-bottom: 1px solid #ff6a00; display: inline-block;">
+                                        @village.Id.ToString("c")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="exampleModal-@(village.Id)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl" style="border: 1px solid #aaa; border-radius:7px;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-3 text-success" id="exampleModalLabel">Village Details - @village.Name</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body m-0">
+                            <partial name="_VillageDetail" model="@village" />
+                        </div>
+                        <div class="modal-footer">
+                                <button asp-controller="Home" asp-action="GeneratePPTExport"
+                                asp-route-id="@village.Id" type="submit" class="btn btn-outline-warning">
+                                <i class="bi bi-file-earmark-ppt"></i> Download Villa PPT
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+</div>
+</div>
