@@ -12,8 +12,8 @@ namespace VillaHub.Domain.Entities
         public string Name { get; set; }=string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
-        public double Price { get; set; };
+        public double Price { get; set; }
 
-
+        public ICollection<Floor> Floors { get; set; } = [];
     }
 }

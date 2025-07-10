@@ -32,6 +32,11 @@
                     <span asp-validation-for="@Model.Villa!.Description" class="text-danger"></span>
                 </div>
                 <div class="form-floating py-1 col-12">
+                    <input asp-for="@Model.Villa!.NumberOfFloors" class="form-control border shadow" />
+                    <label asp-for="@Model.Villa!.NumberOfFloors" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa!.NumberOfFloors" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-1 col-12">
                     <input asp-for="@Model.Villa!.Area" class="form-control border shadow" />
                     <label asp-for="@Model.Villa!.Area" class="ms-2"></label>
                     <span asp-validation-for="@Model.Villa!.Area" class="text-danger"></span>

@@ -11,6 +11,7 @@ namespace VillaHub.Domain.Entities
     public class Villa
     {
         public int Id { get; set; }
+        [Display(Name="Villa Name")]
         public required string Name { get; set; }
         public string? Description { get; set; }
         [Display(Name="No. Of Floors")]
@@ -33,6 +34,7 @@ namespace VillaHub.Domain.Entities
         public Village Village { get; set; } = null!;
         [Display(Name="Villa Images")]
         public ICollection<Image> Images { get; set; } = [];
+        public ICollection<Floor> Floors { get; set; } = [];  // Navigation property: One Villa has many Floors
 
     }
 }

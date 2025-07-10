@@ -10,6 +10,7 @@ namespace VillaHub.Domain.Entities
     public class Village
     {
         public int Id { get; set; }
+        [Display(Name = "Village Name")]
         public required string Name { get; set; }
         public string? Description { get; set; }
         public double Latitude { get; set; }
@@ -21,6 +22,6 @@ namespace VillaHub.Domain.Entities
 
         // ===> Relations
         public ICollection<Villa> Villas { get; set; } = [];  // Navigation property: One Village has many Villas
-
+        public ICollection<Floor> Floors { get; set; } = [];
     }
 }

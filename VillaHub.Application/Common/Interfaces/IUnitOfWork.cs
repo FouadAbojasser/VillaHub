@@ -12,5 +12,8 @@ namespace VillaHub.Application.Common.Interfaces
         IApplicationUserRepository ApplicationUser { get; }
         IVillageRepository Village { get; }
         IVillaRepository Villa { get; }
+        IFloorRepository Floor { get; }
+        IAmenityRepository Amenity { get; }
+        IImageRepository Image { get; }
     }
 }

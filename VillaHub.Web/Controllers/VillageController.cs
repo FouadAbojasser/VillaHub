@@ -15,7 +15,7 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Index()
         {
-            var villageList = _unitOfWork.Village.Get();
+            var villageList = _unitOfWork.Village.Get(null, [v=>v.Villas]);
 
             return View(villageList);
         }

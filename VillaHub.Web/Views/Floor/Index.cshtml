@@ -1,0 +1,89 @@
+﻿@using VillaHub.Domain.Entities
+@model IEnumerable<Floor>
+
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Floors List</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <div class="row pb-3">
+            @* <div class="col-6 offset-6 text-end"> *@
+            @*     <a asp-controller="Floor" asp-action="Create" class="btn btn-secondary"> *@
+            @*         <i class="bi bi-plus-circle"></i> Create New Floor *@
+            @*     </a> *@
+            @* </div> *@
+        </div>
+
+        <table class="table table-bordered table-striped text-center">
+            <thead>
+                <tr>
+                    
+                    <th class="align-content-center">Floor Number</th>
+                    <th class="align-content-center">Villa Name</th>
+                    <th class="align-content-center">Village Name</th>
+                    <th class ="align-content-center">Description</th>
+                    <th class ="align-content-center">Price</th>
+                    <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
+                    <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
+                    <th class="align-content-center">Galary</th>
+                    <th class="align-content-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var floor in Model)
+                {
+                    <tr>
+                        <td>@floor.FloorNumber</td>
+                        <td>@floor.Villa!.Name</td>
+                        <td>@floor.Villa!.Village.Name</td>
+                        <td>@floor.Description</td>
+                        <td>@floor.Price</td>
+                        <td>@floor.Area</td>
+                        <td>@floor.Capacity</td>
+                        <td class="align-content-center">
+                           //Galary
+                        </td>
+                        <td>
+                            <div class="w-75 btn-group" role="group">
+                                <a asp-controller="Floor" asp-action="Update" asp-route-id="@floor.FloorNumber"
+                                   class="btn btn-success mx-1">
+                                    <i class="bi bi-pencil-square"></i> Update
+                                </a>
+                                <a asp-controller="Floor" asp-action="Delete" asp-route-id="@floor.FloorNumber"
+                                   class="btn btn-danger mx-1">
+                                    <i class="bi bi-trash-fill"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark border-0">
+            <div class="modal-body p-0">
+                <img id="modalImage" src="#" class="w-100" style="object-fit: contain;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        function showFullImage(imgSrc) {
+            document.getElementById('modalImage').src = imgSrc;
+        }
+    </script>
+}
+

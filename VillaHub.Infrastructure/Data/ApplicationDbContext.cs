@@ -18,8 +18,8 @@ namespace VillaHub.Infrastructure.Data
         }
         public DbSet<Village> Villages { get; set; }
         public DbSet<Villa> Villas { get; set; }
-        public DbSet<Floor> floors { get; set; }
-        public DbSet<Entertainment> entertainments { get; set; }
+        public DbSet<Floor> Floors { get; set; }
+        public DbSet<Amenity> Amenities { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<OTP> OTPs { get; set; }
@@ -27,23 +27,45 @@ namespace VillaHub.Infrastructure.Data
         {
             base.OnModelCreating(builder);
 
+            // ✅ Villa → Village (safe to cascade)
             builder.Entity<Villa>()
-                    .HasOne(v => v.Village)
-                    .WithMany(vg => vg.Villas)
-                    .HasForeignKey(v => v.VillageId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(v => v.Village)
+                .WithMany(vg => vg.Villas)
+                .HasForeignKey(v => v.VillageId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<Floor>()
+                .HasOne(f => f.Villa)
+                .WithMany(v => v.Floors)
+                .HasForeignKey(f => f.VillaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Floor>()
+                .HasOne(f => f.Village)
+                .WithMany(v => v.Floors)
+                .HasForeignKey(f => f.VillageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ✅ Image → Villa (Restrict to avoid multiple cascade paths)
             builder.Entity<Image>()
-                   .HasOne(v => v.Villa)
-                   .WithMany(vg => vg.Images)
-                   .HasForeignKey(v => v.VillaId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(i => i.Villa)
+                .WithMany(v => v.Images)
+                .HasForeignKey(i => i.VillaId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Image → Floor (Composite Foreign Key)
+            builder.Entity<Image>()
+                .HasOne(i => i.Floor)
+                .WithMany(f => f.Images)
+                .HasForeignKey(i => new { i.FloorVillageId, i.FloorVillaId, i.FloorNumber })
+                .HasPrincipalKey(f => new { f.VillageId, f.VillaId, f.FloorNumber })
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Floor>()
+                .HasKey(e => new { e.VillageId, e.VillaId, e.FloorNumber });
         }
 
 
-
     }
-
 
 }

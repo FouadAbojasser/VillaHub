@@ -1,0 +1,239 @@
+﻿@using VillaHub.Web.ViewModels.Floor
+@model FloorWithVillasVM
+
+@{
+    var existingImages = Model.Floor?.Images?.ToList() ?? new();
+}
+
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Update Floor</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body border p-4">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <div class="p-3">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <input type="hidden" asp-for="Floor.VillaId" />
+                <input type="hidden" asp-for="Floor.VillageId" />
+                <input type="hidden" id="removeFloorImages" name="removeFloorImages" />
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Village.Name" readonly class="form-control border shadow bg-dark" />
+                    <label asp-for="Village.Name" class="ms-2"></label>
+                </div>
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Villa.Name" readonly class="form-control border shadow bg-dark" />
+                    <label asp-for="Villa.Name" class="ms-2"></label>
+                </div>
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Floor.FloorNumber" readonly class="form-control border shadow bg-dark" />
+                    <label asp-for="Floor.FloorNumber" class="ms-2"></label>
+                    <span asp-validation-for="Floor.FloorNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Floor.Description" class="form-control border shadow" />
+                    <label asp-for="Floor.Description" class="ms-2"></label>
+                    <span asp-validation-for="Floor.Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Floor.Price" class="form-control border shadow" />
+                    <label asp-for="Floor.Price" class="ms-2"></label>
+                    <span asp-validation-for="Floor.Price" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Floor.Area" class="form-control border shadow" />
+                    <label asp-for="Floor.Area" class="ms-2"></label>
+                    <span asp-validation-for="Floor.Area" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Floor.Capacity" class="form-control border shadow" />
+                    <label asp-for="Floor.Capacity" class="ms-2"></label>
+                    <span asp-validation-for="Floor.Capacity" class="text-danger"></span>
+                </div>
+
+                <!-- Upload New Images -->
+                <div class="py-1 col-12">
+                    <label for="newFloorImages" class="form-label ms-2 mb-1">Upload New Floor Images</label>
+                    <input id="newFloorImages" type="file" name="newFloorImages" multiple accept="image/*"
+                           class="form-control border shadow" onchange="handleNewImages(event)" />
+                    <span id="galleryError" class="text-danger d-block pt-1" style="display: none;">You can upload up to 5 images only.</span>
+                </div>
+
+                <!-- Existing Images Preview -->
+                <div class="row mt-3" id="existingGallery" style="gap: 15px;">
+                    @foreach (var img in existingImages)
+                    {
+                        <div class="position-relative" style="max-width: 150px;" data-name="@img.Name">
+                            <img src="~/images/floors/@img.Name" class="img-thumbnail shadow w-100"
+                                 style="height: 100px; object-fit: cover;" />
+                            <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
+                                    onclick="removeExistingImage('@img.Name')">
+                                &times;
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                <!-- New Images Preview -->
+                <div class="row mt-3" id="galleryPreview" style="gap: 15px;"></div>
+
+                <!-- Fullscreen Modal Carousel -->
+                <div class="modal fade" id="imageModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content bg-dark border-0">
+                            <div class="modal-body p-0">
+                                <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner" id="imageCarouselInner"></div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="row pt-2">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-success w-100 text-white">
+                            <i class="bi bi-check-circle"></i> Update
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Floor" asp-action="Index" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        let galleryImages = [];
+
+        function handleNewImages(event) {
+            const files = event.target.files;
+            const galleryPreview = document.getElementById("galleryPreview");
+            const galleryError = document.getElementById("galleryError");
+
+            galleryPreview.innerHTML = "";
+
+            if (files.length > 5) {
+                galleryError.style.display = "block";
+                event.target.value = "";
+                return;
+            }
+
+            galleryError.style.display = "none";
+            galleryImages = [];
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imageData = {
+                        id: Date.now() + index,
+                        src: e.target.result,
+                        file: file
+                    };
+                    galleryImages.push(imageData);
+
+                    const col = document.createElement("div");
+                    col.className = "position-relative";
+                    col.style = "max-width: 150px;";
+                    col.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail shadow w-100"
+                             style="height: 100px; object-fit: cover; cursor: pointer;"
+                             onclick="showFullImage(${index})" />
+                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
+                                onclick="removeFloorImage(${imageData.id})">&times;</button>`;
+                    galleryPreview.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeExistingImage(url) {
+            const container = document.querySelector(`[data-name="${url.split('/').pop()}"]`);
+            if (container) {
+                container.remove();
+                const hiddenInput = document.getElementById("removeFloorImages");
+                const currentValue = hiddenInput.value ? JSON.parse(hiddenInput.value) : [];
+                currentValue.push(url);
+                hiddenInput.value = JSON.stringify(currentValue);
+            }
+        }
+
+        function showFullImage(startIndex) {
+            const carouselInner = document.getElementById("imageCarouselInner");
+            carouselInner.innerHTML = "";
+
+            galleryImages.forEach((img, i) => {
+                const div = document.createElement("div");
+                div.className = "carousel-item" + (i === startIndex ? " active" : "");
+                div.innerHTML = `<img src="${img.src}" class="d-block w-100" style="object-fit: contain; height: 500px;" />`;
+                carouselInner.appendChild(div);
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
+
+            const carousel = bootstrap.Carousel.getOrCreateInstance(document.getElementById('imageCarousel'));
+            carousel.to(startIndex);
+        }
+
+        function removeFloorImage(id) {
+            galleryImages = galleryImages.filter(img => img.id !== id);
+            updateThumbnails();
+        }
+
+        function updateThumbnails() {
+            const previewContainer = document.getElementById("galleryPreview");
+            previewContainer.innerHTML = "";
+
+            galleryImages.forEach((img, index) => {
+                const col = document.createElement("div");
+                col.className = "position-relative";
+                col.style = "max-width: 150px;";
+
+                col.innerHTML = `
+                    <img src="${img.src}" class="img-thumbnail shadow w-100" style="height: 100px; object-fit: cover; cursor: pointer;"
+                         onclick="showFullImage(${index})" />
+                    <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
+                            onclick="removeFloorImage(${img.id})">&times;</button>
+                `;
+                previewContainer.appendChild(col);
+            });
+        }
+    </script>
+
+    <style>
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(1);
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+        }
+    </style>
+}
+

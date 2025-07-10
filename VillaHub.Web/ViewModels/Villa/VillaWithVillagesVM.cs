@@ -8,6 +8,6 @@ namespace VillaHub.Web.ViewModels.Villa
     {
         public VillaHub.Domain.Entities.Villa? Villa { get; set; }
         public IEnumerable<SelectListItem> Villages { get; set; } = [];
-                      
+     
     }
 }

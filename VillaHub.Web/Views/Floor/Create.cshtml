@@ -1,99 +1,81 @@
-﻿@using VillaHub.Web.ViewModels.Villa
-@model VillaWithVillagesVM
+﻿@using VillaHub.Web.ViewModels.Floor
+@model FloorWithVillasVM
 
 <div class="w-100 card border-0 p-4">
+
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Create Villa</h2>
+                <h2 class="text-white py-2">Create Floor</h2>
             </div>
         </div>
     </div>
+
     <div class="card-body border p-4">
         <form method="post" class="row" enctype="multipart/form-data">
             <div class="p-3">
                 <div asp-validation-summary="All" class="text-danger"></div>
+
+                <!-- Hidden VillaId to bind it properly -->
+                <input type="hidden" asp-for="Floor.VillageId" value="@Model.Village!.Id" />
+                <input type="hidden" asp-for="Floor.VillaId" value="@Model.Villa!.Id" />
+
+
                 <div class="form-floating py-1 col-12">
-                    <select asp-for="@Model.Villa!.VillageId" asp-items="@Model.Villages"
-                            class="form-select border shadow">
-                        <option disabled selected>--Select Village--</option>
-                    </select>
-                    <label asp-for="Villa.VillageId" class="ms-2"></label>
-                    <span asp-validation-for="Villa.VillageId" class="text-danger"></span>
+                    <input asp-for="@Model.Village.Name" readonly class="form-control border shadow bg-dark" />
+                    <label asp-for="@Model.Village.Name" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Village.Name" class="text-danger"></span>
                 </div>
+
+
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Name" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Name" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Name" class="text-danger"></span>
+                    <input asp-for="@Model.Villa.Name" readonly class="form-control border shadow bg-dark" />
+                    <label asp-for="@Model.Villa.Name" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Villa.Name" class="text-danger"></span>
                 </div>
+                                 
+
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Description" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Description" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Description" class="text-danger"></span>
+                    <input asp-for="@Model.Floor!.FloorNumber" class="form-control border shadow" />
+                    <label asp-for="@Model.Floor!.FloorNumber" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Floor!.FloorNumber" class="text-danger"></span>
                 </div>
+
+
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Area" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Area" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Area" class="text-danger"></span>
+                    <input asp-for="@Model.Floor!.Description" class="form-control border shadow" />
+                    <label asp-for="@Model.Floor!.Description" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Floor!.Description" class="text-danger"></span>
                 </div>
+
+
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Capacity" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Capacity" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Capacity" class="text-danger"></span>
+                    <input asp-for="@Model.Floor!.Price" class="form-control border shadow" />
+                    <label asp-for="@Model.Floor!.Price" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Floor!.Price" class="text-danger"></span>
                 </div>
+
+
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Latitude" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Latitude" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Latitude" class="text-danger"></span>
+                    <input asp-for="@Model.Floor!.Area" class="form-control border shadow" />
+                    <label asp-for="@Model.Floor!.Area" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Floor!.Area" class="text-danger"></span>
                 </div>
+
+
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Longitude" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Longitude" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Longitude" class="text-danger"></span>
+                    <input asp-for="@Model.Floor!.Capacity" class="form-control border shadow" />
+                    <label asp-for="@Model.Floor!.Capacity" class="ms-2"></label>
+                    <span asp-validation-for="@Model.Floor!.Capacity" class="text-danger"></span>
                 </div>
+               
+               <!-- Floor Images Upload -->
                 <div class="py-1 col-12">
-                    <label asp-for="@Model.Villa!.MainImg" class="form-label ms-2 mb-1"></label>
-                    <input asp-for="@Model.Villa!.MainImg" id="MainImg" name="MainImg" type="file" accept="image/*" class="form-control border shadow"
-                            onchange="previewImage(event)" />
-                    <span asp-validation-for="@Model.Villa!.MainImg" class="text-danger"></span>
-                </div>
-
-
-
-                <!-- Main Image Thumbnail Style Preview -->
-                <div class="row mt-2" id="mainImagePreviewContainer" style="max-width: 150px; display: none;">
-                    <div class="position-relative w-100">
-                        <img id="mainImageThumb" src="#" alt="Main Image Preview"
-                             class="img-thumbnail shadow w-100"
-                             style="height: 100px; object-fit: cover; cursor: pointer;"
-                             onclick="openMainImageModal()" />
-                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
-                                onclick="removeImage()">
-                            &times;
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Main Image Modal Preview -->
-                <div class="modal fade" id="mainImageModal" tabindex="-1" aria-labelledby="mainImageModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content bg-dark border-0">
-                            <div class="modal-body p-0">
-                                <img id="mainImageModalImg" src="#" class="w-100" style="object-fit: contain; max-height: 500px;" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                
-                <!-- Villa Images Upload -->
-                <div class="py-1 col-12">
-                    <label asp-for="@Model.Villa!.Images" class="form-label ms-2 mb-1"></label>
-                    <input asp-for="@Model.Villa!.Images" type="file" multiple accept="image/*" name="VillaImages"
-                    class="form-control border shadow" onchange="handleVillaImages(event)" />
+                    <label asp-for="@Model.Floor!.Images" class="form-label ms-2 mb-1"></label>
+                    <input asp-for="@Model.Floor!.Images" type="file" multiple accept="image/*" name="FloorImages"
+                           class="form-control border shadow" onchange="handleFloorImages(event)" />
                     <span id="galleryError" class="text-danger d-block pt-1" style="display: none;">You can upload up to 5 images only.</span>
-                    <span asp-validation-for="@Model.Villa!.Images" class="text-danger"></span>
+                    <span asp-validation-for="@Model.Floor!.Images" class="text-danger"></span>
                 </div>
 
                 <!-- Preview Thumbnails -->
@@ -119,7 +101,7 @@
                 </div>
 
 
-                
+
                 <!-- Actions -->
                 <div class="row pt-2">
                     <div class="col-6 col-md-3">
@@ -128,7 +110,7 @@
                         </button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-controller="Villa" asp-action="Index" class="btn btn-secondary w-100">
+                        <a asp-controller="Floor" asp-action="Index" class="btn btn-secondary w-100">
                             <i class="bi bi-x-circle"></i> Cancel
                         </a>
                     </div>
@@ -142,52 +124,13 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // =============================
-        // 🔷 MAIN IMAGE (THUMBNAIL STYLE)
-        // =============================
-        function previewImage(event) {
-            const input = event.target;
-            const thumb = document.getElementById("mainImageThumb");
-            const container = document.getElementById("mainImagePreviewContainer");
-
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    thumb.src = e.target.result;
-                    container.style.display = "flex";
-                    thumb.dataset.full = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function removeImage() {
-            const input = document.getElementById("MainImg");
-            const container = document.getElementById("mainImagePreviewContainer");
-            const thumb = document.getElementById("mainImageThumb");
-
-            input.value = "";
-            container.style.display = "none";
-            thumb.src = "#";
-            thumb.dataset.full = "";
-        }
-
-        function openMainImageModal() {
-            const fullSrc = document.getElementById("mainImageThumb").dataset.full;
-            const modalImg = document.getElementById("mainImageModalImg");
-
-            if (fullSrc) {
-                modalImg.src = fullSrc;
-                new bootstrap.Modal(document.getElementById("mainImageModal")).show();
-            }
-        }
 
         // =============================
         // 🔷 GALLERY UPLOAD + PREVIEW + MODAL
         // =============================
         let galleryImages = [];
 
-                function handleVillaImages(event) {
+            function handleFloorImages(event) {
             const files = event.target.files;
             const galleryPreview = document.getElementById("galleryPreview");
             const galleryError = document.getElementById("galleryError");
@@ -223,7 +166,7 @@
                              style="height: 100px; object-fit: cover; cursor: pointer;"
                              onclick="showFullImage(${index})" />
                         <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
-                                onclick="removeVillaImage(${imageData.id})">
+                                onclick="removeFloorImage(${imageData.id})">
                             &times;
                         </button>
                     `;
@@ -246,7 +189,7 @@
                     <img src="${img.src}" class="img-thumbnail shadow w-100" style="height: 100px; object-fit: cover; cursor: pointer;"
                          onclick="showFullImage(${index})" />
                     <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
-                            onclick="removeVillaImage(${img.id})">
+                            onclick="removeFloorImage(${img.id})">
                         &times;
                     </button>
                 `;
@@ -254,7 +197,7 @@
             });
         }
 
-        function removeVillaImage(id) {
+        function removeFloorImage(id) {
             galleryImages = galleryImages.filter(img => img.id !== id);
             updateThumbnails();
         }
@@ -277,6 +220,8 @@
             carousel.to(startIndex);
         }
     </script>
+
+    
 
     <style>
         /* Make carousel controls white & bold */

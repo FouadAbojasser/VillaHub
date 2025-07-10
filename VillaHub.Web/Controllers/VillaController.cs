@@ -16,35 +16,60 @@ namespace VillaHub.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
+
+
         public IActionResult Index()
         {
             var villaList = _unitOfWork.Villa.Get(
                 null,
-                [e => e.Village!]
+                [e => e.Village!, f => f.Floors],
+                true,
+                orderBy: q => q.OrderBy(v => v.Village.Name).ThenBy(v => v.Name)
                 );
             return View(villaList);
         }
 
-        public IActionResult Create()
-        {
 
+
+        public IActionResult Create(int? id)
+        {
             var createModel = new VillaWithVillagesVM
             {
 
                 Villages = _unitOfWork.Village.Get().Select(u => new SelectListItem
                 {
                     Text = u.Name,
-                    Value = u.Id.ToString()
+                    Value = u.Id.ToString(),
+                    Selected = (id != null && u.Id == id)  // pre-select if match
                 })
             };
             return View(createModel);
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync(VillaWithVillagesVM villaWithVillage, IFormFile MainImg, List<IFormFile> VillaImages)
         {
-
             ModelState.Remove("Villa.Village");
+
+            if (villaWithVillage.Villa is not null)
+            {
+                var checkDublicatedVillaName = _unitOfWork.Villa.GetOne(e => e.Name == villaWithVillage.Villa.Name);
+
+                if (checkDublicatedVillaName is not null && checkDublicatedVillaName.VillageId == villaWithVillage.Villa.VillageId)
+                {
+                    villaWithVillage.Villages = _unitOfWork.Village.Get().Select(u => new SelectListItem
+                    {
+                        Text = u.Name,
+                        Value = u.Id.ToString()
+                    });
+
+                    ModelState.AddModelError(string.Empty, "Villa Name Already Exist");
+
+                    return View(villaWithVillage);
+                }
+            }
 
             if (!ModelState.IsValid)
             {
@@ -57,47 +82,38 @@ namespace VillaHub.Web.Controllers
                 return View(villaWithVillage);
             }
 
-
+            // === Handle Main Image
             if (villaWithVillage.Villa is not null && MainImg is not null && MainImg.Length > 0)
             {
-                //=> First Process the Image File 
-                // Generate unique filename
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(MainImg.FileName);
-
-                // Define the folder path
                 var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
 
-                // Create folder if it doesn't exist
                 if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
                 }
 
-                // Combine folder and filename to get full path
                 var filePath = Path.Combine(folderPath, fileName);
 
-                // Save the file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await MainImg.CopyToAsync(stream);
                 }
 
-                // Save the image name to the database
                 villaWithVillage.Villa.MainImg = fileName;
 
-                //=> Second Save the Object to the Db
+                // Save the villa to get the generated Id
                 await _unitOfWork.Villa.CreateAsync(villaWithVillage.Villa);
 
-
+                await _unitOfWork.Villa.CommitAsync(); 
             }
 
-            // Handling Multiple Images - Sliders
+            // === Handle Gallery Images
             foreach (var image in VillaImages)
             {
                 if (image != null && image.Length > 0)
                 {
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-
                     var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
 
                     if (!Directory.Exists(folderPath))
@@ -112,26 +128,33 @@ namespace VillaHub.Web.Controllers
                         await image.CopyToAsync(stream);
                     }
 
-                    // Save the image name to the Villa.Images List
-                    villaWithVillage.Villa!.Images.Add(new Image
+                   
+                    var villaImage = new Image
                     {
                         Name = fileName,
                         Type = "VillaImage",
-                        Url = filePath,
-                        CreateDate = DateTime.UtcNow
+                        Url = "/images/villas/" + fileName,
+                        CreateDate = DateTime.UtcNow,
+                        VillaId = villaWithVillage.Villa!.Id,
 
-                    });
+                        //Set them to null as they are nullable and prevent setting them to 0
+                        //ممكن نشيل هذا الجزء لكن الأفضل نخليه
+                        FloorNumber = null,
+                        FloorVillaId = null,
+                        FloorVillageId = null
+                    };
 
+                    await _unitOfWork.Image.CreateAsync(villaImage);
                 }
-
             }
 
-            await _unitOfWork.Villa.CommitAsync();
+            await _unitOfWork.Image.CommitAsync();
 
             TempData["success"] = "Villa Created Successfully";
 
             return RedirectToAction(nameof(Index));
         }
+
 
 
         public IActionResult Update(int id)
@@ -172,7 +195,7 @@ namespace VillaHub.Web.Controllers
             }
             if (villaWithVillages.Villa is not null)
             {
-                // Update VillaInDb with new values from the VillaWithVillagesVM
+                
                 VillaInDb.Name = villaWithVillages.Villa.Name;
                 VillaInDb.Description = villaWithVillages.Villa.Description;
                 VillaInDb.NumberOfFloors = villaWithVillages.Villa.NumberOfFloors;
@@ -222,6 +245,8 @@ namespace VillaHub.Web.Controllers
                     // Log exception or notify admin
                     Console.WriteLine($"Error deleting file: {ex.Message}");
                 }
+
+                
             }
     
             // Then handle new image uploads
@@ -251,12 +276,11 @@ namespace VillaHub.Web.Controllers
                
             }
         }
-           
-        
+
+
         private async Task HandlingUpdateVillaImagesAsync(Villa villaInDb, List<string>? removedImagesList, List<IFormFile>? newVillaImages)
         {
-
-            // Handle removed images
+            //Handle removed images
             if (removedImagesList != null && removedImagesList.Count > 0)
             {
                 foreach (var imageUrl in removedImagesList)
@@ -284,6 +308,8 @@ namespace VillaHub.Web.Controllers
                         {
                             Console.WriteLine($"Error deleting file: {ex.Message}");
                         }
+
+                        _unitOfWork.Image.Delete(imageToRemove);
                     }
                 }
             }
@@ -315,9 +341,13 @@ namespace VillaHub.Web.Controllers
                         {
                             Name = fileName,
                             Type = "VillaImage",
-                            Url = filePath,
-                            CreateDate = DateTime.UtcNow
-
+                            Url = "/images/villas/" + fileName,
+                            CreateDate = DateTime.UtcNow,
+                            VillaId = villaInDb.Id, 
+                            
+                            FloorNumber = null,
+                            FloorVillaId = null,
+                            FloorVillageId = null
                         });
                     }
                 }
@@ -328,7 +358,7 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Delete(int id)
         {
-            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == id, [m=>m.Images]);
+            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == id, [m => m.Images]);
 
             if (villaInDb is not null)
             {
@@ -338,23 +368,23 @@ namespace VillaHub.Web.Controllers
             return RedirectToAction("Error", "Home");
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Delete(Villa villa)
         {
-
-            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == villa.Id, [m=>m.Images], true);
+            var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == villa.Id, [m => m.Images], true);
 
             if (villaInDb is null)
             {
                 return RedirectToAction("Error", "Home");
             }
 
+            // === 🔻 Delete Main Image
             if (!string.IsNullOrEmpty(villaInDb.MainImg))
             {
                 string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
 
                 string oldFilePath = Path.Combine(folderPath, villaInDb.MainImg);
+
                 try
                 {
                     if (System.IO.File.Exists(oldFilePath))
@@ -364,31 +394,34 @@ namespace VillaHub.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Log exception
                     Console.WriteLine($"Error deleting file: {ex.Message}");
                 }
             }
 
-            
-
-            if (villaInDb.Images is not null && villaInDb.Images.Count > 0) 
+            //التأكد أن مسح الصورة يتم لصور الفيلا فقط 
+            if (villaInDb.Images is not null && villaInDb.Images.Count > 0)
             {
-                foreach (var image in villaInDb.Images) 
+                foreach (var image in villaInDb.Images.ToList())
                 {
-                    string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
+                    // التأكد أولا أن الصورة لا تتبع لطابق 
+                    if (image.FloorNumber is null && image.FloorVillaId is null && image.FloorVillageId is null)
+                    {
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
+                        string oldFilePath = Path.Combine(folderPath, image.Name ?? "");
 
-                    string oldFilePath = Path.Combine(folderPath, image.Name!);
-                    try
-                    {
-                        if (System.IO.File.Exists(oldFilePath))
+                        try
                         {
-                            System.IO.File.Delete(oldFilePath);
+                            if (System.IO.File.Exists(oldFilePath))
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log exception
-                        Console.WriteLine($"Error deleting file: {ex.Message}");
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error deleting file: {ex.Message}");
+                        }
+
+                        _unitOfWork.Image.Delete(image);
                     }
                 }
             }
@@ -400,7 +433,6 @@ namespace VillaHub.Web.Controllers
             TempData["success"] = "Villa Deleted Successfully";
 
             return RedirectToAction(nameof(Index));
-
         }
 
 

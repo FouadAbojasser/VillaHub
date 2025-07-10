@@ -22,6 +22,27 @@ namespace VillaHub.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AmenityFloor", b =>
+                {
+                    b.Property<int>("AmenitiesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FloorsVillageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FloorsVillaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FloorsFloorNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("AmenitiesId", "FloorsVillageId", "FloorsVillaId", "FloorsFloorNumber");
+
+                    b.HasIndex("FloorsVillageId", "FloorsVillaId", "FloorsFloorNumber");
+
+                    b.ToTable("AmenityFloor");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -155,6 +176,34 @@ namespace VillaHub.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("VillaHub.Domain.Entities.Amenity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Amenities");
+                });
+
             modelBuilder.Entity("VillaHub.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -235,34 +284,19 @@ namespace VillaHub.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("VillaHub.Domain.Entities.Entertainment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("entertainments");
-                });
-
             modelBuilder.Entity("VillaHub.Domain.Entities.Floor", b =>
                 {
-                    b.Property<int>("FoolrNumber")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("VillageId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FoolrNumber"));
+                    b.Property<int>("VillaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FloorNumber")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Area")
+                        .HasColumnType("float");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
@@ -273,25 +307,17 @@ namespace VillaHub.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("FoolrNumber");
+                    b.HasKey("VillageId", "VillaId", "FloorNumber");
 
-                    b.ToTable("floors");
+                    b.HasIndex("VillaId");
+
+                    b.ToTable("Floors");
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.Image", b =>
@@ -304,6 +330,15 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("FloorNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FloorVillaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FloorVillageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -318,12 +353,14 @@ namespace VillaHub.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VillaId")
+                    b.Property<int?>("VillaId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("VillaId");
+
+                    b.HasIndex("FloorVillageId", "FloorVillaId", "FloorNumber");
 
                     b.ToTable("Images");
                 });
@@ -443,6 +480,21 @@ namespace VillaHub.Infrastructure.Migrations
                     b.ToTable("Villages");
                 });
 
+            modelBuilder.Entity("AmenityFloor", b =>
+                {
+                    b.HasOne("VillaHub.Domain.Entities.Amenity", null)
+                        .WithMany()
+                        .HasForeignKey("AmenitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VillaHub.Domain.Entities.Floor", null)
+                        .WithMany()
+                        .HasForeignKey("FloorsVillageId", "FloorsVillaId", "FloorsFloorNumber")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -494,13 +546,38 @@ namespace VillaHub.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("VillaHub.Domain.Entities.Floor", b =>
+                {
+                    b.HasOne("VillaHub.Domain.Entities.Villa", "Villa")
+                        .WithMany("Floors")
+                        .HasForeignKey("VillaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("VillaHub.Domain.Entities.Village", "Village")
+                        .WithMany("Floors")
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Villa");
+
+                    b.Navigation("Village");
+                });
+
             modelBuilder.Entity("VillaHub.Domain.Entities.Image", b =>
                 {
                     b.HasOne("VillaHub.Domain.Entities.Villa", "Villa")
                         .WithMany("Images")
                         .HasForeignKey("VillaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("VillaHub.Domain.Entities.Floor", "Floor")
+                        .WithMany("Images")
+                        .HasForeignKey("FloorVillageId", "FloorVillaId", "FloorNumber")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Floor");
 
                     b.Navigation("Villa");
                 });
@@ -527,13 +604,22 @@ namespace VillaHub.Infrastructure.Migrations
                     b.Navigation("Village");
                 });
 
+            modelBuilder.Entity("VillaHub.Domain.Entities.Floor", b =>
+                {
+                    b.Navigation("Images");
+                });
+
             modelBuilder.Entity("VillaHub.Domain.Entities.Villa", b =>
                 {
+                    b.Navigation("Floors");
+
                     b.Navigation("Images");
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.Village", b =>
                 {
+                    b.Navigation("Floors");
+
                     b.Navigation("Villas");
                 });
 #pragma warning restore 612, 618
