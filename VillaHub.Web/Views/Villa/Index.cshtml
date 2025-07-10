@@ -53,12 +53,12 @@
                                 <span class="text-muted">No image</span>
                             }
                         </td>
-                        <td>@villa.Name</td>
-                        <td>@villa.Village!.Name</td>
-                        <td>@villa.Description</td>
-                        <td>@villa.Floors.Count()</td>
-                        <td>@villa.Area</td>
-                        <td>@villa.Capacity</td>
+                        <td class="align-content-center">@villa.Name</td>
+                        <td class="align-content-center">@villa.Village!.Name</td>
+                        <td class="align-content-center">@villa.Description</td>
+                        <td class="align-content-center">@villa.Floors.Count()</td>
+                        <td class="align-content-center">@villa.Area</td>
+                        <td class="align-content-center">@villa.Capacity</td>
                         <td class="align-content-center">
                             @if (villa.Latitude != 0 && villa.Longitude != 0)
                             {
@@ -72,7 +72,7 @@
                                 <span class="text-muted">No location</span>
                             }
                         </td>
-                        <td>
+                        <td class="align-content-center">
                             <div class="w-75 btn-group" role="group">
                                 <a asp-controller="Villa" asp-action="Update" asp-route-id="@villa.Id"
                                    class="btn btn-success mx-1">

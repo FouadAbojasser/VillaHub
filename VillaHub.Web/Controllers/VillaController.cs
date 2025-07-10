@@ -436,14 +436,5 @@ namespace VillaHub.Web.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
     }
 }

@@ -19,24 +19,27 @@
             <div class="p-3">
                 <div asp-validation-summary="All" class="text-danger"></div>
 
-                <input type="hidden" asp-for="Floor.VillaId" />
-                <input type="hidden" asp-for="Floor.VillageId" />
+                @* <input type="hidden" asp-for="Floor.VillaId" /> *@
+                @* <input type="hidden" asp-for="Floor.VillageId" /> *@
+
+                <input type="hidden" asp-for="Village.Id" />
+                <input type="hidden" asp-for="Villa.Id"  />
+                <input type="hidden" asp-for="Floor.FloorNumber" />
                 <input type="hidden" id="removeFloorImages" name="removeFloorImages" />
 
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="Village.Name" readonly class="form-control border shadow bg-dark" />
+                    <input asp-for="Village.Name" disabled class="form-control border shadow" />
                     <label asp-for="Village.Name" class="ms-2"></label>
                 </div>
 
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="Villa.Name" readonly class="form-control border shadow bg-dark" />
+                    <input asp-for="Villa.Name" disabled class="form-control border shadow" />
                     <label asp-for="Villa.Name" class="ms-2"></label>
                 </div>
 
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="Floor.FloorNumber" readonly class="form-control border shadow bg-dark" />
+                    <input asp-for="Floor.FloorNumber" disabled class="form-control border shadow" />
                     <label asp-for="Floor.FloorNumber" class="ms-2"></label>
-                    <span asp-validation-for="Floor.FloorNumber" class="text-danger"></span>
                 </div>
 
                 <div class="form-floating py-1 col-12">

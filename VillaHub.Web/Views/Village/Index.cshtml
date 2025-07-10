@@ -49,9 +49,9 @@
                                 <span class="text-muted">No image</span>
                             }
                         </td>
-                        <td>@village.Name</td>
-                        <td>@village.Description</td>
-                        <td class="text-center">@village.Villas.Count()</td>
+                        <td class="align-content-center">@village.Name</td>
+                        <td class="align-content-center">@village.Description</td>
+                        <td class="align-content-center">@village.Villas.Count()</td>
                         <td class="align-content-center">
                             @if (village.Latitude != 0 && village.Longitude != 0)
                             {
@@ -65,7 +65,7 @@
                                 <span class="text-muted">No location</span>
                             }
                         </td>
-                        <td>
+                        <td class="align-content-center">
                             <div class="w-75 btn-group" role="group">
                                 <a asp-controller="Village" asp-action="Update" asp-route-id="@village.Id"
                                    class="btn btn-success mx-1">

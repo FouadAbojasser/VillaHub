@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
@@ -24,7 +25,7 @@ namespace VillaHub.Web.Controllers
         {
             var floorList = _unitOfWork.Floor.Get(
                 null,
-                [e => e.Villa!, v=>v.Villa.Village]
+                [e => e.Villa!, v=>v.Villa.Village, m=>m.Images]
                 );
             return View(floorList);
         }
@@ -52,17 +53,32 @@ namespace VillaHub.Web.Controllers
             }
 
             return BadRequest();
-        }
+        } //not used
 
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync(FloorWithVillasVM floorWithVillas, List<IFormFile> FloorImages)
         {
-            
+            var FloorInDb = _unitOfWork.Floor.GetOne(
+                            f => f.FloorNumber == floorWithVillas.Floor!.FloorNumber
+                            &&
+                            f.VillaId == floorWithVillas.Floor.VillaId
+                            &&
+                            f.VillageId == floorWithVillas.Floor.VillageId,
+                            [v => v.Village, m => m.Villa, g => g.Images],
+                            false);
+
             ModelState.Remove("Villa.Village");
 
             if (!ModelState.IsValid)
             {
+                return View(floorWithVillas);
+            }
+
+            if (FloorInDb is not null)
+            {
+                ModelState.AddModelError(string.Empty, $"Floor {FloorInDb.FloorNumber} in Villa {FloorInDb.Villa.Name} in Village {FloorInDb.Village.Name} Already Exist!");
+
                 return View(floorWithVillas);
             }
 
@@ -122,25 +138,31 @@ namespace VillaHub.Web.Controllers
 
 
 
-        public IActionResult Update(int id)
+        public IActionResult Update(int floorNumber, int villaId, int villageId)
         {
-            var floorInDb = _unitOfWork.Floor.GetOne(e => e.FloorNumber == id, [v => v.Village, m => m.Villa!, e => e.Images]);
+            var floorInDb = _unitOfWork.Floor.GetOne(
+                e => e.FloorNumber == floorNumber
+                &&
+                e.VillaId == villaId
+                &&
+                e.VillageId == villageId,
+                [v => v.Village, m => m.Villa, e => e.Images]);
 
             if (floorInDb != null)
             {
                 var floorsWithVillas = new FloorWithVillasVM
                 {
-                    Village= floorInDb.Village,
-
-                    Villa=floorInDb.Villa,
-
-                    Floor = floorInDb,
+                    Village = floorInDb.Village,
+                    Villa = floorInDb.Villa,
+                    Floor = floorInDb
                 };
 
                 return View(floorsWithVillas);
             }
+
             return RedirectToAction("Error", "Home");
         }
+
 
 
 
@@ -150,7 +172,14 @@ namespace VillaHub.Web.Controllers
             var removedImagesList = JsonConvert.DeserializeObject<List<string>>(removeFloorImages ?? "[]");
 
             var FloorInDb = _unitOfWork.Floor.GetOne(
-                v => v.FloorNumber == floorWithVillasVM.Floor!.FloorNumber, [m => m.Villa, g => g.Images], false);
+                            f => f.FloorNumber == floorWithVillasVM.Floor!.FloorNumber
+                            &&
+                            f.VillaId == floorWithVillasVM.Villa!.Id
+                            &&
+                            f.VillageId == floorWithVillasVM.Village!.Id,
+                            [m => m.Villa, g => g.Images],
+                            false);
+
 
             if (FloorInDb is null)
             {
@@ -252,9 +281,15 @@ namespace VillaHub.Web.Controllers
 
 
 
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int floorNumber, int villaId, int villageId)
         {
-            var floorInDb = _unitOfWork.Floor.GetOne(a => a.FloorNumber == id, [m=>m.Images, e=>e.Villa, x=>x.Villa.Village]);
+            var floorInDb = _unitOfWork.Floor.GetOne(
+                e => e.FloorNumber == floorNumber
+                &&
+                e.VillaId == villaId
+                &&
+                e.VillageId == villageId,
+                [v => v.Village, m => m.Villa, e => e.Images]);
 
             if (floorInDb is not null)
             {

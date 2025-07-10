@@ -1,4 +1,5 @@
-﻿@using VillaHub.Domain.Entities
+﻿
+@using VillaHub.Domain.Entities
 @model IEnumerable<Floor>
 
 <div class="w-100 card border-0 p-4">
@@ -21,12 +22,12 @@
         <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
-                    
+
                     <th class="align-content-center">Floor Number</th>
                     <th class="align-content-center">Villa Name</th>
                     <th class="align-content-center">Village Name</th>
-                    <th class ="align-content-center">Description</th>
-                    <th class ="align-content-center">Price</th>
+                    <th class="align-content-center">Description</th>
+                    <th class="align-content-center">Price</th>
                     <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
                     <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
                     <th class="align-content-center">Galary</th>
@@ -37,27 +38,38 @@
                 @foreach (var floor in Model)
                 {
                     <tr>
-                        <td>@floor.FloorNumber</td>
-                        <td>@floor.Villa!.Name</td>
-                        <td>@floor.Villa!.Village.Name</td>
-                        <td>@floor.Description</td>
-                        <td>@floor.Price</td>
-                        <td>@floor.Area</td>
-                        <td>@floor.Capacity</td>
+                        <td class="align-content-center">@floor.FloorNumber</td>
+                        <td class="align-content-center">@floor.Villa!.Name</td>
+                        <td class="align-content-center">@floor.Villa!.Village.Name</td>
+                        <td class="align-content-center">@floor.Description</td>
+                        <td class="align-content-center">@floor.Price</td>
+                        <td class="align-content-center">@floor.Area</td>
+                        <td class="align-content-center">@floor.Capacity</td>
                         <td class="align-content-center">
-                           //Galary
+                            <a href="#" class="text-decoration-none text-primary" data-bs-toggle="modal" data-bs-target="#galleryModal" onclick="loadFloorGallery('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId')">
+                                Gallery (@floor.Images.Count())
+                            </a>
                         </td>
+
                         <td>
                             <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Floor" asp-action="Update" asp-route-id="@floor.FloorNumber"
+                                <a asp-controller="Floor" asp-action="Update"
+                                   asp-route-floorNumber="@floor.FloorNumber"
+                                   asp-route-villaId="@floor.VillaId"
+                                   asp-route-villageId="@floor.VillageId"
                                    class="btn btn-success mx-1">
                                     <i class="bi bi-pencil-square"></i> Update
                                 </a>
-                                <a asp-controller="Floor" asp-action="Delete" asp-route-id="@floor.FloorNumber"
+
+                                <a asp-controller="Floor" asp-action="Delete"
+                                   asp-route-floorNumber="@floor.FloorNumber"
+                                   asp-route-villaId="@floor.VillaId"
+                                   asp-route-villageId="@floor.VillageId"
                                    class="btn btn-danger mx-1">
                                     <i class="bi bi-trash-fill"></i> Delete
                                 </a>
                             </div>
+
                         </td>
                     </tr>
                 }
@@ -66,16 +78,21 @@
     </div>
 </div>
 
-<!-- Image Preview Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+<!-- Gallery Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-dark border-0">
-            <div class="modal-body p-0">
-                <img id="modalImage" src="#" class="w-100" style="object-fit: contain;" />
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Floor Gallery</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="galleryContent" class="row" style="gap: 15px;"></div>
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -84,6 +101,44 @@
         function showFullImage(imgSrc) {
             document.getElementById('modalImage').src = imgSrc;
         }
+
+            function loadFloorGallery(floorNumber, villaId, villageId) {
+            const galleryContainer = document.getElementById("galleryContent");
+            galleryContainer.innerHTML = "";
+
+            const images = @Html.Raw(Json.Serialize(Model.SelectMany(f => f.Images.Select(img => new
+            {
+                floorNumber = f.FloorNumber,
+                villaId = f.VillaId,
+                villageId = f.VillageId,
+                name = img.Name
+            }))));
+
+
+            const filtered = images.filter(img =>
+                img.floorNumber === parseInt(floorNumber) &&
+                img.villaId === parseInt(villaId) &&
+                img.villageId === parseInt(villageId)
+            );
+
+            if (filtered.length === 0) {
+                galleryContainer.innerHTML = "<p>No images available for this floor.</p>";
+                return;
+            }
+
+            filtered.forEach(img => {
+                const col = document.createElement("div");
+                col.className = "col-md-4";
+
+                col.innerHTML = `
+                    <img src="/images/floors/${img.name}" class="img-thumbnail w-100 shadow-sm"
+                         style="height: 150px; object-fit: cover;" alt="Floor Image" />
+                `;
+                galleryContainer.appendChild(col);
+            });
+        }
+
     </script>
+
 }
 
