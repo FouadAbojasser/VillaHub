@@ -76,11 +76,13 @@ namespace VillaHub.Web.Controllers
         public IActionResult Update(int id)
         {
             var village = _unitOfWork.Village.GetOne(e => e.Id == id);
-            if (village != null)
+
+            if (village is null)
             {
-                return View(village);
+                return RedirectToAction("Error", "Home");
             }
-            return RedirectToAction("Error", "Home");
+
+            return View(village);
         }
 
 

@@ -1,6 +1,6 @@
 ﻿
-@using VillaHub.Web.ViewModels.Villa
-@model VillaWithVillagesVM
+@using VillaHub.Domain.Entities
+@model Amenity
 
 <div class="w-100 card border-0 p-4">
     <div class="card-header bg-success bg-gradient ml-0 py-3">
@@ -11,172 +11,40 @@
         </div>
     </div>
     <div class="card-body border p-4">
-        <form asp-action="Update" asp-controller="Villa" method="post" enctype="multipart/form-data" class="row">
+        <form asp-action="Update" asp-controller="Amenity" method="post" enctype="multipart/form-data" class="row">
 
-            <input hidden asp-for="@Model.Villa!.Id" />
-           
-            <input type="hidden" name="removeMainImg" id="removeMainImg" value="" />
-            <input type="hidden" name="newMainImg" id="newMainImg" value="" />
-    
-            <!-- Add these at the top of your form -->
-            <input type="hidden" name="removeVillaImages" id="removeVillaImages" value="" />
-            <input type="hidden" name="newVillaImages" id="newVillaImages" value="" />
-
+            <input hidden asp-for="Id" />
             
             <div class="p-3">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <!-- Basic Fields -->
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                 <div class="form-floating py-1 col-12">
-                    <select asp-for="@Model.Villa!.VillageId" asp-items="@Model.Villages" class="form-select border shadow">
-                        <option disabled selected>--Select Village--</option>
+                    <input asp-for="Name" class="form-control border shadow" />
+                    <label asp-for="Name" class="ms-2"></label>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-floating py-1 col-12">
+                    <select asp-for="Type" asp-items="ViewBag.TypeList" class="form-select border shadow">
+                        <option disabled selected>--Select Type--</option>
                     </select>
-                    <label asp-for="Villa.VillageId" class="ms-2"></label>
-                    <span asp-validation-for="Villa.VillageId" class="text-danger"></span>
+                    <label asp-for="Type" class="ms-2"></label>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-floating py-1 col-12">
+                    <input asp-for="Description" class="form-control border shadow" />
+                    <label asp-for="Description" class="ms-2"></label>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
                 <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Name" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Name" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Name" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Description" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Description" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Description" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.NumberOfFloors" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.NumberOfFloors" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.NumberOfFloors" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Area" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Area" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Area" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Capacity" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Capacity" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Capacity" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Latitude" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Latitude" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Latitude" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating py-1 col-12">
-                    <input asp-for="@Model.Villa!.Longitude" class="form-control border shadow" />
-                    <label asp-for="@Model.Villa!.Longitude" class="ms-2"></label>
-                    <span asp-validation-for="@Model.Villa!.Longitude" class="text-danger"></span>
-                </div>
-
-
-                <!-- Main Image Upload -->
-                <div class="py-1 col-12">
-                    <label asp-for="@Model.Villa!.MainImg" class="form-label ms-2 mb-1"></label>
-                    <div class="input-group">
-                        <input asp-for="@Model.Villa!.MainImg" id="MainImg" name="newMainImg" type="file"
-                               accept="image/*" class="form-control border shadow"
-                               onchange="previewImage(event)" style="display: none;" />
-                        <input type="text" id="mainImageFilename" class="form-control file-upload-info"
-                               value="@(Model.Villa!.MainImg ?? "No image chosen")" disabled />
-                        <span class="input-group-append">
-                            <button class="btn btn-primary" type="button" id="uploadMainBtn">Choose Image</button>
-                        </span>
-                    </div>
-                    <span asp-validation-for="@Model.Villa!.MainImg" class="text-danger"></span>
-                </div>
-
-                @if (!string.IsNullOrEmpty(Model.Villa!.MainImg))
-                {
-                    <div class="row mt-2" id="existingMainImage" style="max-width: 150px;">
-                        <div class="position-relative w-100" style="height: 100px;">
-                            <img id="existingMainImgTag" src="~/images/villas/@Model.Villa.MainImg"
-                                 alt="Main Image" class="img-thumbnail shadow w-100"
-                                 style="height: 100px; object-fit: cover; cursor: pointer;"
-                                 onclick="openImageInCarousel(this.src)" />
-                            <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
-                                    title="Remove main image" onclick="removeOldMainImage('@Model.Villa.MainImg')">
-                                ×
-                            </button>
-                        </div>
-                    </div>
-                }
-
-                <!-- New Uploaded Preview -->
-                <div class="row mt-2 d-none" id="mainImagePreviewContainer" style="max-width: 150px;">
-                    <div class="position-relative w-100" style="height: 100px;">
-                        <img id="mainImageThumb" src="#" alt="Main Image Preview" class="img-thumbnail shadow w-100"
-                             style="height: 100px; object-fit: cover; cursor: pointer;"
-                             onclick="openImageInCarousel(this.src)" />
-                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
-                                title="Remove image" onclick="removeNewImage()">
-                            ×
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Villa Gallery Upload Section -->
-                <div class="py-1 col-12">
-                    <label class="form-label ms-2 mb-1">Villa Images (@(Model.Villa.Images?.Count ?? 0) Files)</label>
-                    <div class="input-group">
-                        <input type="file" id="VillaImagesInput" name="newVillaImages" multiple accept="image/*"
-                               class="form-control border shadow" style="display: none;"
-                               onchange="handleVillaImagesChange(event)" />
-                        <input type="text" id="villaImagesFilename" class="form-control file-upload-info"
-                               value="@(Model.Villa.Images?.Count > 0 ? $"{Model.Villa.Images.Count} Files" : "No files chosen")" disabled />
-                        <span class="input-group-append">
-                            <button class="btn btn-primary" type="button" id="uploadVillaBtn">Choose Files</button>
-                        </span>
-                    </div>
-                    <span id="galleryError" class="text-danger d-block pt-1" style="display: none;">You can upload up to 5 images only.</span>
-                    <span asp-validation-for="@Model.Villa.Images" class="text-danger"></span>
-                </div>
-
-                <!-- Gallery Preview -->
-                <div class="row mt-3" id="galleryPreview" style="gap: 15px;">
-                    @if (Model.Villa.Images != null && Model.Villa.Images.Any())
-                    {
-                        foreach (var img in Model.Villa.Images)
-                        {
-                            <div class="position-relative gallery-thumb" data-name="@img.Name" style="max-width: 150px;">
-                                <img src="~/images/villas/@img.Name"
-                                     class="img-thumbnail shadow w-100"
-                                     style="height: 100px; object-fit: cover; cursor: pointer;"
-                                     onclick="openImageInCarousel(this.src)" />
-                                <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
-                                        onclick="removeVillaImage('@img.Name', this)">
-                                    ×
-                                </button>
-                            </div>
-                        }
-                    }
-                </div>
-
-
-                <!-- Image Modal Carousel -->
-                <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content bg-dark border-0">
-                            <div class="modal-body p-0">
-                                <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
-                                    <div class="carousel-inner" id="imageCarouselInner"></div>
-                                    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon"></span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <input asp-for="Price" class="form-control border shadow" />
+                    <label asp-for="Price" class="ms-2"></label>
+                    <span asp-validation-for="Price" class="text-danger"></span>
                 </div>
 
                 <!-- Submit/Cancel Buttons -->
@@ -187,7 +55,7 @@
                         </button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-controller="Villa" asp-action="Index" class="btn btn-secondary w-100">
+                        <a asp-controller="Amenity" asp-action="Index" class="btn btn-secondary w-100">
                             <i class="bi bi-x-circle"></i> Cancel
                         </a>
                     </div>
@@ -203,264 +71,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() 
-        {
-            const uploadMainBtn = document.getElementById("uploadMainBtn");
-            const mainImageInput = document.getElementById("MainImg");
-            const fileInfo = document.getElementById("mainImageFilename");
-
-            uploadMainBtn.addEventListener("click", () => mainImageInput.click());
-
-            mainImageInput.addEventListener("change", function(event) {
-                const file = event.target.files?.[0];
-                if (!file?.type.startsWith("image/")) {
-                    fileInfo.value = "No image chosen";
-                    return;
-                }
-
-                fileInfo.value = file.name;
-                previewImage(event);
-
-                // Track the new image filename
-                document.getElementById("newMainImg").value = file.name;
-
-                // If there was an old image, track its removal
-                @if (!string.IsNullOrEmpty(Model.Villa!.MainImg))
-                {
-                    <text>
-                      document.getElementById("removeMainImg").value = "@Model.Villa.MainImg";
-                    </text>
-                }
-                    });
-                });
-
-                // Add this to your DOMContentLoaded event
-                document.getElementById("uploadVillaBtn").addEventListener("click", function() {
-                    document.getElementById("VillaImagesInput").click();
-                });
-
-        function handleVillaImagesChange(event) {
-            const files = event.target.files;
-            const fileInfo = document.getElementById("villaImagesFilename");
-            const errorDisplay = document.getElementById("galleryError");
-
-            // Reset tracking
-            document.getElementById("newVillaImages").value = "";
-
-            if (files.length > 5) {
-                errorDisplay.style.display = "block";
-                event.target.value = "";
-                fileInfo.value = "No files chosen";
-                return;
-            }
-
-            errorDisplay.style.display = "none";
-
-            if (files.length === 0) {
-                fileInfo.value = "No files chosen";
-                return;
-            }
-
-            fileInfo.value = files.length + " Files";
-
-            // Track new files for form submission (names only)
-            const newFilesInput = document.getElementById("newVillaImages");
-            newFilesInput.value = JSON.stringify(Array.from(files).map(f => f.name));
-
-            // Display previews
-            Array.from(files).forEach(file => {
-                if (!file.type.startsWith('image/')) return;
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const wrapper = document.createElement("div");
-                    wrapper.className = "position-relative gallery-thumb";
-                    wrapper.style.maxWidth = "150px";
-                    wrapper.innerHTML = `
-                        <img src="${e.target.result}" class="img-thumbnail shadow w-100"
-                             style="height: 100px; object-fit: cover; cursor:pointer;"
-                             onclick="openImageInCarousel('${e.target.result}')" />
-                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1"
-                                onclick="removeNewVillaImage('${file.name}', this)">×</button>`;
-                    document.getElementById("galleryPreview").appendChild(wrapper);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function removeVillaImage(imageName, element) {
-            // Add to removal list
-            const removedInput = document.getElementById("removeVillaImages");
-            let removedImages = [];
-
-            if (removedInput.value) {
-                removedImages = JSON.parse(removedInput.value);
-            }
-
-            if (!removedImages.includes(imageName)) {
-                removedImages.push(imageName);
-                removedInput.value = JSON.stringify(removedImages);
-            }
-
-            // Remove from DOM
-            element.parentElement.remove();
-
-            // Update file count display
-            updateVillaImagesCount();
-        }
-
-        function removeNewVillaImage(imageName, element) {
-            // Remove from new files list
-            const newFilesInput = document.getElementById("newVillaImages");
-            let newFiles = [];
-
-            if (newFilesInput.value) {
-                newFiles = JSON.parse(newFilesInput.value);
-                newFiles = newFiles.filter(name => name !== imageName);
-                newFilesInput.value = JSON.stringify(newFiles);
-            }
-
-            // Remove from DOM
-            element.parentElement.remove();
-
-            // Update file count display
-            updateVillaImagesCount();
-        }
-
-        function updateVillaImagesCount() {
-            const existingCount = document.querySelectorAll('.gallery-thumb[data-name]').length;
-            const newCount = document.querySelectorAll('.gallery-thumb:not([data-name])').length;
-            const totalCount = existingCount + newCount;
-
-            document.getElementById("villaImagesFilename").value =
-                totalCount > 0 ? `${totalCount} Files` : "No files chosen";
-        }
-
-        function previewImage(event) {
-            const file = event.target.files?.[0];
-            if (!file?.type.startsWith("image/")) return;
-
-            const reader = new FileReader();
-            reader.onload = e => {
-                document.getElementById("mainImageThumb").src = e.target.result;
-                document.getElementById("mainImagePreviewContainer").classList.remove("d-none");
-                document.getElementById("existingMainImage")?.classList.add("d-none");
-                document.getElementById("mainImageFilename").value = file.name;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeNewImage() {
-            // Clear the file input
-            document.getElementById("MainImg").value = "";
-
-            // Update the displayed filename
-            document.getElementById("mainImageFilename").value = "No image chosen";
-
-            // Hide the new image preview
-            document.getElementById("mainImagePreviewContainer").classList.add("d-none");
-
-            // Don't show the old image - keep it hidden
-            document.getElementById("existingMainImage")?.classList.add("d-none");
-
-            // Clear new image tracking
-            document.getElementById("newMainImg").value = "";
-
-            // Keep the old image removal tracking if it existed
-        @if (!string.IsNullOrEmpty(Model.Villa!.MainImg))
-        {
-            <text>
-                    if (document.getElementById("removeMainImg").value === "") {
-                        document.getElementById("removeMainImg").value = "@Model.Villa.MainImg";
-                    }
-            </text>
-        }
-        }
-
-        function removeOldMainImage(fileName) {
-            // Clear the file input
-            document.getElementById("MainImg").value = "";
-
-            // Update the displayed filename
-            document.getElementById("mainImageFilename").value = "No image chosen";
-
-            // Hide the existing image preview
-            document.getElementById("existingMainImage").classList.add("d-none");
-
-            // Track the removed image
-            document.getElementById("removeMainImg").value = fileName;
-
-            // Clear any new image tracking
-            document.getElementById("newMainImg").value = "";
-
-            // Clear any preview if shown
-            document.getElementById("mainImagePreviewContainer").classList.add("d-none");
-        }
-
-        // Rest of your existing functions remain the same
-        function handleVillaImages(event) {
-            const files = Array.from(event.target.files);
-            const galleryPreview = document.getElementById("galleryPreview");
-            const newVillaImagesContainer = document.getElementById("newVillaImagesContainer");
-
-            // Clear previous hidden inputs
-            newVillaImagesContainer.innerHTML = "";
-
-            if (files.length > 5) {
-                document.getElementById("galleryError").style.display = "block";
-                event.target.value = "";
-                return;
-            }
-
-            document.getElementById("galleryError").style.display = "none";
-
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const wrapper = document.createElement("div");
-                    wrapper.className = "position-relative gallery-thumb";
-                    wrapper.style.maxWidth = "150px";
-                    wrapper.innerHTML = `
-                        <img src="${e.target.result}" class="img-thumbnail shadow w-100" style="height: 100px; object-fit: cover; cursor:pointer;" onclick="openImageInCarousel('${e.target.result}')" />
-                        <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1" onclick="this.parentElement.remove()">×</button>`;
-                    galleryPreview.appendChild(wrapper);
-                };
-                reader.readAsDataURL(file);
-
-                // Create a hidden input with same name for List<string> binding
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = "newVillaImages";
-                input.value = file.name;
-                newVillaImagesContainer.appendChild(input);
-            });
-        }
-
-        function removeGalleryImage(name, btn) {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = "removeVillaImages";
-            input.value = name;
-            document.getElementById("removeVillaImagesContainer").appendChild(input);
-
-            btn.parentElement.remove();
-        }
-
-        function openImageInCarousel(src) {
-            const inner = document.getElementById("imageCarouselInner");
-            inner.innerHTML = `<div class="carousel-item active"><img src="${src}" class="d-block w-100" style="object-fit: contain; height: 500px;" /></div>`;
-            new bootstrap.Modal(document.getElementById("imageModal")).show();
-        }
-    </script>
-
-    <style>
-        .img-thumbnail {
-            transition: transform 0.2s;
-        }
-
-            .img-thumbnail:hover {
-                transform: scale(1.05);
-            }
-    </style>
 }

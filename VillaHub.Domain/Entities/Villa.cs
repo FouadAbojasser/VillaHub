@@ -34,7 +34,8 @@ namespace VillaHub.Domain.Entities
         public Village Village { get; set; } = null!;
         [Display(Name="Villa Images")]
         public ICollection<Image> Images { get; set; } = [];
-        public ICollection<Floor> Floors { get; set; } = [];  // Navigation property: One Villa has many Floors
+        public ICollection<Floor> Floors { get; set; } = [];
+        public ICollection<Amenity> Amenities { get; set; } = [];
 
     }
 }

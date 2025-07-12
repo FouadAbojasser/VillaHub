@@ -1,19 +1,19 @@
 ﻿@using VillaHub.Domain.Entities
-@model IEnumerable<Villa>
+@model IEnumerable<Amenity>
 
 <div class="w-100 card border-0 p-4">
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Villas List</h2>
+                <h2 class="text-white py-2">Amenities List</h2>
             </div>
         </div>
     </div>
     <div class="card-body border p-4">
         <div class="row pb-3">
             <div class="col-6 offset-6 text-end">
-                <a asp-controller="Villa" asp-action="Create" class="btn btn-secondary">
-                    <i class="bi bi-plus-circle"></i> Create New Villa
+                <a asp-controller="Amenity" asp-action="Create" class="btn btn-secondary">
+                    <i class="bi bi-plus-circle"></i> Create New Amenity
                 </a>
             </div>
         </div>
@@ -21,67 +21,38 @@
         <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
-                    <th class ="align-content-center">Image</th>
                     <th class="align-content-center">Name</th>
-                    <th class ="align-content-center">Village</th>
+                    <th class ="align-content-center">Type</th>
                     <th class ="align-content-center">Description</th>
-                    <th class ="align-content-center">Number Of Floors</th>
-                    <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
-                    <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
-                    <th class="align-content-center">Location</th>
-                    <th class="align-content-center">Actions</th>
+                    <th class ="align-content-center">Price</th>
+                    <th class ="align-content-center">Date Created</th>
+                    <th class ="align-content-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var villa in Model)
+                @foreach (var amenity in Model)
                 {
                     <tr>
-                        <td class="align-content-center">
-                            @if (!string.IsNullOrEmpty(villa.MainImg))
-                            {
-                                var imagePath = Url.Content($"~/images/villas/" + villa.MainImg);
-                                <img src="@imagePath"
-                                     alt="Villa Image"
-                                     style="width: 100px; height: auto; cursor: pointer;"
-                                     class="img-thumbnail"
-                                     data-bs-toggle="modal"
-                                     data-bs-target="#imageModal"
-                                     onclick="showFullImage('@imagePath')" />
-                            }
-                            else
-                            {
-                                <span class="text-muted">No image</span>
-                            }
-                        </td>
-                        <td>@villa.Name</td>
-                        <td>@villa.Village!.Name</td>
-                        <td>@villa.Description</td>
-                        <td>@villa.NumberOfFloors</td>
-                        <td>@villa.Area</td>
-                        <td>@villa.Capacity</td>
-                        <td class="align-content-center">
-                            @if (villa.Latitude != 0 && villa.Longitude != 0)
-                            {
-                                <a href="https://www.google.com/maps?q=@villa.Latitude,@villa.Longitude"
-                                   target="_blank" class="btn btn-sm btn-outline-primary">
-                                    View on Map
-                                </a>
-                            }
-                            else
-                            {
-                                <span class="text-muted">No location</span>
-                            }
-                        </td>
+                        
+                        <td>@amenity.Name</td>
+                        <td>@amenity.Type</td>
+                        <td>@amenity.Description</td>
+                        <td>@amenity.Price</td>
+                        <td>@amenity.CreateDate</td>
+                                               
                         <td class="align-content-center">
                             <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Villa" asp-action="Update" asp-route-id="@villa.Id"
+
+                                <a asp-controller="Amenity" asp-action="Update" asp-route-id="@amenity.Id"
                                    class="btn btn-success mx-2">
                                     <i class="bi bi-pencil-square"></i> Update
                                 </a>
-                                <a asp-controller="Villa" asp-action="Delete" asp-route-id="@villa.Id"
+
+                                <a asp-controller="Amenity" asp-action="Delete" asp-route-id="@amenity.Id"
                                    class="btn btn-danger mx-2">
                                     <i class="bi bi-trash-fill"></i> Delete
                                 </a>
+
                             </div>
                         </td>
                     </tr>
@@ -91,24 +62,7 @@
     </div>
 </div>
 
-<!-- Image Preview Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-dark border-0">
-            <div class="modal-body p-0">
-                <img id="modalImage" src="#" class="w-100" style="object-fit: contain;" />
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
-@section Scripts {
-    <script>
-        function showFullImage(imgSrc) {
-            document.getElementById('modalImage').src = imgSrc;
-        }
-    </script>
-}
 

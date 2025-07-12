@@ -21,7 +21,8 @@ namespace VillaHub.Domain.Entities
         public DateTime UpdateDate { get; set; }
 
         // ===> Relations
-        public ICollection<Villa> Villas { get; set; } = [];  // Navigation property: One Village has many Villas
+        public ICollection<Villa> Villas { get; set; } = [];  
         public ICollection<Floor> Floors { get; set; } = [];
+        public ICollection<Amenity> Amenities { get; set; } = [];
     }
 }
