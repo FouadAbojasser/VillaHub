@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Domain.Entities;
+using VillaHub.Web.ViewModels.Floor;
 using VillaHub.Web.ViewModels.Villa;
 
 namespace VillaHub.Web.Controllers
@@ -22,7 +23,7 @@ namespace VillaHub.Web.Controllers
         {
             var villaList = _unitOfWork.Villa.Get(
                 null,
-                [e => e.Village!, f => f.Floors],
+                [e => e.Village!, f => f.Floors, a=>a.Amenities],
                 true,
                 orderBy: q => q.OrderBy(v => v.Village.Name).ThenBy(v => v.Name)
                 );
@@ -33,6 +34,8 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Create(int? id)
         {
+            var amenityList = _unitOfWork.Amenity.Get(a => a.Type == Amenity.AmenityType.Villa);
+
             var createModel = new VillaWithVillagesVM
             {
 
@@ -41,7 +44,9 @@ namespace VillaHub.Web.Controllers
                     Text = u.Name,
                     Value = u.Id.ToString(),
                     Selected = (id != null && u.Id == id)  // pre-select if match
-                })
+                }),
+
+                Amenities = amenityList.ToList(), //All Amenities in Db
             };
             return View(createModel);
         }
@@ -86,6 +91,7 @@ namespace VillaHub.Web.Controllers
             if (villaWithVillage.Villa is not null && MainImg is not null && MainImg.Length > 0)
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(MainImg.FileName);
+
                 var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
 
                 if (!Directory.Exists(folderPath))
@@ -102,6 +108,17 @@ namespace VillaHub.Web.Controllers
 
                 villaWithVillage.Villa.MainImg = fileName;
 
+                // Add Amenities to the model.Villa
+                foreach (var x in villaWithVillage.SelectedAmenityIds)
+                {
+                    var amenityToAdd = _unitOfWork.Amenity.GetOne(e => e.Id == x, null, false);
+
+                    if (amenityToAdd is not null)
+                    {
+                        villaWithVillage.Villa.Amenities.Add(amenityToAdd);
+                    }
+                }
+
                 // Save the villa to get the generated Id
                 await _unitOfWork.Villa.CreateAsync(villaWithVillage.Villa);
 
@@ -114,6 +131,7 @@ namespace VillaHub.Web.Controllers
                 if (image != null && image.Length > 0)
                 {
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+
                     var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "villas");
 
                     if (!Directory.Exists(folderPath))
@@ -144,6 +162,7 @@ namespace VillaHub.Web.Controllers
                         FloorVillageId = null
                     };
 
+
                     await _unitOfWork.Image.CreateAsync(villaImage);
                 }
             }
@@ -159,19 +178,23 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Update(int id)
         {
-            var villaInDb = _unitOfWork.Villa.GetOne(e => e.Id == id, [m => m.Village!, e => e.Images]);
+            var amenityList = _unitOfWork.Amenity.Get(a => a.Type == Amenity.AmenityType.Villa);
+
+            var villaInDb = _unitOfWork.Villa.GetOne(e => e.Id == id, [m => m.Village!, e => e.Images, a=>a.Amenities]);
 
             if (villaInDb != null)
             {
                 var villaWithVillages = new VillaWithVillagesVM
                 {
                     Villa = villaInDb,
+
                     Villages = _unitOfWork.Village.Get().Select(u => new SelectListItem
                     {
                         Text = u.Name,
                         Value = u.Id.ToString()
-                    })
+                    }),
 
+                    Amenities=amenityList.ToList()
                 };
 
                 return View(villaWithVillages);
@@ -183,11 +206,12 @@ namespace VillaHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAsync(VillaWithVillagesVM villaWithVillages, IFormFile newMainImg, string removeMainImg, List<IFormFile>? newVillaImages, string removeVillaImages)
         {
+            var amenityList = _unitOfWork.Amenity.Get(a => a.Type == Amenity.AmenityType.Villa);
 
             var removedImagesList = JsonConvert.DeserializeObject<List<string>>(removeVillaImages ?? "[]");
 
             var VillaInDb = _unitOfWork.Villa.GetOne(
-                v => v.Id == villaWithVillages.Villa!.Id, [m => m.Village, g => g.Images], false);
+                v => v.Id == villaWithVillages.Villa!.Id, [m => m.Village, g => g.Images, a => a.Amenities], false);
 
             if (VillaInDb is null)
             {
@@ -203,6 +227,25 @@ namespace VillaHub.Web.Controllers
                 VillaInDb.Capacity = villaWithVillages.Villa.Capacity;
                 VillaInDb.Latitude = villaWithVillages.Villa.Latitude;
                 VillaInDb.Longitude = villaWithVillages.Villa.Longitude;
+
+                foreach (var x in VillaInDb.Amenities.ToList())
+                {
+                    if (!villaWithVillages.SelectedAmenityIds.Any(a => a == x.Id))
+                    {
+                        VillaInDb.Amenities.Remove(x);
+                    }
+                }
+
+                foreach (var x in villaWithVillages.SelectedAmenityIds)
+                {
+                    var amenityToAdd = _unitOfWork.Amenity.GetOne(e => e.Id == x, null, false);
+
+                    if (amenityToAdd is not null)
+                    {
+                        VillaInDb.Amenities.Add(amenityToAdd);
+                    }
+                }
+
                 VillaInDb.UpdateDate = DateTime.UtcNow;
             }
 

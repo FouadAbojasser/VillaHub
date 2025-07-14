@@ -14,9 +14,9 @@
                     <!-- Village Image -->
                     <div class="col-md-4">
                         <img src="~/images/villages/@village.ImgUrl"
-                             alt="@village.Name"
-                             class="img-fluid w-100"
-                             style="height: 200px; object-fit: cover; border-radius: 5px 0 0 5px;" />
+                        alt="@village.Name"
+                        class="img-fluid w-100"
+                        style="height: 200px; object-fit: cover; border-radius: 5px 0 0 5px;" />
                     </div>
 
 
@@ -26,7 +26,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h5 class="text-warning mb-0" style="font-size: 1.5rem;">@village.Name</h5>
                                 <button type="button" class="btn btn-sm btn-outline-success"
-                                        data-bs-toggle="modal" data-bs-target='#exampleModal-@(village.Id)'>
+                                data-bs-toggle="modal" data-bs-target='#exampleModal-@(village.Id)'>
                                     Details
                                 </button>
                             </div>
@@ -53,18 +53,25 @@
                                 <div class="text-warning fw-bold text-end" style="font-size: 1rem; line-height: 1.4;">
                                     Average Price / Night <br />
                                     <span style="border-bottom: 1px solid #ff6a00; display: inline-block;">
-                                        @village.Id.ToString("c")
-                                    </span>
+                                        @if (village.Floors != null && village.Floors.Any(f => f.Price != null))
+                                        {
+                                            @village.Floors.Where(f => f.Price != null).Average(f => f.Price!).ToString("c")
+                                        }
+                                        else
+                                        {
+                                            <span>No floor pricing data</span>
+                                        }
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
 
-            <div class="modal fade" id="exampleModal-@(village.Id)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl" style="border: 1px solid #aaa; border-radius:7px;">
+                <div class="modal fade" id="exampleModal-@(village.Id)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" style="border: 1px solid #aaa; border-radius:7px;">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-3 text-success" id="exampleModalLabel">Village Details - @village.Name</h1>

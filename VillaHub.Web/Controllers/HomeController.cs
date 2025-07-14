@@ -22,7 +22,7 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Index()
         {
-            var villageList = _unitOfWork.Village.Get(null, [e => e.Villas]);
+            var villageList = _unitOfWork.Village.Get(null, [e => e.Villas, e=>e.Floors]);
 
             return View(villageList);
         }

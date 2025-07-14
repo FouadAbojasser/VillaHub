@@ -25,7 +25,7 @@ namespace VillaHub.Web.Controllers
         {
             var floorList = _unitOfWork.Floor.Get(
                 null,
-                [e => e.Villa!, v=>v.Villa.Village, m=>m.Images]
+                [f => f.Villa!, f=>f.Villa.Village, f=>f.Images, f=>f.Amenities]
                 );
             return View(floorList);
         }
@@ -36,6 +36,8 @@ namespace VillaHub.Web.Controllers
         {
             if (id is not null)
             {
+                var amenityList = _unitOfWork.Amenity.Get(a => a.Type == Amenity.AmenityType.Floor);
+
                 var selecetedVilla = _unitOfWork.Villa.GetOne(e => e.Id == id, [e => e.Village]);
 
                 if (selecetedVilla is not null) 
@@ -44,7 +46,9 @@ namespace VillaHub.Web.Controllers
                     {
                         Villa = selecetedVilla,
 
-                        Village = selecetedVilla.Village
+                        Village = selecetedVilla.Village,
+
+                        Amenities = amenityList.ToList(),
                     };
                    
                    return View(createModel);
@@ -84,6 +88,17 @@ namespace VillaHub.Web.Controllers
 
             if (floorWithVillas.Floor is not null)
             {
+                foreach (var x in floorWithVillas.SelectedAmenityIds)
+                {
+                    var amenityToAdd = _unitOfWork.Amenity.GetOne(e => e.Id == x, null, false);
+
+                    if (amenityToAdd is not null)
+                    {
+                        floorWithVillas.Floor.Amenities.Add(amenityToAdd);
+                        floorWithVillas.Floor.Price += amenityToAdd.Price;
+                    }
+                }
+
                 floorWithVillas.Floor.CreateDate = DateTime.UtcNow;
 
                 await _unitOfWork.Floor.CreateAsync(floorWithVillas.Floor);
@@ -140,13 +155,15 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Update(int floorNumber, int villaId, int villageId)
         {
+            var amenityList = _unitOfWork.Amenity.Get(a=>a.Type == Amenity.AmenityType.Floor);
+
             var floorInDb = _unitOfWork.Floor.GetOne(
                 e => e.FloorNumber == floorNumber
                 &&
                 e.VillaId == villaId
                 &&
                 e.VillageId == villageId,
-                [v => v.Village, m => m.Villa, e => e.Images]);
+                [v => v.Village, m => m.Villa, e => e.Images, m=>m.Amenities]);
 
             if (floorInDb != null)
             {
@@ -154,7 +171,9 @@ namespace VillaHub.Web.Controllers
                 {
                     Village = floorInDb.Village,
                     Villa = floorInDb.Villa,
-                    Floor = floorInDb
+                    Floor = floorInDb,
+                    Amenities = amenityList.ToList(), //All Amenities in Db
+                   
                 };
 
                 return View(floorsWithVillas);
@@ -169,6 +188,7 @@ namespace VillaHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAsync(FloorWithVillasVM floorWithVillasVM, List<IFormFile>? newFloorImages, string removeFloorImages)
         {
+            
             var removedImagesList = JsonConvert.DeserializeObject<List<string>>(removeFloorImages ?? "[]");
 
             var FloorInDb = _unitOfWork.Floor.GetOne(
@@ -177,7 +197,7 @@ namespace VillaHub.Web.Controllers
                             f.VillaId == floorWithVillasVM.Villa!.Id
                             &&
                             f.VillageId == floorWithVillasVM.Village!.Id,
-                            [m => m.Villa, g => g.Images],
+                            [m => m.Villa, g => g.Images, a=>a.Amenities],
                             false);
 
 
@@ -192,15 +212,36 @@ namespace VillaHub.Web.Controllers
                 FloorInDb.Price = floorWithVillasVM.Floor.Price;
                 FloorInDb.Area = floorWithVillasVM.Floor.Area;
                 FloorInDb.Capacity = floorWithVillasVM.Floor.Capacity;
+
+                foreach(var x in FloorInDb.Amenities.ToList())
+                {
+                    if (!floorWithVillasVM.SelectedAmenityIds.Any(a => a == x.Id))
+                    {
+                        FloorInDb.Price -= x.Price;
+                        FloorInDb.Amenities.Remove(x);
+                    }
+                }
+
+                foreach(var x in floorWithVillasVM.SelectedAmenityIds)
+                {
+                    var amenityToAdd = _unitOfWork.Amenity.GetOne(e => e.Id == x,null,false);
+
+                    if(amenityToAdd is not null)
+                    {
+                        FloorInDb.Amenities.Add(amenityToAdd);
+                        FloorInDb.Price += amenityToAdd.Price;
+                    }
+                }
+
                 FloorInDb.UpdateDate = DateTime.UtcNow;
             }
 
             // Handling Sliders
             await HandlingUpdateVillaImagesAsync(FloorInDb, removedImagesList, newFloorImages);
 
-            await _unitOfWork.Villa.CommitAsync();
+            await _unitOfWork.Floor.CommitAsync();
 
-            TempData["success"] = "Villa Edited Successfully";
+            TempData["success"] = "Floor Updated Successfully";
 
             return RedirectToAction(nameof(Index));
 

@@ -30,6 +30,7 @@
                     <th class="align-content-center">Price</th>
                     <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
                     <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
+                    <th class="align-content-center">Amenities</th>
                     <th class="align-content-center">Galary</th>
                     <th class="align-content-center">Actions</th>
                 </tr>
@@ -45,8 +46,18 @@
                         <td class="align-content-center">@floor.Price</td>
                         <td class="align-content-center">@floor.Area</td>
                         <td class="align-content-center">@floor.Capacity</td>
+
                         <td class="align-content-center">
-                            <a href="#" class="text-decoration-none text-primary" data-bs-toggle="modal" data-bs-target="#galleryModal" onclick="loadFloorGallery('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId')">
+                            <a href="#" class="text-decoration-none text-primary"
+                               data-bs-toggle="modal" data-bs-target="#amenityModal"
+                               onclick="loadAmenities('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId')">
+                                Amenities (@floor.Amenities.Count())
+                            </a>
+                        </td>
+
+                        <td class="align-content-center">
+                            <a href="#" class="text-decoration-none text-primary" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                            onclick="loadFloorGallery('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId', '@floor.Villa.Name')">
                                 Gallery (@floor.Images.Count())
                             </a>
                         </td>
@@ -75,6 +86,36 @@
                 }
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Amenity Modal -->
+<div class="modal fade" id="amenityModal" tabindex="-1" aria-labelledby="amenityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Floor Amenities</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="amenityList" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Amenity Modal -->
+<div class="modal fade" id="amenityModal" tabindex="-1" aria-labelledby="amenityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Floor Amenities</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="amenityList" class="list-group"></ul>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -138,7 +179,42 @@
             });
         }
 
-    </script>
+        //Amenity Script
+      
+        function loadAmenities(floorNumber, villaId, villageId) {
+            const amenityList = document.getElementById("amenityList");
+            amenityList.innerHTML = "";
 
+            const floors = @Html.Raw(Json.Serialize(Model.Select(f => new {
+                floorNumber = f.FloorNumber,
+                villaId = f.VillaId,
+                villageId = f.VillageId,
+                villaName = f.Villa.Name,
+               amenities = f.Amenities.Select(a => a.Name.Trim())
+            })));
+
+            const floor = floors.find(f =>
+                f.floorNumber === parseInt(floorNumber) &&
+                f.villaId === parseInt(villaId) &&
+                f.villageId === parseInt(villageId)
+            );
+
+            if (!floor || floor.amenities.length === 0) {
+                amenityList.innerHTML = "<li class='list-group-item'>No amenities available for this floor.</li>";
+                return;
+            }
+
+            floor.amenities.forEach(amenity => {
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent = amenity;
+                amenityList.appendChild(li);
+            });
+            
+            // Update modal title with floor info
+            document.querySelector('#amenityModal .modal-title').textContent =
+                `Amenities for Floor ${floorNumber} in Villa ${floor.villaName}`;
+        }
+    </script>
 }
 

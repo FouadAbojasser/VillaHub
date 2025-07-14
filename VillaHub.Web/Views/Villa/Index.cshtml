@@ -28,6 +28,7 @@
                     <th class ="align-content-center">Number Of Floors</th>
                     <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
                     <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
+                    <th class="align-content-center">Amenities</th>
                     <th class="align-content-center">Location</th>
                     <th class="align-content-center">Actions</th>
                 </tr>
@@ -59,6 +60,13 @@
                         <td class="align-content-center">@villa.Floors.Count()</td>
                         <td class="align-content-center">@villa.Area</td>
                         <td class="align-content-center">@villa.Capacity</td>
+                        <td class="align-content-center">
+                            <a href="#" class="text-decoration-none text-primary"
+                               data-bs-toggle="modal" data-bs-target="#villaAmenityModal"
+                               onclick="loadVillaAmenities('@villa.Id')">
+                                Amenities (@villa.Amenities.Count())
+                            </a>
+                        </td>
                         <td class="align-content-center">
                             @if (villa.Latitude != 0 && villa.Longitude != 0)
                             {
@@ -97,6 +105,23 @@
     </div>
 </div>
 
+
+<!-- Villa Amenity Modal -->
+<div class="modal fade" id="villaAmenityModal" tabindex="-1" aria-labelledby="villaAmenityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Villa Amenities</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="villaAmenityList" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Image Preview Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -114,6 +139,36 @@
     <script>
         function showFullImage(imgSrc) {
             document.getElementById('modalImage').src = imgSrc;
+        }
+
+        function loadVillaAmenities(villaId) {
+            const amenityList = document.getElementById("villaAmenityList");
+            amenityList.innerHTML = "";
+
+            const villas = @Html.Raw(Json.Serialize(Model.Select(v => new
+            {
+                id = v.Id,
+                name = v.Name,
+                amenities = v.Amenities.Select(a => a.Name.Trim())
+            })));
+
+            const villa = villas.find(v => v.id === parseInt(villaId));
+
+            if (!villa || !villa.amenities || villa.amenities.length === 0) {
+                amenityList.innerHTML = "<li class='list-group-item'>No amenities available for this villa.</li>";
+                return;
+            }
+
+            villa.amenities.forEach(amenity => {
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent = amenity;
+                amenityList.appendChild(li);
+            });
+
+            // Update modal title with villa info
+            document.querySelector('#villaAmenityModal .modal-title').textContent =
+                `Amenities for Villa ${villa.name}`;
         }
     </script>
 }
