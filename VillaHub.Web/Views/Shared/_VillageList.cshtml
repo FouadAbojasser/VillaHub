@@ -1,23 +1,40 @@
-﻿@using VillaHub.Domain.Entities
-@model IEnumerable<Village>
+﻿@using VillaHub.Web.ViewModels.Home
+@model HomeVM
 
-<div id="VillasList">
-
+<div id="VillageList">
+    
     <div class="row px-lg-5 m-lg-4 m-sm-0 px-sm-0" style="--bs-gutter-x:0">
 
-        @foreach (var village in Model)
+        @foreach (var village in Model.Villages!)
         {
 
             <div class="p-4 col-md-12 col-lg-6">
                 <div class="row g-0 border rounded shadow-sm h-100" style="overflow: hidden;">
 
                     <!-- Village Image -->
-                    <div class="col-md-4">
+                    <div class="col-md-4 d-flex flex-column align-items-center justify-content-start p-2">
                         <img src="~/images/villages/@village.ImgUrl"
-                        alt="@village.Name"
-                        class="img-fluid w-100"
-                        style="height: 200px; object-fit: cover; border-radius: 5px 0 0 5px;" />
+                             alt="@village.Name"
+                             class="img-fluid w-100 mb-3"
+                             style="height: 150px; object-fit: cover; border-radius: 5px;" />
+                        @if (Model.CheckInDate != default && Model.CheckInDate > DateOnly.FromDateTime(DateTime.Now))
+                        {
+                            @if (village.isAvailable)
+                            {
+                                <a class="btn btn-success form-control w-100 mt-auto">
+                                    <i class="bi bi-calendar-check"></i> Book Now
+                                </a>
+
+                            }
+                            else
+                            {
+                                <a class="btn btn-outline-danger disabled form-control  w-100 mt-auto">
+                                    <i class="bi bi-calendar-check"></i> Sold Out
+                                </a>
+                            }
+                        }
                     </div>
+
 
 
                     <!-- Village Info -->
@@ -35,6 +52,7 @@
                                 @Html.Raw(village.Description)
                             </div>
                         </div>
+                        
 
                         <!-- Metrics and Price -->
                         <div class="row align-items-end pt-2">
@@ -92,5 +110,5 @@
                 </div>
             </div>
         }
-</div>
+    </div>
 </div>
