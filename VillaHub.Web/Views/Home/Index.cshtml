@@ -49,7 +49,7 @@
     @* في حال استخدام مكتبة مساعدة  *@
     @* data-ajax-method="post"
     data-ajax="true"
-    data-ajax-mode="replace" data-ajax-update="#VillageList" *@
+    data-ajax-mode="replace" data-ajax-update="#FloorList" *@
 
     <form method="post" asp-action="GetVillagesByDate">
         
@@ -61,20 +61,20 @@
                 <span asp-validation-for="PriceRange" class="text-danger"></span>
             </div>
 
+
             <div class="flex-fill">
                 <label asp-for="CheckInDate" class="form-label mb-1"></label>
                 <input asp-for="CheckInDate" type="date" class="form-control w-100" />
                 <span asp-validation-for="CheckInDate" class="text-danger"></span>
             </div>
 
+
             <div class="flex-fill">
                 <label asp-for="NumberOfNights" class="form-label mb-1"></label>
-                <select asp-for="NumberOfNights" class="form-select w-100">
+                <select class="form-select w-100" asp-for="NumberOfNights">
                     @for (var i = 1; i < 11; i++)
                     {
-                        <option value="@i" selected="@(Model.NumberOfNights == i ? "selected" : null)">
-                            @i
-                        </option>
+                        <option value="@i">@i</option>
                     }
                 </select>
             </div>
@@ -91,19 +91,33 @@
 </div>
 
 
-<div>
+<div class="mx-5 my-5 border-bottom pb-4">
+    <h2 class="text-success mb-2">Floors</h2>
+    <partial name="_FloorList" model="@Model" />
+</div>
+
+<div class="mx-5 my-5 border-bottom pb-4">
+    <h2 class="text-primary mb-2">Villas</h2>
     <partial name="_VillageList" model="@Model" />
 </div>
+
+<div class="mx-5 my-5">
+    <h2 class="text-warning mb-2">Villages</h2>
+    <partial name="_VillageList" model="@Model" />
+</div>
+
 
 @section scripts{
     <script>
         function fnLoadVillaList()
         {
+             
             $('.spinner').show();
+            //تسميات لازم تكون زي التسميات الي في المودل
             var objData = {
                 checkInDate: $("#CheckInDate").val(),
-                nights: $("#NumberOfNights").val(),
-                price: $("#PriceRange").val()
+                NumberOfNights: $("#NumberOfNights").val(),
+                PriceRange: $("#PriceRange").val()
             };
 
             $.ajax({
@@ -111,8 +125,8 @@
                 data:objData,
                 url: "@Url.Action("GetVillagesByDate", "Home")",
                 success: function (data) {
-                    $("#VillageList").empty();
-                    $("#VillageList").html(data);
+                    $("#FloorList").empty();
+                    $("#FloorList").html(data);
                     $('.spinner').hide();
                 },
                 failure: function (response) {

@@ -24,10 +24,14 @@ namespace VillaHub.Web.Controllers
         public IActionResult Index()
         {
             var villageList = _unitOfWork.Village.Get(null, [e => e.Villas, e=>e.Floors]);
+            var villaList = _unitOfWork.Villa.Get(null, [e => e.Images, e=>e.Floors, e=>e.Amenities]);
+            var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e =>e.Amenities]);
 
             HomeVM homeVM = new HomeVM()
             {
                 Villages = villageList,
+                Villas= villaList,
+                Floors= floorList,
                 CheckInDate = DateOnly.FromDateTime(DateTime.Now),
                 PriceRange = 100,
                 NumberOfNights = 1
@@ -43,25 +47,25 @@ namespace VillaHub.Web.Controllers
         {
             Thread.Sleep(1000);
 
-            var villageList = _unitOfWork.Village.Get(null, [e => e.Villas, e => e.Floors]);
+            var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e => e.Amenities]);
 
-            foreach (var village in villageList)
+            foreach (var floor in floorList)
             {
-                if (village.Id % 2 == 0)
+                if (floor.FloorNumber % 2 == 0)
                 {
-                    village.isAvailable = false;
+                    floor.isAvailable = false;
                 }
             }
 
             HomeVM returnHomeVM = new HomeVM()
             {
-                Villages = villageList,
+                Floors = floorList,
                 CheckInDate= homeVM.CheckInDate,
                 PriceRange= homeVM.PriceRange,
                 NumberOfNights= homeVM.NumberOfNights
             };
 
-            return PartialView("_VillageList",returnHomeVM);
+            return PartialView("_FloorList",returnHomeVM);
         }
 
 

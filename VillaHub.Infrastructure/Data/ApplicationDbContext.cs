@@ -23,6 +23,7 @@ namespace VillaHub.Infrastructure.Data
         public DbSet<Image> Images { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<OTP> OTPs { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -19,7 +19,8 @@ namespace VillaHub.Infrastructure.Repository
         public IFloorRepository Floor { get; private set; }
         public IAmenityRepository Amenity { get; private set; }
         public IImageRepository Image { get; private set; }
-        
+        public IBookingRepository Booking { get; private set; }
+
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbcontext = dbContext;
@@ -31,6 +32,7 @@ namespace VillaHub.Infrastructure.Repository
             Floor = new FloorRepository(_dbcontext);
             Amenity = new AmenityRepository(_dbcontext);
             Image = new ImageRepository(_dbcontext);
+            Booking = new BookingRepository(_dbcontext);
         }
 
     }

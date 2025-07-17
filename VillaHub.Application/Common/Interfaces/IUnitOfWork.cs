@@ -15,5 +15,6 @@ namespace VillaHub.Application.Common.Interfaces
         IFloorRepository Floor { get; }
         IAmenityRepository Amenity { get; }
         IImageRepository Image { get; }
+        IBookingRepository Booking { get; }
     }
 }

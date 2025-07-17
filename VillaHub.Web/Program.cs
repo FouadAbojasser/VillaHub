@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
@@ -40,6 +41,12 @@ namespace VillaHub.Web
                 option.SignIn.RequireConfirmedEmail = true; //Change to true to allow only confioremd emails to login
             });
 
+            //Change login path if it is under Area
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login"; // Include the Area in the path
+            });
+
 
             builder.Services.AddAuthentication()
             .AddGoogle(options =>
@@ -63,6 +70,9 @@ namespace VillaHub.Web
             });
 
             var app = builder.Build();
+
+            //Register Strip in the Application
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Strip:SecretKey").Get<string>();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

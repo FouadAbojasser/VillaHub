@@ -37,5 +37,8 @@ namespace VillaHub.Domain.Entities
         public ICollection<Floor> Floors { get; set; } = [];
         public ICollection<Amenity> Amenities { get; set; } = [];
 
+        [NotMapped]
+        public bool isAvailable { get; set; } = true;
+
     }
 }
