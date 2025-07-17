@@ -101,6 +101,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                 CreatedAt= DateTime.UtcNow,
             };
 
+            
             var result = await _userManager.CreateAsync(applicationUser, registerVM.Password);
 
             if (result.Succeeded)
@@ -124,8 +125,17 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                     TempData["success"] = "User Registered Successfully!, Please Confirm Your Email";
 
-                    // Give the user Default Role 
-                    await _userManager.AddToRoleAsync(applicationUser, SD.Role_Customer);
+                     
+                    if (string.IsNullOrEmpty(registerVM.Role))
+                    {
+                        // Give the user Default Role = Customer
+                        await _userManager.AddToRoleAsync(applicationUser, SD.Role_Customer);
+                    }
+                    else
+                    { 
+                        await _userManager.AddToRoleAsync(applicationUser, registerVM.Role); 
+                    }
+                        
 
                     return RedirectToAction("Index", "Home", new { area = "" });
                 }

@@ -25,6 +25,12 @@ namespace VillaHub.Web.Controllers
             _stripeSettings = stripeSettings.Value;
         }
 
+        [Authorize]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
 
 
         [Authorize]
@@ -226,7 +232,69 @@ namespace VillaHub.Web.Controllers
 
 
 
+        public IActionResult BookingDetails(int bookingId)
+        {
+            if(bookingId == 0)
+            {
+                return NotFound();
+            }
 
+            var BookingInDb = _unitOfWork.Booking.GetOne(b=>b.Id == bookingId,[b=>b.User]);
+
+            if(BookingInDb is not null)
+            {
+                var BookedFloor = _unitOfWork.Floor.GetOne(
+                                        f => f.FloorNumber == BookingInDb.FloorNumber
+                                        && f.VillaId == BookingInDb.VillaId
+                                        && f.VillageId == BookingInDb.VillageId,
+                                        [f => f.Images, f => f.Village, f => f.Villa, f=>f.Amenities]);
+
+                if (BookedFloor is not null) 
+                {
+                    BookingInDb.Village = BookedFloor.Village;
+                    BookingInDb.Villa = BookedFloor.Villa;
+                    BookingInDb.Floor = BookedFloor;
+                }
+                                
+            }
+
+            return View(BookingInDb);
+
+        }
+
+
+        #region API Calls
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetAllBookings(string status)
+        {
+            IEnumerable<Booking> objBooking;
+
+            if (User.IsInRole(SD.Role_SuperAdmin))
+            {
+                //Admin User Can Get all Booking Records
+                objBooking = _unitOfWork.Booking.Get(null, [b => b.User]);
+            }
+            else
+            {
+                //Get booking for this user only
+                var claimIdentity = (ClaimsIdentity)User.Identity!;
+                var UserId = claimIdentity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
+                objBooking=_unitOfWork.Booking.Get(b=>b.UserId == UserId);
+
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                objBooking = objBooking.Where(b=>b.Status!.ToLower().Equals(status.ToLower()));
+            }
+
+            return Json(new {data=objBooking});
+
+        }
+
+        #endregion 
 
 
 

@@ -14,17 +14,16 @@ namespace VillaHub.Domain.Entities
         public int Id { get; set; }
 
 
-
         // User Related Fields
         [Required]
         public string UserId { get; set; } = string.Empty;
         [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; } = null!;
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         [Required]
-        public string Email { get; set; }
-        public string? Phone { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
 
 
 
@@ -32,14 +31,14 @@ namespace VillaHub.Domain.Entities
         // Village , Villa and Floor Related Fields
         public int VillageId { get; set; }
         [NotMapped]
-        public Village Village { get; set; }
+        public Village Village { get; set; } = null!;
         [Required]
         public int VillaId { get; set; }
         [ForeignKey("VillaId")]
-        public Villa Villa { get; set; }
+        public Villa Villa { get; set; } = null!;
         public int FloorNumber { get; set; }
         [NotMapped]
-        public Floor Floor { get; set; }
+        public Floor Floor { get; set; } = null!;
         [Required]
         public double TotalCost { get; set; }
         public int Nights { get; set; }

@@ -40,7 +40,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("FloorsVillageId", "FloorsVillaId", "FloorsFloorNumber");
 
-                    b.ToTable("AmenityFloor");
+                    b.ToTable("AmenityFloor", (string)null);
                 });
 
             modelBuilder.Entity("AmenityVilla", b =>
@@ -55,7 +55,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("VillasId");
 
-                    b.ToTable("AmenityVilla");
+                    b.ToTable("AmenityVilla", (string)null);
                 });
 
             modelBuilder.Entity("AmenityVillage", b =>
@@ -70,7 +70,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("VillagesId");
 
-                    b.ToTable("AmenityVillage");
+                    b.ToTable("AmenityVillage", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -236,7 +236,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Amenities");
+                    b.ToTable("Amenities", (string)null);
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.ApplicationUser", b =>
@@ -393,7 +393,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("VillaId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.Floor", b =>
@@ -429,7 +429,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("VillaId");
 
-                    b.ToTable("Floors");
+                    b.ToTable("Floors", (string)null);
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.Image", b =>
@@ -474,7 +474,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("FloorVillageId", "FloorVillaId", "FloorNumber");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.OTP", b =>
@@ -505,7 +505,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("OTPs");
+                    b.ToTable("OTPs", (string)null);
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.Villa", b =>
@@ -554,7 +554,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasIndex("VillageId");
 
-                    b.ToTable("Villas");
+                    b.ToTable("Villas", (string)null);
                 });
 
             modelBuilder.Entity("VillaHub.Domain.Entities.Village", b =>
@@ -589,7 +589,7 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Villages");
+                    b.ToTable("Villages", (string)null);
                 });
 
             modelBuilder.Entity("AmenityFloor", b =>
