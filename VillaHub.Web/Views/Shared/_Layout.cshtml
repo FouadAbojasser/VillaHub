@@ -1,4 +1,6 @@
-﻿@using VillaHub.Application.Common.Utility
+﻿@using Microsoft.AspNetCore.Identity
+@using VillaHub.Application.Common.Utility
+@using VillaHub.Domain.Entities
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -30,24 +32,41 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Village" asp-action="Index">Villages</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Villa" asp-action="Index">Villas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Floor" asp-action="Index">Floors</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Amenity" asp-action="Index">Amenity</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index" asp-route-status=@SD.StatusApproved>Bookings</a>
-                        </li>
+
+                        <!-- Dropdown for Contents -->
+                        @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_SuperAdmin))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" style="text-decoration: none; color: inherit;" id="propertiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Manage Contents
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="propertiesDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Village" asp-action="Index">Villages</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Villa" asp-action="Index">Villas</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Floor" asp-action="Index">Floors</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Amenity" asp-action="Index">Amenity</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.Identity is not null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">Your Bookings</a>
+                            </li>
+                        }
+                        
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
+
             </div>
         </nav>
     </header>
@@ -59,19 +78,25 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
+    <footer class="border-top footer bg-dark text-muted">
+        <div class="container text-center">
             &copy; 2025 - VillaHub.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.bundle.min.js" integrity="sha512-sH8JPhKJUeA9PWk3eOcOl8U+lfZTgtBXD41q6cO/slwxGHCxKcW45K4oPCUhHG7NMB4mbKEddVmPuTXtpbCbFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Load jQuery (only once, latest version) -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- Bootstrap Bundle (only once, latest stable CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- DataTables (after jQuery) -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    @* <script src="~/js/jquery.unobtrusive-ajax.min.js"></script> *@
+
+    <!-- Site custom JS (after all libraries) -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

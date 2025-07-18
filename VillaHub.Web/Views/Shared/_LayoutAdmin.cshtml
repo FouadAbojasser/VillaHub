@@ -1,165 +1,88 @@
-﻿<!DOCTYPE html>
+﻿@using VillaHub.Application.Common.Utility
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-    <title>The VillaHub - Villas and More</title>
-    <link rel="icon" href="@Url.Content("~/images/core-img/favicon.ico")" />
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - VillaHub.Web</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/VillaHub.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/spinner.css" />
+    <!-- DataTables with Bootstrap 5 styling -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
 
 </head>
-
 <body>
-    <!-- Navbar -->
-    <!-- ##### Header Area Start ##### -->
-    <header class="header-area">
-        <!-- Navbar Area -->
-        <div class="palatin-main-menu">
-            <div class="classy-nav-container breakpoint-off">
-                <div class="container">
-                    <!-- Menu -->
-                    <nav class="classy-navbar justify-content-between" id="palatinNav">
+    <header>
+        <nav class="navbar navbar-dark bg-dark border-bottom">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+                <!-- Toggle button for sidebar -->
+                <button class="btn btn-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                    <i class="bi bi-list fs-3"></i>
+                </button>
 
-                        <!-- Nav brand -->
-                        <a href="/Home/Index1" class="nav-brand"><img src="~/images/core-img/logo.png" alt=""></a>
+                <!-- Logo -->
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    @* <img src="~/images/others/resort.jpg" style="width:35px" /> *@
+                </a>
 
-                        <!-- Navbar Toggler -->
-                        <div class="classy-navbar-toggler">
-                            <span class="navbarToggler"><span></span><span></span><span></span></span>
-                        </div>
-
-                        <!-- Menu -->
-                        <div class="classy-menu">
-
-                            <!-- close btn -->
-                            <div class="classycloseIcon">
-                                <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
-                            </div>
-
-                            <!-- Nav Start -->
-                            <div class="classynav">
-                                <ul>
-                                    <li class="active"><a href="/Home/Index1">Home</a></li>
-
-                                    <li>
-                                        <a href="#">Pages</a>
-                                        <ul class="dropdown">
-                                            <li><a asp-controller="Home" asp-action="Index1">Home</a></li>
-                                            <li><a asp-controller="Village" asp-action="Index">Villages</a></li>
-                                            <li><a asp-controller="Villa" asp-action="Index">Villas</a></li>
-                                            <li><a asp-controller="Floor" asp-action="Index">Floors</a></li>
-                                            <li><a asp-controller="Amenity" asp-action="Index">Amenity</a></li>
-                                        </ul>
-                                    </li>
-
-                                    <li>
-                                        <partial name="_LoginPartial" />
-                                    </li>
-
-                                    <li><a href="#">Services</a></li>
-
-                                    <li><a href="#">Contact</a></li>
-
-                                    <li><a href="#">About Us</a></li>
-                                </ul>
-
-                                <!-- Button -->
-                                <div class="menu-btn">
-                                    <a href="#" class="btn palatin-btn">Make a Reservation</a>
-                                </div>
-
-                            </div>
-                            <!-- Nav End -->
-                        </div>
-                    </nav>
-                </div>
+                <!-- Login Partial -->
+                <partial name="_LoginPartialAdmin" />
             </div>
-        </div>
+        </nav>
     </header>
-    <!-- ##### Header Area End ##### -->
-    <!-- Main -->
-    <div>
-        <main role="main">
+
+    <!-- Sidebar as offcanvas -->
+    <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <ul class="nav flex-column">
+                <li class="nav-item px-3 text-muted small fw-bold text-uppercase mt-2">Main</li>
+                <li class="nav-item"><a class="nav-link text-white" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                <li class="nav-item px-3 text-muted small fw-bold text-uppercase mt-3">Content Management</li>
+                <li class="nav-item"><a class="nav-link text-white" asp-controller="Village" asp-action="Index"><i class="bi bi-house-door me-2"></i>Villages</a></li>
+                <li class="nav-item"><a class="nav-link text-white" asp-controller="Villa" asp-action="Index"><i class="bi bi-house-door me-2"></i>Villas</a></li>
+                <li class="nav-item"><a class="nav-link text-white" asp-controller="Floor" asp-action="Index"><i class="bi bi-list-ol me-2"></i>Floors</a></li>
+                <li class="nav-item"><a class="nav-link text-white" asp-controller="Amenity" asp-action="Index"><i class="bi bi-building me-2"></i>Amenities</a></li>
+                <li class="nav-item"><a class="nav-link text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved"><i class="bi bi-journal-plus me-2"></i>Manage Bookings</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="loading spinner" style="display:none;"></div>
+        <main class="pt-4 px-3">
             <partial name="_Notification" />
             @RenderBody()
         </main>
     </div>
 
-    <!-- Footer -->
-    <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container">
-            <div class="row">
 
-                <!-- Footer Widget Area -->
-                <div class="col-12 col-lg-5">
-                    <div class="footer-widget-area mt-50">
-                        <a href="#" class="d-block mb-5"><img src="~/images/core-img/logo.png" alt=""></a>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum.</p>
-                    </div>
-                </div>
-
-                <!-- Footer Widget Area -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="footer-widget-area mt-50">
-                        <h6 class="widget-title mb-5">Find us on the map</h6>
-                        <img src="~/images/bg-img/footer-map.png" alt="">
-                    </div>
-                </div>
-
-                <!-- Footer Widget Area -->
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="footer-widget-area mt-50">
-                        <h6 class="widget-title mb-5">Subscribe to our newsletter</h6>
-                        <form action="#" method="post" class="subscribe-form">
-                            <input type="email" name="subscribe-email" id="subscribeemail" placeholder="Your E-mail">
-                            <button type="submit">Subscribe</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Copywrite Text -->
-                <div class="col-12">
-                    <div class="copywrite-text mt-30">
-                        <p>
-                        </p>
-                    </div>
-                </div>
-            </div>
+    <footer class="border-top footer bg-dark text-muted">
+        <div class="container text-center">
+            &copy; 2025 - VillaHub.Web - <a class="text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <!-- ##### Footer Area End ##### -->
-    @await RenderSectionAsync("Scripts", required: false)
 
-    <!-- ##### All Javascript Script ##### -->
-    <!-- jQuery-2.2.4 js -->
-    <script src="~/js/jquery/jquery-2.2.4.min.js"></script>
-    <!-- Popper js -->
-    <script src="~/js/bootstrap/popper.min.js"></script>
-    <!-- Bootstrap js -->
-    <script src="~/js/bootstrap/bootstrap.min.js"></script>
-    <!-- All Plugins js -->
-    <script src="~/js/plugins/plugins.js"></script>
-    <!-- Active js -->
-    <script src="~/js/active.js"></script>
-
-    <!-- JS Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts: jQuery and Bootstrap.bundle -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script> *@
 
-    <!-- Local JS -->
-    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
+    <!-- Local site scripts -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
-
 </html>

@@ -1,0 +1,11 @@
+﻿<ul class="navbar-nav d-none d-md-flex nav-login">
+    <li class="nav-item d-flex align-items-center">
+        <span class="nav-link mb-0">Hello @User.Identity!.Name</span>
+        <a class="nav-link ms-3 mb-0"
+           asp-area="Identity"
+           asp-controller="Account"
+           asp-action="Logout">
+            Logout
+        </a>
+    </li>
+</ul>

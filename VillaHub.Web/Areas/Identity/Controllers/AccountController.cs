@@ -65,6 +65,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     Text = x.Name,
                     Value = x.Name
                 }),
+
                 RedirectUrl = returnUrl,
 
                 CountryList = SD.CountryList.Select(c => new SelectListItem
@@ -154,6 +155,11 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     ModelState.AddModelError(string.Empty, err.Description);
                 }
             }
+            registerVM.RoleList = _roleManager.Roles.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Name
+            });
             registerVM.CountryList = SD.CountryList;
             return View(registerVM);
 
@@ -205,7 +211,17 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         TempData["success"] = "Login Successfully";
 
-                        return RedirectToAction("Index", "Home", new { area = "" });
+                        var chk1 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_Admin);
+                        var chk2 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_SuperAdmin);
+
+                        if (chk1 || chk2)
+                        {
+                            return RedirectToAction("Index", "Dashboard", new { area = "" });
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "" });
+                        }
                     }
                     else
                     {
@@ -213,7 +229,6 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         return RedirectToAction("Index", "Home", new { area = "" });
                     }
-
                 }
                 else
                 {
@@ -239,10 +254,13 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             return RedirectToAction("Index", "Home", new {area = "" });
         }
 
+
         public IActionResult ResendConfirmEmail()
         {
             return View();
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> ResendConfirmEmailAsync(ResendConfirmationEmailVM confirmEmailVM)
@@ -703,6 +721,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(applicationUser, SD.Role_Customer);
                     result = await _userManager.AddLoginAsync(applicationUser, info);
                     if (result.Succeeded)
                     {

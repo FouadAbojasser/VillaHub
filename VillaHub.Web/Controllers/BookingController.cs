@@ -9,6 +9,7 @@ using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
 using VillaHub.Web.ViewModels.Floor;
+using VillaHub.Web.ViewModels.Home;
 
 namespace VillaHub.Web.Controllers
 {
@@ -25,11 +26,14 @@ namespace VillaHub.Web.Controllers
             _stripeSettings = stripeSettings.Value;
         }
 
+
+
         [Authorize]
         public IActionResult Index()
         {
             return View();
         }
+
 
 
 
@@ -56,7 +60,7 @@ namespace VillaHub.Web.Controllers
                     {
                         Name = applicationUser.Name,
                         Email = applicationUser.Email!,
-                        Phone = applicationUser.PhoneNumber,
+                        Phone = applicationUser.PhoneNumber!,
 
                         FloorNumber = floorNumber,
                         Floor = FloorToBook,
@@ -99,13 +103,50 @@ namespace VillaHub.Web.Controllers
                     [f => f.Village, f => f.Villa, f => f.Images, f => f.Amenities],
                     false);
 
+
                 if (FloorToBook is not null)
-                {
+                { 
+                    //Check Availability Before Placing Booking
+                    
+                    //Get All Bookings with status "Approved"
+                    //var AllBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved);
+
+                    //foreach (var book in AllBookings)
+                    //{
+                    //    var bookCheckIn = book.CheckInDate;
+                    //    var bookCheckOut = book.CheckOutDate;
+
+                    //    var requestCheckIn = booking.CheckInDate;
+                    //    var requestCheckOut = booking.CheckOutDate;
+
+                    //    bool isOverlapping = bookCheckIn <= requestCheckOut && requestCheckIn <= bookCheckOut;
+
+                        
+                    //    if (isOverlapping == true && FloorToBook.FloorNumber == booking.FloorNumber && FloorToBook.VillaId == booking.VillaId && FloorToBook.VillageId == booking.VillageId)
+                    //    {
+                    //        //user can not book this it has been booked
+                    //        //FloorToBook.isAvailable = false;
+                    //        TempData["error"] = "Floor has been Booked !!";
+
+                    //        //return RedirectToAction(nameof(FinalizeBookingAsync), new {
+
+                    //        //     villageId = booking.VillageId,
+                    //        //     villaId = booking.VillaId,
+                    //        //     floorNumber = booking.FloorNumber,
+                    //        //     checkInDate = booking.CheckInDate,
+                    //        //     noOfNights = booking.Nights
+
+                    //        //});
+                    //    }
+                        
+                    //}
+
                     booking.UserId = UserId;
                     booking.User = applicationUser;
                     booking.TotalCost = FloorToBook.Price * booking.Nights;
                     booking.Status = SD.StatusPending;
                     booking.BookingDate = DateTime.UtcNow;
+
 
                     await _unitOfWork.Booking.CreateAsync(booking);
                     await _unitOfWork.Booking.CommitAsync();
@@ -261,6 +302,46 @@ namespace VillaHub.Web.Controllers
             return View(BookingInDb);
 
         }
+
+
+
+        [Authorize(Roles =SD.Role_SuperAdmin)]
+        [HttpPost]
+        public async Task<IActionResult> BookingCheckInAsync(Booking booking)
+        {
+            booking.Status = SD.StatusCheckedIn;
+            _unitOfWork.Booking.Update(booking);
+            await _unitOfWork.Booking.CommitAsync();
+            TempData["success"] = "Booking has ben changed to Checked-In";
+            return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
+        }
+
+
+
+        [Authorize(Roles = SD.Role_SuperAdmin)]
+        [HttpPost]
+        public async Task<IActionResult> BookingCheckOutAsync(Booking booking)
+        {
+            booking.Status = SD.StatusCompleted;
+            _unitOfWork.Booking.Update(booking);
+            await _unitOfWork.Booking.CommitAsync();
+            TempData["success"] = "Booking has ben changed to Completed";
+            return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
+        }
+
+
+
+        [Authorize(Roles = SD.Role_SuperAdmin)]
+        [HttpPost]
+        public async Task<IActionResult> BookingCancelAsync(Booking booking)
+        {
+            booking.Status = SD.StatusCancelled;
+            _unitOfWork.Booking.Update(booking);
+            await _unitOfWork.Booking.CommitAsync();
+            TempData["success"] = "Booking has ben changed to Cancelled";
+            return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
+        }
+
 
 
         #region API Calls

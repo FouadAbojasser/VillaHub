@@ -13,6 +13,15 @@ namespace VillaHub.Application.Common.Utility
         public const string Role_Admin = "Admin";
         public const string Role_Customer = "Customer";
 
+
+        public const string StatusPending = "Pending";
+        public const string StatusApproved = "Approved";
+        public const string StatusCheckedIn = "CheckedIn";
+        public const string StatusCompleted = "Completed";
+        public const string StatusCancelled = "Cancelled";
+        public const string StatusRefunded = "Refunded";
+
+
         public static List<SelectListItem> CountryList = new List<SelectListItem>
         {
             new SelectListItem { Text = "Egypt", Value = "+2" },
@@ -22,11 +31,11 @@ namespace VillaHub.Application.Common.Utility
             new SelectListItem { Text = "Saudi Arabia", Value = "+966" },
         };
 
-        public const string StatusPending = "Pending";
-        public const string StatusApproved = "Approved";
-        public const string StatusCheckedIn = "CheckedIn";
-        public const string StatusCompleted = "Completed";
-        public const string StatusCancelled = "Cancelled";
-        public const string StatusRefunded = "Refunded";
+        
+
+
+
+
+
     }
 }

@@ -43,6 +43,7 @@ namespace VillaHub.Web.Controllers
 
 
         [HttpPost]
+        //Not used 
         public IActionResult GetVillagesByDate(HomeVM homeVM)
         {
             Thread.Sleep(1000);
@@ -67,6 +68,52 @@ namespace VillaHub.Web.Controllers
 
             return PartialView("_FloorList",returnHomeVM);
         }
+
+
+
+        //Logic for Floor Availability
+        public IActionResult CheckFloorAvailability(int floorNumber, int villaId, int villageId, HomeVM homeVM)
+        {
+            Thread.Sleep(1000);
+
+            //Get All floors
+            var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e => e.Amenities]);
+
+            //Get All Bookings with status "Approved"
+            var AllBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved);
+
+            foreach (var booking in AllBookings) 
+            {
+                var bookCheckIn = booking.CheckInDate;
+                var bookCheckOut = booking.CheckOutDate;
+
+                var searchCheckIn = homeVM.CheckInDate;
+                var searchCheckOut = homeVM.CheckInDate.AddDays(homeVM.NumberOfNights);
+
+                bool isOverlapping = bookCheckIn <= searchCheckOut && searchCheckIn <= bookCheckOut;
+
+                foreach (var floor in floorList)
+                {
+                    if (isOverlapping == true && floor.FloorNumber == booking.FloorNumber && floor.VillaId == booking.VillaId && floor.VillageId == booking.VillageId )
+                    {
+                        floor.isAvailable = false;
+                    }
+                }
+            }
+
+            HomeVM returnHomeVM = new HomeVM()
+            {
+                Floors = floorList,
+                CheckInDate = homeVM.CheckInDate,
+                PriceRange = homeVM.PriceRange,
+                NumberOfNights = homeVM.NumberOfNights
+            };
+
+            return PartialView("_FloorList", returnHomeVM);
+
+           
+        }
+
 
 
 
