@@ -20,3 +20,25 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Dark background for toolbar dropdown */
+.apexcharts-menu {
+    background-color: #2a2a2a !important;
+    color: #fff !important;
+    border: 1px solid #444;
+}
+
+.apexcharts-menu-item {
+    color: #fff !important;
+}
+
+    .apexcharts-menu-item:hover {
+        background-color: #444 !important;
+    }
+
+/* Optional: Darken the toolbar icons (e.g., download icon) */
+.apexcharts-toolbar svg {
+    fill: #fff !important;
+}
+
+
