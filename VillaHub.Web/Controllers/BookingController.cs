@@ -148,8 +148,11 @@ namespace VillaHub.Web.Controllers
                     booking.BookingDate = DateTime.UtcNow;
 
 
-                    await _unitOfWork.Booking.CreateAsync(booking);
-                    await _unitOfWork.Booking.CommitAsync();
+                    if (booking.Status != SD.StatusPending)
+                    {
+                        await _unitOfWork.Booking.CreateAsync(booking);
+                        await _unitOfWork.Booking.CommitAsync();
+                    }
 
                     string stripeSessionUrl = await CreateStripeSessionUrl(
                         booking.TotalCost,
@@ -273,6 +276,7 @@ namespace VillaHub.Web.Controllers
 
 
 
+
         public IActionResult BookingDetails(int bookingId)
         {
             if(bookingId == 0)
@@ -305,16 +309,28 @@ namespace VillaHub.Web.Controllers
 
 
 
+
+
         [Authorize(Roles =SD.Role_SuperAdmin)]
         [HttpPost]
         public async Task<IActionResult> BookingCheckInAsync(Booking booking)
         {
-            booking.Status = SD.StatusCheckedIn;
-            _unitOfWork.Booking.Update(booking);
-            await _unitOfWork.Booking.CommitAsync();
-            TempData["success"] = "Booking has ben changed to Checked-In";
-            return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
+            var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == booking.Id);
+
+            if (bookingInDb is not null)
+            {
+                bookingInDb.Status = SD.StatusCheckedIn;
+                bookingInDb.ActualCheckInDate = DateTime.UtcNow;
+                _unitOfWork.Booking.Update(bookingInDb);
+                await _unitOfWork.Booking.CommitAsync();
+                TempData["success"] = "Booking has ben changed to Checked-In";
+            }
+
+           return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
+           
         }
+
+
 
 
 
@@ -322,25 +338,44 @@ namespace VillaHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> BookingCheckOutAsync(Booking booking)
         {
-            booking.Status = SD.StatusCompleted;
-            _unitOfWork.Booking.Update(booking);
-            await _unitOfWork.Booking.CommitAsync();
-            TempData["success"] = "Booking has ben changed to Completed";
+            var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == booking.Id);
+
+            if (bookingInDb is not null)
+            {
+                bookingInDb.Status = SD.StatusCompleted;
+                bookingInDb.ActualCheckOutDate = DateTime.UtcNow;
+                _unitOfWork.Booking.Update(bookingInDb);
+                await _unitOfWork.Booking.CommitAsync();
+                TempData["success"] = "Booking has ben changed to Completed";
+            }
+            
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
         }
 
 
 
-        [Authorize(Roles = SD.Role_SuperAdmin)]
+
+
+        //[Authorize(Roles = SD.Role_SuperAdmin)]
+        //ممكن نخلي إلغاء الحجز يتم فقط من الأدمن
         [HttpPost]
         public async Task<IActionResult> BookingCancelAsync(Booking booking)
         {
-            booking.Status = SD.StatusCancelled;
-            _unitOfWork.Booking.Update(booking);
-            await _unitOfWork.Booking.CommitAsync();
-            TempData["success"] = "Booking has ben changed to Cancelled";
+            var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == booking.Id);
+
+            if (bookingInDb is not null) 
+            { 
+                bookingInDb.Status = SD.StatusCancelled;
+                _unitOfWork.Booking.Update(bookingInDb);
+                await _unitOfWork.Booking.CommitAsync();
+                TempData["success"] = "Booking has ben changed to Cancelled";
+            }
+
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
         }
+
+
+
 
 
 

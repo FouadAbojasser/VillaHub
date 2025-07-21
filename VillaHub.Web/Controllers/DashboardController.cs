@@ -34,7 +34,7 @@ namespace VillaHub.Web.Controllers
         public IActionResult BookingsRadialChartData()
         {
             // Total Bookings that are not Pendding or Cancelled
-            var totalBookings = _unitOfWork.Booking.Get(b => b.Status != SD.StatusPending || b.Status != SD.StatusCancelled);
+            var totalBookings = _unitOfWork.Booking.Get(b => b.Status != SD.StatusPending && b.Status != SD.StatusCancelled);
 
             var currentMonthBookings = totalBookings.Count(b => b.BookingDate >= currentMonthStartDate && b.BookingDate <= DateTime.Now);
 
@@ -46,7 +46,7 @@ namespace VillaHub.Web.Controllers
 
             if (previousMonthBookings != 0)
             {
-                IncreaseDecreaseRatio = Convert.ToInt32(((currentMonthBookings - previousMonthBookings) / (previousMonthBookings)) * 100);
+              IncreaseDecreaseRatio = Convert.ToInt32(((double)(currentMonthBookings - previousMonthBookings) / previousMonthBookings) * 100);
             }
 
             radialBarChartVM.TotalCount = totalBookings.Count();
@@ -76,7 +76,7 @@ namespace VillaHub.Web.Controllers
 
             if (previousMonthUsers != 0)
             {
-                IncreaseDecreaseRatio = Convert.ToInt32(((currentMonthUsers - previousMonthUsers) / (previousMonthUsers)) * 100);
+                IncreaseDecreaseRatio = Convert.ToInt32((double)((currentMonthUsers - previousMonthUsers) / (previousMonthUsers)) * 100);
             }
 
             radialBarChartVM.TotalCount = totalUsers.Count();
@@ -214,6 +214,36 @@ namespace VillaHub.Web.Controllers
 
             return Json(lineChartVM);
 
+        }
+
+
+
+
+
+        public IActionResult TopBookedVillasColumnChartData()
+        {
+            var bookingData = _unitOfWork.Booking.Get(b =>  b.BookingDate.Date <= DateTime.Now
+            && b.Status == SD.StatusApproved)
+            .GroupBy(b => new {b.VillaId, b.VillageId })
+            .Select(g => new {
+           
+
+            VillaName = _unitOfWork.Villa.Get()
+                        .Where(v => v.Id == g.Key.VillaId)
+                        .Select(v => v.Name)
+                        .FirstOrDefault(),
+
+            VillageName = _unitOfWork.Village.Get()
+                .Where(v => v.Id == g.Key.VillageId)
+                .Select(v => v.Name)
+                .FirstOrDefault(),
+
+            Bookings = g.Count()
+
+            }).OrderByDescending(x => x.Bookings);
+
+
+            return Json(bookingData);
         }
 
 

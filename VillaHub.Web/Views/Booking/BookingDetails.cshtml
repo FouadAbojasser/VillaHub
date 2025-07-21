@@ -62,11 +62,11 @@
                 <input asp-for="Nights" hidden />
                 <div class="row pt-1 mb-3 " style="border-radius:20px; ">
                     <div class="col-6">
-                        <h3 class="text-success">Enter Booking Details</h3>
+                        <h3 class="text-success">Booking Details</h3>
                     </div>
                     <div class="col-6">
                         @if ((Model.Status == SD.StatusApproved || Model.Status == SD.StatusPending)
-                                                && User.IsInRole(SD.Role_SuperAdmin))
+                                                && (User.IsInRole(SD.Role_SuperAdmin) || User.IsInRole(SD.Role_Customer)))
                         {
                             <button type="submit" asp-controller="Booking" asp-action="BookingCancel" class="btn btn-sm btn-outline-danger form-control my-1">
                                 <i class="bi bi-x-circle"></i> &nbsp; Cancel Booking
@@ -75,14 +75,17 @@
                     </div>
                 </div>
                 <div class="row">
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Name</label>
                         <input asp-for="Name" class="form-control" />
                     </div>
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Phone</label>
                         <input asp-for="Phone" class="form-control" />
                     </div>
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Email</label>
                         <input asp-for="Email" class="form-control" />
@@ -92,21 +95,32 @@
                         <label class="text-warning">No. of nights</label>
                         <input asp-for="Nights" disabled class="form-control" />
                     </div>
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Status</label>
                         <input asp-for="Status" disabled class="form-control" />
                     </div>
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Booking Date</label>
                         <input asp-for="BookingDate" disabled class="form-control" />
                     </div>
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Check-in Date</label>
                         <input asp-for="CheckInDate" disabled class="form-control" />
                     </div>
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Actual Check-in Date</label>
-                        <input asp-for="ActualCheckInDate" disabled class="form-control" />
+                        @if (Model.ActualCheckInDate == default)
+                        {
+                            <input disabled class="form-control" placeholder="" />
+                        }
+                        else
+                        {
+                            <input asp-for="ActualCheckInDate" disabled class="form-control" />
+                        }
                     </div>
 
 
@@ -114,9 +128,17 @@
                         <label class="text-warning">Check-out Date</label>
                         <input asp-for="CheckOutDate" disabled class="form-control" />
                     </div>
+
                     <div class="form-group pt-2 col-6">
                         <label class="text-warning">Actual Check-out Date</label>
-                        <input asp-for="ActualCheckOutDate" disabled class="form-control" />
+                        @if(Model.ActualCheckOutDate == default)
+                        {
+                            <input disabled class="form-control" placeholder="" />
+                        }
+                        else
+                        {
+                            <input asp-for="ActualCheckOutDate" disabled class="form-control" />
+                        }
                     </div>
 
                     @* @if (Model.Status == SD.StatusApproved && User.IsInRole(SD.Role_SuperAdmin))
@@ -144,7 +166,10 @@
                         }
                     } *@
 
-                    @if (Model.IsPaymentSuccessful && User.IsInRole(SD.Role_SuperAdmin))
+                    @* @if (Model.IsPaymentSuccessful && User.IsInRole(SD.Role_SuperAdmin)) *@
+                    @* Remove Model.IsPaymentSuccessful to see strip data for all types of bookings *@
+
+                    @if ( User.IsInRole(SD.Role_SuperAdmin))
                     {
                         <div class="form-group pt-2 col-6">
                             <label class="text-warning">Stripe PaymentIntent Id</label>
@@ -156,13 +181,21 @@
                         </div>
                         <div class="form-group pt-2 col-6">
                             <label class="text-warning">Payment Date</label>
-                            <input asp-for="PaymentDate" disabled class="form-control" />
+                            @if (Model.PaymentDate == default)
+                            {
+                                <input disabled class="form-control" placeholder="" />
+                            }
+                            else
+                            {
+                                <input asp-for="PaymentDate" disabled class="form-control" />
+                            }
                         </div>
                     }
-                    <div class="form-group pt-2 col-6">
+
+                    @* <div class="form-group pt-2 col-6">
                         <label class="text-warning">Status</label>
                         <input asp-for="Status" disabled class="form-control" />
-                    </div>
+                    </div> *@
                 </div>
                 <div class="form-group pt-2 pt-md-4">
                     @if (User.IsInRole(SD.Role_SuperAdmin))
@@ -183,6 +216,17 @@
                             </button>
                         }
                     }
+
+                    @if (Model.Status == SD.StatusPending && Model.Floor.isAvailable && User.IsInRole(SD.Role_Customer))
+                    {
+                        <button type="submit" asp-controller="Booking" asp-action="FinalizeBooking"
+                                class="btn btn-success form-control">
+                            Looks Good! Book Now
+                        </button>
+                       
+                    }
+                    
+                    
                 </div>
             </form>
         </div>
