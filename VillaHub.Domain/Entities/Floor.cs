@@ -32,6 +32,7 @@ namespace VillaHub.Domain.Entities
         public Village Village { get; set; } = null!;
 
         public ICollection<Image> Images { get; set; } = [];
+        public ICollection<Review> Reviews { get; set; } = [];
         public ICollection<Amenity> Amenities { get; set; } = [];
 
         [NotMapped]

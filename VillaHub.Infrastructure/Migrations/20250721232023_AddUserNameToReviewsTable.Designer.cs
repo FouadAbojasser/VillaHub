@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VillaHub.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using VillaHub.Infrastructure.Data;
 namespace VillaHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721232023_AddUserNameToReviewsTable")]
+    partial class AddUserNameToReviewsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -522,9 +525,6 @@ namespace VillaHub.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateOnly>("CreatedAt")
-                        .HasColumnType("date");
-
                     b.Property<int?>("FloorNumber")
                         .HasColumnType("int");
 
@@ -536,9 +536,6 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.Property<int>("Rate")
                         .HasColumnType("int");
-
-                    b.Property<DateOnly>("UpdatedAt")
-                        .HasColumnType("date");
 
                     b.Property<string>("UserId")
                         .IsRequired()

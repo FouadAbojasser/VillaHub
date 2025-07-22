@@ -54,7 +54,9 @@ namespace VillaHub.Domain.Entities
         public DateOnly CheckInDate { get; set; }
         [Required]
         public DateOnly CheckOutDate { get; set; }
+        //[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ActualCheckInDate { get; set; }
+        //[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ActualCheckOutDate { get; set; }
 
 

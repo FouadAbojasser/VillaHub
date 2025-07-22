@@ -166,6 +166,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
         }
 
 
+
         public IActionResult Login(string returnUrl = null!)
         {
             if(returnUrl == null)
@@ -178,6 +179,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
             return View(loginVM);
         }
+
 
 
         [HttpPost]
@@ -216,10 +218,18 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         if (chk1 || chk2)
                         {
+                            if (!string.IsNullOrEmpty(loginVM.RedirectUrl))
+                            {
+                                return Redirect(loginVM.RedirectUrl);
+                            }
                             return RedirectToAction("Index", "Dashboard", new { area = "" });
                         }
                         else
                         {
+                            if (!string.IsNullOrEmpty(loginVM.RedirectUrl))
+                            {
+                                return Redirect(loginVM.RedirectUrl);
+                            }
                             return RedirectToAction("Index", "Home", new { area = "" });
                         }
                     }

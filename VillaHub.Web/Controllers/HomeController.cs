@@ -25,7 +25,7 @@ namespace VillaHub.Web.Controllers
         {
             var villageList = _unitOfWork.Village.Get(null, [e => e.Villas, e=>e.Floors]);
             var villaList = _unitOfWork.Villa.Get(null, [e => e.Images, e=>e.Floors, e=>e.Amenities]);
-            var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e =>e.Amenities]);
+            var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e =>e.Amenities, e=>e.Reviews]);
 
             HomeVM homeVM = new HomeVM()
             {

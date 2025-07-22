@@ -64,7 +64,40 @@
                     <div class="col-md-8 d-flex flex-column justify-content-between p-3">
                         <div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="text-warning mb-0" style="font-size: 1.5rem;">@floor.FloorNumber - @floor.Villa.Name - @floor.Village.Name</h5>
+                                <div>
+                                    <h5 class="text-warning mb-0" style="font-size: 1.5rem;">
+                                        @floor.FloorNumber - @floor.Villa.Name - @floor.Village.Name
+                                    </h5>
+
+                                    @if (floor.Reviews.Any())
+                                    {
+                                        var average = floor.Reviews.Average(r => r.Rate);
+                                        <div class="small text-muted">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= Math.Floor(average))
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                else if (i - average <= 0.5)
+                                                {
+                                                    <i class="bi bi-star-half text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-warning"></i>
+                                                }
+                                            }
+                                            <span class="ms-2">(@average.ToString("0.0"))</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="small text-muted">No Ratings Available</div>
+                                    }
+                                </div>
+
+                                
                                 <button type="button" class="btn btn-sm btn-outline-success"
                                         data-bs-toggle="modal" data-bs-target="#exampleModal-@($"{floor.VillageId}-{floor.VillaId}-{floor.FloorNumber}")">
 
@@ -73,7 +106,15 @@
                             </div>
 
                             <div class="mb-2 text-muted" style="font-size: 0.9rem;">
-                                @Html.Raw(floor.Description)
+                                @if(floor.Description!.Length > 100)
+                                {
+                                    @Html.Raw(floor.Description.Substring(0,100));
+                                    <span>. . .</span>
+                                }
+                                else
+                                {
+                                    @Html.Raw(floor.Description);
+                                }
                             </div>
                         </div>
 
@@ -116,6 +157,7 @@
                 <div class="modal-dialog modal-xl" style="border: 1px solid #aaa; border-radius:7px;">
                     <div class="modal-content">
                         <div class="modal-header">
+                            
                             <h1 class="modal-title fs-3 text-success" id="exampleModalLabel">
                                 Floor Details – Floor: @floor.FloorNumber, Villa: @floor.Villa.Name, Village: @floor.Village.Name
                             </h1>
@@ -126,6 +168,19 @@
                             <partial name="_FloorDetail" model="@floor" />
                         </div>
                         <div class="modal-footer">
+
+                            <button type="button"
+                                    class="btn btn-outline-info"
+                                    onclick="window.open('@Url.Action("FloorReview", "Review", new { area = "Customer", villageId = floor.VillageId, villaId = floor.VillaId, floorNumber = floor.FloorNumber })', '_blank')">
+                                <i class="bi bi-chat-dots"></i> Customers Reviews
+                            </button>
+
+
+                            <button onclick="window.open('https://www.google.com/maps?q=@floor.Villa.Latitude,@floor.Villa.Longitude', '_blank')"
+                                    type="button" class="btn btn-outline-primary">
+                                <i class="bi bi-google"></i> View On Google
+                            </button>
+
                             <button asp-controller="Home"
                                     asp-action="GeneratePPTExport"
                                     asp-route-villageId="@floor.VillageId"

@@ -24,6 +24,7 @@ namespace VillaHub.Infrastructure.Data
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<OTP> OTPs { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -62,8 +63,18 @@ namespace VillaHub.Infrastructure.Data
                 .HasPrincipalKey(f => new { f.VillageId, f.VillaId, f.FloorNumber })
                 .OnDelete(DeleteBehavior.Cascade);
 
+
             builder.Entity<Floor>()
                 .HasKey(e => new { e.VillageId, e.VillaId, e.FloorNumber });
+
+
+            // Review → Floor (Composite Foreign Key)
+            builder.Entity<Review>()
+                .HasOne(i => i.Floor)
+                .WithMany(f => f.Reviews)
+                .HasForeignKey(i => new { i.FloorVillageId, i.FloorVillaId, i.FloorNumber })
+                .HasPrincipalKey(f => new { f.VillageId, f.VillaId, f.FloorNumber })
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
 

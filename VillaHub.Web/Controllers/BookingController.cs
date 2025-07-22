@@ -89,7 +89,9 @@ namespace VillaHub.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> FinalizeBookingAsync(Booking booking)
         {
+            
             var claimIdentity = (ClaimsIdentity)User.Identity!;
+
             var UserId = claimIdentity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
             var applicationUser = await _userManager.FindByIdAsync(UserId);
@@ -98,48 +100,15 @@ namespace VillaHub.Web.Controllers
             {
                 var FloorToBook = _unitOfWork.Floor.GetOne(
                     f => f.FloorNumber == booking.FloorNumber &&
-                         f.VillaId == booking.VillaId &&
-                         f.VillageId == booking.VillageId,
+                            f.VillaId == booking.VillaId &&
+                            f.VillageId == booking.VillageId,
                     [f => f.Village, f => f.Villa, f => f.Images, f => f.Amenities],
                     false);
 
 
                 if (FloorToBook is not null)
-                { 
+                {
                     //Check Availability Before Placing Booking
-                    
-                    //Get All Bookings with status "Approved"
-                    //var AllBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved);
-
-                    //foreach (var book in AllBookings)
-                    //{
-                    //    var bookCheckIn = book.CheckInDate;
-                    //    var bookCheckOut = book.CheckOutDate;
-
-                    //    var requestCheckIn = booking.CheckInDate;
-                    //    var requestCheckOut = booking.CheckOutDate;
-
-                    //    bool isOverlapping = bookCheckIn <= requestCheckOut && requestCheckIn <= bookCheckOut;
-
-                        
-                    //    if (isOverlapping == true && FloorToBook.FloorNumber == booking.FloorNumber && FloorToBook.VillaId == booking.VillaId && FloorToBook.VillageId == booking.VillageId)
-                    //    {
-                    //        //user can not book this it has been booked
-                    //        //FloorToBook.isAvailable = false;
-                    //        TempData["error"] = "Floor has been Booked !!";
-
-                    //        //return RedirectToAction(nameof(FinalizeBookingAsync), new {
-
-                    //        //     villageId = booking.VillageId,
-                    //        //     villaId = booking.VillaId,
-                    //        //     floorNumber = booking.FloorNumber,
-                    //        //     checkInDate = booking.CheckInDate,
-                    //        //     noOfNights = booking.Nights
-
-                    //        //});
-                    //    }
-                        
-                    //}
 
                     booking.UserId = UserId;
                     booking.User = applicationUser;
@@ -147,29 +116,28 @@ namespace VillaHub.Web.Controllers
                     booking.Status = SD.StatusPending;
                     booking.BookingDate = DateTime.UtcNow;
 
-
-                    if (booking.Status != SD.StatusPending)
+                    if (booking.Id == 0)
                     {
                         await _unitOfWork.Booking.CreateAsync(booking);
                         await _unitOfWork.Booking.CommitAsync();
                     }
 
                     string stripeSessionUrl = await CreateStripeSessionUrl(
-                        booking.TotalCost,
-                        booking.Id,
-                        booking.VillageId,
-                        booking.VillaId,
-                        booking.FloorNumber,
-                        booking.CheckInDate,
-                        booking.Nights
-                    );
+                            booking.TotalCost,
+                            booking.Id,
+                            booking.VillageId,
+                            booking.VillaId,
+                            booking.FloorNumber,
+                            booking.CheckInDate,
+                            booking.Nights);
 
                     //Go to payment
                     return Redirect(stripeSessionUrl);
                 }
             }
 
-            return BadRequest();
+        return BadRequest(); 
+                      
         }
 
 

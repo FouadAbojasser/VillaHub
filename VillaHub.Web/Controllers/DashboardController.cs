@@ -223,7 +223,7 @@ namespace VillaHub.Web.Controllers
         public IActionResult TopBookedVillasColumnChartData()
         {
             var bookingData = _unitOfWork.Booking.Get(b =>  b.BookingDate.Date <= DateTime.Now
-            && b.Status == SD.StatusApproved)
+            && ( b.Status != SD.StatusRefunded || b.Status != SD.StatusCancelled))
             .GroupBy(b => new {b.VillaId, b.VillageId })
             .Select(g => new {
            
@@ -246,6 +246,39 @@ namespace VillaHub.Web.Controllers
             return Json(bookingData);
         }
 
+
+
+
+        public IActionResult BookingsSTSPieChartData()
+        {
+            int NoOfAllBookings = _unitOfWork.Booking.Get().Count();
+
+            int NoOfPenddingBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusPending).Count();
+            double percentOfPenddingBookings = Math.Round((double)NoOfPenddingBookings / NoOfAllBookings * 100, 2);
+
+            int NoOfApprovedBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved).Count();
+            double percentOfApprovedBookings = Math.Round((double)NoOfApprovedBookings / NoOfAllBookings * 100, 2);
+
+            int NoOfCheckedInBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusCheckedIn).Count();
+            double percentOfCheckedInBookings = Math.Round((double)NoOfCheckedInBookings / NoOfAllBookings * 100, 2);
+
+            int NoOfCompletedBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusCompleted).Count();
+            double percentOfCompletedBookings = Math.Round((double)NoOfCompletedBookings / NoOfAllBookings * 100, 2);
+
+            int NoOfCancelledBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusCancelled).Count();
+            double percentOfCancelledBookings = Math.Round((double)NoOfCancelledBookings / NoOfAllBookings * 100, 2);
+
+
+            BookingsPieChartVM bookingsPieChartVM = new()
+            {
+                Labels = ["Pendding", "Approved", "Checked-In", "Completed", "Cancelled"],
+
+                Series = [percentOfPenddingBookings, percentOfApprovedBookings, percentOfCheckedInBookings , percentOfCompletedBookings, percentOfCancelledBookings],
+            };
+
+
+            return Json(bookingsPieChartVM);
+        }
 
     }
 }

@@ -18,7 +18,7 @@
                 <partial name="_FloorDetail" model="@Model.Floor" />
                 <hr />
                 <div class="text-end">
-                    <h4 class="text-danger font-weight-bold ">
+                    <h4 class="text-danger font-weight-bold mb-3">
                         Booking Total :
                         <span style="border-bottom:1px solid #ff6a00">
                             @Model.TotalCost.ToString("c")
@@ -26,24 +26,27 @@
                     </h4>
                 </div>
 
-                <hr />
+                <hr/>
 
                 <form method="post">
                     <div class="row pt-1 mb-3 " style="border-radius:20px; ">
                         <div class="col-12 text-center">
 
-                            <button asp-action="GenerateInvoice" asp-route-id="@Model.Id"
-                                    asp-route-downloadType="word" type="submit"
-                                    class="btn btn-sm btn-secondary my-1">
-                                <i class="bi bi-file-earmark-word"></i> Generate Invoice (word)
-                            </button>
+                            @if (Model.IsPaymentSuccessful == true)
+                            {
+                                <button asp-action="GenerateInvoice" asp-route-id="@Model.Id"
+                                        asp-route-downloadType="word" type="submit"
+                                        class="btn btn-sm btn-secondary my-1">
+                                    <i class="bi bi-file-earmark-word"></i> Generate Invoice (word)
+                                </button>
 
-                            <button asp-action="GenerateInvoice" asp-route-id="@Model.Id"
-                                    asp-route-downloadType="pdf" type="submit"
-                                    class="btn btn-sm btn-secondary my-1">
-                                <i class="bi bi-file-earmark-pdf"></i> Generate Invoice (pdf)
-                            </button>
-
+                                <button asp-action="GenerateInvoice" asp-route-id="@Model.Id"
+                                        asp-route-downloadType="pdf" type="submit"
+                                        class="btn btn-sm btn-secondary my-1">
+                                    <i class="bi bi-file-earmark-pdf"></i> Generate Invoice (pdf)
+                                </button>
+                            }
+                            
                         </div>
                     </div>
                 </form>
@@ -169,16 +172,19 @@
                     @* @if (Model.IsPaymentSuccessful && User.IsInRole(SD.Role_SuperAdmin)) *@
                     @* Remove Model.IsPaymentSuccessful to see strip data for all types of bookings *@
 
-                    @if ( User.IsInRole(SD.Role_SuperAdmin))
+                    @if (User.IsInRole(SD.Role_SuperAdmin))
                     {
                         <div class="form-group pt-2 col-6">
                             <label class="text-warning">Stripe PaymentIntent Id</label>
                             <input asp-for="StripePaymentIntentId" disabled class="form-control" />
                         </div>
+
                         <div class="form-group pt-2 col-6">
                             <label class="text-warning">Stripe Session Id</label>
                             <input asp-for="StripeSessionId" disabled class="form-control" />
                         </div>
+                    }
+
                         <div class="form-group pt-2 col-6">
                             <label class="text-warning">Payment Date</label>
                             @if (Model.PaymentDate == default)
@@ -190,7 +196,7 @@
                                 <input asp-for="PaymentDate" disabled class="form-control" />
                             }
                         </div>
-                    }
+                    
 
                     @* <div class="form-group pt-2 col-6">
                         <label class="text-warning">Status</label>
@@ -229,6 +235,41 @@
                     
                 </div>
             </form>
+
+            @if (User.IsInRole(SD.Role_Customer) && Model.Status == SD.StatusCompleted)
+            {
+                <div id="customerReviewSection">
+                    <partial name="_AddCustomerReview" model="@Model" />
+                </div>
+            }
+
+
         </div>
     </div>
 </div>
+
+@section scripts {
+<script>
+    document.querySelectorAll('#starRating i').forEach(star => {
+    star.addEventListener('click', function () {
+        const value = this.getAttribute('data-value');
+        document.getElementById('ratingValue').value = value;
+
+        // Highlight stars
+        document.querySelectorAll('#starRating i').forEach(s => {
+            if (s.getAttribute('data-value') <= value) {
+                s.classList.remove('bi-star');
+                s.classList.add('bi-star-fill');
+                s.style.color = '#ffc107';
+            } else {
+                s.classList.add('bi-star');
+                s.classList.remove('bi-star-fill');
+                s.style.color = '#ccc';
+            }
+        });
+    });
+    });
+</script>
+
+}
+

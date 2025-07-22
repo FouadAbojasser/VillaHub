@@ -1,28 +1,28 @@
 ﻿@using VillaHub.Web.ViewModels.Home
 @model HomeVM
 
-<div id="VillageList">
+<div id="VillaList">
     
     <div class="row px-lg-5 m-lg-4 m-sm-0 px-sm-0" style="--bs-gutter-x:0">
 
-        @foreach (var village in Model.Villages!)
+        @foreach (var villa in Model.Villas!)
         {
 
             <div class="p-4 col-md-12 col-lg-6">
                 <div class="row g-0 border rounded shadow-sm h-100" style="overflow: hidden;">
 
-                    <!-- Village Image -->
+                    <!-- Villa Image -->
                     <div class="col-md-4 d-flex flex-column align-items-center justify-content-start p-2">
-                        <img src="~/images/villages/@village.ImgUrl"
-                             alt="@village.Name"
+                        <img src="~/images/villas/@villa.MainImg"
+                             alt="@villa.Name"
                              class="img-fluid w-100 mb-3"
                              style="height: 150px; object-fit: cover; border-radius: 5px;" />
                         @if (Model.CheckInDate != default && Model.CheckInDate > DateOnly.FromDateTime(DateTime.Now))
                         {
-                            @if (village.isAvailable)
+                            @if (villa.isAvailable)
                             {
                                 <a asp-controller="Booking" asp-action="FinalizeBooking"
-                                    asp-route-villaId="@village.Id"
+                                    asp-route-villaId="@villa.Id"
                                     asp-route-checkInDate="@Model.CheckInDate"
                                    asp-route-noOfNights="@Model.NumberOfNights"
                                     class="btn btn-success form-control w-100 mt-auto">
@@ -42,19 +42,19 @@
 
 
 
-                    <!-- Village Info -->
+                    <!-- Villa Info -->
                     <div class="col-md-8 d-flex flex-column justify-content-between p-3">
                         <div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="text-warning mb-0" style="font-size: 1.5rem;">@village.Name</h5>
+                                <h5 class="text-warning mb-0" style="font-size: 1.5rem;">@villa.Name</h5>
                                 <button type="button" class="btn btn-sm btn-outline-success"
-                                data-bs-toggle="modal" data-bs-target='#exampleModal-@(village.Id)'>
+                                data-bs-toggle="modal" data-bs-target='#exampleModal-@(villa.Id)'>
                                     Details
                                 </button>
                             </div>
 
                             <div class="mb-2 text-muted" style="font-size: 0.9rem;">
-                                @Html.Raw(village.Description)
+                                @Html.Raw(villa.Description)
                             </div>
                         </div>
                         
@@ -62,12 +62,12 @@
                         <!-- Metrics and Price -->
                         <div class="row align-items-end pt-2">
                             <div class="col-6">
-                                @if (village.Villas != null && village.Villas.Any())
+                                @if (villa.Floors != null && villa.Floors.Any())
                                 {
                                     <div class="small">
-                                        <div>No. of Villas: <strong>@village.Villas.Count</strong></div>
-                                        <div>Capacity (Avg): <strong>@Math.Round(@village.Villas.Average(v => v.Capacity),0)</strong> persons</div>
-                                        <div>Area (Avg): <strong>@village.Villas.Average(v => v.Area)</strong> sqm</div>
+                                        <div>No. of Floors: <strong>@villa.Floors.Count</strong></div>
+                                        <div>Capacity (Avg): <strong>@Math.Round(@villa.Floors.Average(v => v.Capacity),0)</strong> persons</div>
+                                        <div>Area (Avg): <strong>@Math.Round(@villa.Floors.Average(v => v.Area),1)</strong> sqm</div>
                                     </div>
                                 }
                             </div>
@@ -76,9 +76,9 @@
                                 <div class="text-warning fw-bold text-end" style="font-size: 1rem; line-height: 1.4;">
                                     Average Price / Night <br />
                                     <span style="border-bottom: 1px solid #ff6a00; display: inline-block;">
-                                        @if (village.Floors != null && village.Floors.Any(f => f.Price != null))
+                                        @if (villa.Floors != null && villa.Floors.Any(f => f.Price != null))
                                         {
-                                            @village.Floors.Where(f => f.Price != null).Average(f => f.Price!).ToString("c")
+                                            @villa.Floors.Where(f => f.Price != null).Average(f => f.Price!).ToString("c")
                                         }
                                         else
                                         {
@@ -93,29 +93,33 @@
                 </div>
 
 
-                <div class="modal fade" id="exampleModal-@(village.Id)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="exampleModal-@(villa.Id)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl" style="border: 1px solid #aaa; border-radius:7px;">
                     <div class="modal-content">
+
                         <div class="modal-header">
-                            <h1 class="modal-title fs-3 text-success" id="exampleModalLabel">Village Details - @village.Name</h1>
+                            <h1 class="modal-title fs-3 text-success" id="exampleModalLabel">Village Details - @villa.Name</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+
                         <div class="modal-body m-0">
-                            <partial name="_VillageDetail" model="@village" />
+                            <partial name="_VillaDetail" model="@villa" />
                         </div>
+
                         <div class="modal-footer">
 
-                            <button onclick="window.open('https://www.google.com/maps?q=@village.Latitude,@village.Longitude', '_blank')"
+                            <button onclick="window.open('https://www.google.com/maps?q=@villa.Latitude,@villa.Longitude', '_blank')"
                                     type="button" class="btn btn-outline-primary">
                                 <i class="bi bi-google"></i> View On Google
                             </button>
 
                             <button asp-controller="Home" asp-action="GeneratePPTExport"
-                                asp-route-id="@village.Id" type="submit" class="btn btn-outline-warning">
+                                asp-route-id="@villa.Id" type="submit" class="btn btn-outline-warning">
                                 <i class="bi bi-file-earmark-ppt"></i> Download Villa PPT
                             </button>
 
                             <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+
                         </div>
 
                     </div>

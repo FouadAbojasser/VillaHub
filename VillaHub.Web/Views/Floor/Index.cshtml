@@ -42,7 +42,7 @@
                         <td class="align-content-center">@floor.FloorNumber</td>
                         <td class="align-content-center">@floor.Villa!.Name</td>
                         <td class="align-content-center">@floor.Villa!.Village.Name</td>
-                        <td class="align-content-center">@floor.Description</td>
+                        <td class="text-start">@floor.Description</td>
                         <td class="align-content-center">@floor.Price</td>
                         <td class="align-content-center">@floor.Area</td>
                         <td class="align-content-center">@floor.Capacity</td>
@@ -62,25 +62,26 @@
                             </a>
                         </td>
 
-                        <td>
-                            <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Floor" asp-action="Update"
-                                   asp-route-floorNumber="@floor.FloorNumber"
-                                   asp-route-villaId="@floor.VillaId"
-                                   asp-route-villageId="@floor.VillageId"
-                                   class="btn btn-success mx-1">
-                                    <i class="bi bi-pencil-square"></i> Update
-                                </a>
+                        <td class="text-center align-middle">
+                            <div class="d-inline-flex justify-content-center">
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Floor" asp-action="Update"
+                                       asp-route-floorNumber="@floor.FloorNumber"
+                                       asp-route-villaId="@floor.VillaId"
+                                       asp-route-villageId="@floor.VillageId"
+                                       class="btn btn-success mx-1">
+                                        <i class="bi bi-pencil-square"></i> Update
+                                    </a>
 
-                                <a asp-controller="Floor" asp-action="Delete"
-                                   asp-route-floorNumber="@floor.FloorNumber"
-                                   asp-route-villaId="@floor.VillaId"
-                                   asp-route-villageId="@floor.VillageId"
-                                   class="btn btn-danger mx-1">
-                                    <i class="bi bi-trash-fill"></i> Delete
-                                </a>
+                                    <a asp-controller="Floor" asp-action="Delete"
+                                       asp-route-floorNumber="@floor.FloorNumber"
+                                       asp-route-villaId="@floor.VillaId"
+                                       asp-route-villageId="@floor.VillageId"
+                                       class="btn btn-danger mx-1">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </a>
+                                </div>
                             </div>
-
                         </td>
                     </tr>
                 }
@@ -89,20 +90,6 @@
     </div>
 </div>
 
-<!-- Amenity Modal -->
-<div class="modal fade" id="amenityModal" tabindex="-1" aria-labelledby="amenityModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Floor Amenities</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul id="amenityList" class="list-group"></ul>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Amenity Modal -->
 <div class="modal fade" id="amenityModal" tabindex="-1" aria-labelledby="amenityModalLabel" aria-hidden="true">
@@ -118,6 +105,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Gallery Modal -->
 <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
@@ -133,8 +121,6 @@
         </div>
     </div>
 </div>
-
-
 
 
 @section Scripts {
