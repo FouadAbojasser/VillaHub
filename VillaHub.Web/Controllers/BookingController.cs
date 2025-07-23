@@ -148,14 +148,14 @@ namespace VillaHub.Web.Controllers
         {
             var domain = $"{Request.Scheme}://{Request.Host}";
 
-            var formattedCheckIn = checkInDate.ToString("dd-MM-yyyy");
+            //var formattedCheckIn = checkInDate.ToString("dd-MM-yyyy");
 
             // If payment canceled, return back to booking confirm
             var cancelUrl = $"{domain}/Booking/FinalizeBooking" +
                             $"?villageId={villageId}" +
                             $"&villaId={villaId}" +
                             $"&floorNumber={floorNumber}" +
-                            $"&checkInDate={formattedCheckIn}" +
+                            $"&checkInDate={checkInDate}" +
                             $"&noOfNights={noOfNights}";
 
             // Retrieve floor with image, villa, and village info

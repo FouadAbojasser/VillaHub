@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -213,24 +214,48 @@ namespace VillaHub.Web.Controllers
                 FloorInDb.Area = floorWithVillasVM.Floor.Area;
                 FloorInDb.Capacity = floorWithVillasVM.Floor.Capacity;
 
-                foreach(var x in FloorInDb.Amenities.ToList())
+                List<Amenity> AmenitiesToAdd = [];
+                List<Amenity> AmenitiesToRemove = [];
+
+                foreach (var selectedAmenityId in floorWithVillasVM.SelectedAmenityIds)
                 {
-                    if (!floorWithVillasVM.SelectedAmenityIds.Any(a => a == x.Id))
+                    if(!FloorInDb.Amenities.ToList().Any(a=>a.Id == selectedAmenityId))
                     {
-                        FloorInDb.Price -= x.Price;
-                        FloorInDb.Amenities.Remove(x);
+                        var amenityToAdd = _unitOfWork.Amenity.GetOne(e => e.Id == selectedAmenityId, null, false);
+
+                        if (amenityToAdd is not null)
+                        {
+                            AmenitiesToAdd.Add(amenityToAdd);
+                        }
                     }
+              
                 }
 
-                foreach(var x in floorWithVillasVM.SelectedAmenityIds)
-                {
-                    var amenityToAdd = _unitOfWork.Amenity.GetOne(e => e.Id == x,null,false);
 
-                    if(amenityToAdd is not null)
+                foreach (var amenityInDb in FloorInDb.Amenities.Select(a=>a.Id))
+                {
+                    if (!floorWithVillasVM.SelectedAmenityIds.Any(a => a == amenityInDb))
                     {
-                        FloorInDb.Amenities.Add(amenityToAdd);
-                        FloorInDb.Price += amenityToAdd.Price;
+                        var amenityToRemove = _unitOfWork.Amenity.GetOne(e => e.Id == amenityInDb, null, false);
+
+                        if (amenityToRemove is not null)
+                        {
+                            AmenitiesToRemove.Add(amenityToRemove);
+                        }
                     }
+                   
+                }
+
+
+                foreach(var amenity in AmenitiesToAdd)
+                {
+                    FloorInDb.Amenities.Add(amenity);
+                    FloorInDb.Price += amenity.Price;
+                }
+                foreach (var amenity in AmenitiesToRemove)
+                {
+                    FloorInDb.Amenities.Remove(amenity);
+                    FloorInDb.Price -= amenity.Price;
                 }
 
                 FloorInDb.UpdateDate = DateTime.UtcNow;

@@ -73,20 +73,54 @@ namespace VillaHub.Web.Controllers
 
 
 
+
+
         [HttpPost]
         public async Task<IActionResult> UpdateAsync(Amenity amenity)
         {
-            var amenityInDb = _unitOfWork.Amenity.GetOne(e => e.Id == amenity.Id);
-
-            ViewBag.TypeList = new SelectList(new[] { "Village", "Villa", "Floor" });
-
             if (amenity is null)
             {
-                return RedirectToAction("Error", "Home");
+                return View(amenity);
             }
 
-            if (amenityInDb is not null)
+            var amenityInDb = _unitOfWork.Amenity.GetOne(e => e.Id == amenity.Id);
+
+            if (amenityInDb is null)
             {
+                return NotFound();
+            }
+
+            amenity.CreateDate = amenityInDb.CreateDate;
+
+            ViewBag.TypeList = new SelectList(new[] { "Village", "Villa", "Floor" });
+                
+            var priceDiff = Math.Abs(amenityInDb.Price - amenity.Price);
+
+            if (priceDiff != 0)
+            {
+                if (amenityInDb.Type.ToString() == "Floor")
+                {
+                    ICollection<Floor> floorsHaveThisAmenity = _unitOfWork.Floor.Get(e => e.Amenities.Any(e => e.Id == amenity.Id)).ToList();
+
+                    foreach (var floor in floorsHaveThisAmenity)
+                    {
+                        if (amenityInDb.Price < amenity.Price)
+                        {
+                            floor.Price += priceDiff;
+                        }
+                        else
+                        {
+                            floor.Price -= priceDiff;
+                        }
+                        _unitOfWork.Floor.Update(floor);
+                        await _unitOfWork.Floor.CommitAsync();
+                    }
+                }
+
+            }
+
+                amenity.CreateDate = amenityInDb.CreateDate;
+                amenity.UpdateDate = DateTime.UtcNow;
                 _unitOfWork.Amenity.Update(amenity);
 
                 await _unitOfWork.Amenity.CommitAsync();
@@ -94,10 +128,12 @@ namespace VillaHub.Web.Controllers
                 TempData["success"] = "Amenity Updated Successfully";
 
                 return RedirectToAction(nameof(Index));
-            }
-
-            return View(amenity);
+                            
         }
+
+
+
+
 
 
         public IActionResult Delete(int id)
@@ -124,6 +160,19 @@ namespace VillaHub.Web.Controllers
 
             if (amenityInDb is not null)
             {
+                if (amenityInDb.Type.ToString() == "Floor")
+                {
+                  ICollection<Floor> floorsHaveThisAmenity =  _unitOfWork.Floor.Get(e => e.Amenities.Any(e => e.Id == amenity.Id)).ToList();
+
+                    foreach (var floor in floorsHaveThisAmenity) 
+                    {
+                        floor.Price -= amenityInDb.Price;
+                        _unitOfWork.Floor.Update(floor);
+                        await _unitOfWork.Floor.CommitAsync();
+                    }
+
+                }
+
                 _unitOfWork.Amenity.Delete(amenityInDb);
 
                 await _unitOfWork.Amenity.CommitAsync();

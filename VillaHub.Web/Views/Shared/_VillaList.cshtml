@@ -54,7 +54,17 @@
                             </div>
 
                             <div class="mb-2 text-muted" style="font-size: 0.9rem;">
-                                @Html.Raw(villa.Description)
+                                @if (villa.Description!.Length > 100)
+                                {
+                                    @Html.Raw(villa.Description.Substring(0, 100))
+                                    ;
+                                    <span>. . .</span>
+                                }
+                                else
+                                {
+                                    @Html.Raw(villa.Description)
+                                    ;
+                                }
                             </div>
                         </div>
                         

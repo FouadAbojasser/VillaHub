@@ -76,7 +76,7 @@ namespace VillaHub.Web.Controllers
 
             if (previousMonthUsers != 0)
             {
-                IncreaseDecreaseRatio = Convert.ToInt32((double)((currentMonthUsers - previousMonthUsers) / (previousMonthUsers)) * 100);
+                IncreaseDecreaseRatio = Convert.ToInt32(((double)(currentMonthUsers - previousMonthUsers) / previousMonthUsers) * 100);
             }
 
             radialBarChartVM.TotalCount = totalUsers.Count();
@@ -93,7 +93,7 @@ namespace VillaHub.Web.Controllers
         public IActionResult RevenuesRadialChartData()
         {
             // Total Bookings that are not Pendding or Cancelled
-            var totalBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved);
+            var totalBookings = _unitOfWork.Booking.Get(b => b.IsPaymentSuccessful == true);
 
             var currentMonthRevenues = totalBookings.Where(b => b.BookingDate >= currentMonthStartDate && b.BookingDate <= DateTime.Now).Sum(b => b.TotalCost);
 

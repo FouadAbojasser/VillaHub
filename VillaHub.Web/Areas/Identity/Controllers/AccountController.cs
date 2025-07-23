@@ -81,6 +81,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
         }
 
 
+
+
         [HttpPost]
         public async Task<IActionResult> RegisterAsync(RegisterVM registerVM)
         {
@@ -167,6 +169,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
 
 
+
         public IActionResult Login(string returnUrl = null!)
         {
             if(returnUrl == null)
@@ -218,7 +221,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         if (chk1 || chk2)
                         {
-                            if (!string.IsNullOrEmpty(loginVM.RedirectUrl))
+                            if (!string.IsNullOrEmpty(loginVM.RedirectUrl) && loginVM.RedirectUrl != "/")
                             {
                                 return Redirect(loginVM.RedirectUrl);
                             }
