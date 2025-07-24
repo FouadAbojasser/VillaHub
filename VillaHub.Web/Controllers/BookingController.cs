@@ -1,15 +1,18 @@
-﻿using System.Security.Claims;
-using System.Threading.Tasks;
+﻿
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Stripe.Checkout;
+using Syncfusion.DocIO;
+using Syncfusion.DocIO.DLS;
+using Syncfusion.DocIORenderer;
+using Syncfusion.Pdf;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
-using VillaHub.Web.ViewModels.Floor;
-using VillaHub.Web.ViewModels.Home;
+using Color = Syncfusion.Drawing.Color;
+
 
 namespace VillaHub.Web.Controllers
 {
@@ -344,6 +347,135 @@ namespace VillaHub.Web.Controllers
 
 
 
+
+
+        
+
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> GenerateInvoiceAsync(int bookingId, string downloadType)
+        {
+            var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == bookingId);
+
+            var applicationUser = new ApplicationUser();
+
+            if (bookingInDb is not null)
+            {
+                applicationUser = await _userManager.FindByIdAsync(bookingInDb.UserId);
+                var bookingVilla = _unitOfWork.Villa.GetOne(v => v.Id == bookingInDb.VillaId);
+                var bookingVillage = _unitOfWork.Village.GetOne(v=>v.Id == bookingInDb.VillageId);
+
+                //Loading the Template Document
+                WordDocument documnet = new WordDocument();
+                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "templates", "BookingDetails.docx");
+                if (!System.IO.File.Exists(templatePath))
+                    throw new FileNotFoundException($"Template not found at: {templatePath}");
+                using FileStream fileStream = new(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                documnet.Open(fileStream, FormatType.Automatic);
+
+
+                //Update The Template with Booking Data
+                TextSelection textSelection = documnet.Find("XX_BOOKING_NUMBER", false, true);
+                WTextRange textRange = textSelection.GetAsOneRange();
+                textRange.Text = bookingInDb.Id.ToString();
+
+                textSelection = documnet.Find("XX_BOOKING_DATE", false, true);
+                textRange = textSelection.GetAsOneRange();
+                textRange.Text = bookingInDb.BookingDate.ToShortDateString();
+
+                textSelection = documnet.Find("xx_payment_date", false, true);
+                textRange = textSelection.GetAsOneRange();
+                textRange.Text = bookingInDb.PaymentDate.ToShortDateString();
+
+                textSelection = documnet.Find("xx_checkin_date", false, true);
+                textRange = textSelection.GetAsOneRange();
+                textRange.Text = bookingInDb.CheckInDate.ToShortDateString();
+
+                textSelection = documnet.Find("xx_checkout_date", false, true);
+                textRange = textSelection.GetAsOneRange();
+                textRange.Text = bookingInDb.CheckOutDate.ToShortDateString();
+
+                textSelection = documnet.Find("xx_booking_total", false, true);
+                textRange = textSelection.GetAsOneRange();
+                textRange.Text = bookingInDb.TotalCost.ToString("c");
+
+
+                if (applicationUser is not null)
+                {
+                    textSelection = documnet.Find("xx_customer_name", false, true);
+                    textRange = textSelection.GetAsOneRange();
+                    textRange.Text = applicationUser.Name;
+
+                    textSelection = documnet.Find("xx_customer_phone", false, true);
+                    textRange = textSelection.GetAsOneRange();
+                    textRange.Text = applicationUser.PhoneNumber!;
+
+
+                    textSelection = documnet.Find("xx_customer_email", false, true);
+                    textRange = textSelection.GetAsOneRange();
+                    textRange.Text = applicationUser.Email!;
+                }
+
+                //Insert A table into the Template
+                WTable table = new(documnet);
+                table.TableFormat.Borders.LineWidth = 1f;
+                table.TableFormat.Borders.Color = Color.Black;
+                table.TableFormat.Paddings.Top = 7f;
+                table.TableFormat.Paddings.Bottom = 7f;
+                table.TableFormat.Borders.Horizontal.LineWidth = 7f;
+
+                table.ResetCells(2, 4);
+
+                WTableRow row_0 = table.Rows[0];
+                row_0.Cells[0].AddParagraph().AppendText("Floor Number");
+                row_0.Cells[0].Width = 80f;
+                row_0.Cells[1].AddParagraph().AppendText("Villa Name");
+                row_0.Cells[1].Width = 220f;
+                row_0.Cells[2].AddParagraph().AppendText("Village Name");
+                row_0.Cells[2].Width = 80f;
+                row_0.Cells[3].AddParagraph().AppendText("No. of Nights");
+
+                WTableRow row_1 = table.Rows[1];
+                row_1.Cells[0].AddParagraph().AppendText(bookingInDb.FloorNumber.ToString());
+                row_1.Cells[0].Width = 80f;
+                
+                row_1.Cells[1].AddParagraph().AppendText(bookingVilla!.Name);
+                row_1.Cells[1].Width = 220f;
+                row_1.Cells[2].AddParagraph().AppendText(bookingVillage!.Name);
+                row_1.Cells[2].Width = 80f;
+                row_1.Cells[3].AddParagraph().AppendText(bookingInDb.Nights.ToString());
+
+
+                TextBodyPart textBodyPart = new(documnet);
+                textBodyPart.BodyItems.Add(table);
+                documnet.Replace("<ADDTABLEHERE>", textBodyPart,false,true);
+                
+
+                //Saving the Files
+                using DocIORenderer docIORenderer = new();
+                MemoryStream documnetStream = new();
+
+                if (downloadType == "pdf")
+                {
+                    PdfDocument pdfDocument = docIORenderer.ConvertToPDF(documnet);
+                    pdfDocument.Save(documnetStream);
+                    documnetStream.Position = 0;
+                    return File(documnetStream, "application/pdf", $"Invoice_{bookingId}.pdf");
+                }
+                else
+                {
+                  documnet.Save(documnetStream, FormatType.Docx);
+                  documnetStream.Position = 0;
+                  return File(documnetStream, "application/docx", $"Invoice_{bookingId}.docx");
+                }
+
+                
+            }
+
+            return NotFound();
+        }
+      
 
 
 
