@@ -2,7 +2,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
@@ -11,6 +14,7 @@ using Syncfusion.Pdf;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
+using VillaHub.Web.SignalR;
 using Color = Syncfusion.Drawing.Color;
 
 
@@ -21,12 +25,17 @@ namespace VillaHub.Web.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly StripeSettings _stripeSettings;
+        private readonly ICustomEmailSender _customEmailSender;
+        private readonly INotificationService _notificationService;
 
-        public BookingController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IOptions<StripeSettings> stripeSettings)
+        public BookingController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager,
+            IOptions<StripeSettings> stripeSettings, ICustomEmailSender customEmailSender, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _stripeSettings = stripeSettings.Value;
+            _customEmailSender = customEmailSender;
+            _notificationService = notificationService;
         }
 
 
@@ -220,12 +229,30 @@ namespace VillaHub.Web.Controllers
 
         public async Task<IActionResult> BookingConfirmation(int bookingId)
         {
-            var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == bookingId);
+            var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == bookingId, [b=>b.Villa]);
+
+            var claimIdentity = (ClaimsIdentity)User.Identity!;
+            var UserId = claimIdentity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var applicationUser = await _userManager.FindByIdAsync(UserId);
+            
 
             if (bookingInDb is null || string.IsNullOrEmpty(bookingInDb.StripeSessionId))
             {
                 return NotFound();
             }
+
+            if (applicationUser is not null)
+            {
+                bookingInDb.User = applicationUser;
+            }
+
+            var villaInBooking = _unitOfWork.Villa.GetOne(v => v.Id == bookingInDb.VillaId);
+            bookingInDb.Villa = villaInBooking!;
+
+            var floorInBooking = _unitOfWork.Floor.GetOne(v => v.FloorNumber == bookingInDb.FloorNumber
+                                                         && v.VillaId == bookingInDb.VillaId
+                                                         && v.VillageId == bookingInDb.VillageId);
+            bookingInDb.Floor = floorInBooking!;
 
             var service = new Stripe.Checkout.SessionService();
 
@@ -239,7 +266,20 @@ namespace VillaHub.Web.Controllers
 
                 _unitOfWork.Booking.UpdateStatus(bookingId, SD.StatusApproved);
 
-                await _unitOfWork.Booking.CommitAsync();
+                //await _unitOfWork.Booking.CommitAsync();
+
+                if (string.IsNullOrEmpty(bookingInDb.IsInvoiceEmailed))
+                {
+                    bookingInDb.IsInvoiceEmailed = "YES";
+                    _unitOfWork.Booking.Update(bookingInDb);
+                    await _unitOfWork.Booking.CommitAsync();
+                    //Generate the Invoice
+                    await GenerateInvoiceAsync(bookingId, "pdf", "BookingConfirmation");
+
+                }
+                    //Send RealTime notification to SuperAdmin
+                    await _notificationService.NotifyNewBooking(bookingInDb);
+
             }
 
             return View(bookingId);
@@ -345,16 +385,12 @@ namespace VillaHub.Web.Controllers
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
         }
 
-
-
-
-
         
 
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> GenerateInvoiceAsync(int bookingId, string downloadType)
+        public async Task<IActionResult> GenerateInvoiceAsync(int bookingId, string downloadType, string? comeFrom = null)
         {
             var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == bookingId);
 
@@ -461,7 +497,28 @@ namespace VillaHub.Web.Controllers
                     PdfDocument pdfDocument = docIORenderer.ConvertToPDF(documnet);
                     pdfDocument.Save(documnetStream);
                     documnetStream.Position = 0;
-                    return File(documnetStream, "application/pdf", $"Invoice_{bookingId}.pdf");
+                    // Check if we're coming from BookingConfirmation
+                    
+                    if (comeFrom == "BookingConfirmation")
+                    {
+                        // Convert stream to byte[] for emailing
+                        byte[] pdfBytes = documnetStream.ToArray();
+
+                        string emailBody = "<p>Thank you for your booking. Please find your invoice attached.</p>";
+
+                        await _customEmailSender.SendEmailWithAttachmentAsync(applicationUser!.Email, "VillaHub - Booking Invoice", emailBody, pdfBytes, $"Invoice-{bookingId}.pdf");
+
+                        // Redirect to a confirmation page or return a success message
+                        TempData["success"] = "Invoice has been emailed successfully.";
+                        
+                        //return View("BookingConfirmation", new { bookingId }); // or any other relevant redirect
+
+                    }
+                    else
+                    {
+                        return File(documnetStream, "application/pdf", $"Invoice_{bookingId}.pdf");
+                    }
+                   
                 }
                 else
                 {
@@ -470,7 +527,6 @@ namespace VillaHub.Web.Controllers
                   return File(documnetStream, "application/docx", $"Invoice_{bookingId}.docx");
                 }
 
-                
             }
 
             return NotFound();

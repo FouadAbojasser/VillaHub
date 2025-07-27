@@ -119,6 +119,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                     //Generating HTML Confirmation Message
                     string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "email-templates", "confirm.html");
+
                     string emailBody = await System.IO.File.ReadAllTextAsync(templatePath);
                     emailBody = emailBody.Replace("{{UserName}}", applicationUser.Name)
                                          .Replace("{{ConfirmationLink}}", link);

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Syncfusion.Presentation;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
@@ -116,106 +117,113 @@ namespace VillaHub.Web.Controllers
 
 
 
-        [HttpPost]
-        //public IActionResult GeneratePPTExport(int id)
-        //{
-        //    var FloorInDb = _villaService.GetVillaById(id);
-        //    if (villa is null)
-        //    {
-        //        return RedirectToAction(nameof(Error));
-        //    }
+        [HttpGet]
+        public IActionResult GeneratePPTExport(int villageId, int villaId, int floorNumber)
+        {
+            var FloorInDb = _unitOfWork.Floor.GetOne(f=>f.FloorNumber==floorNumber
+                                                  && f.VillaId==villaId
+                                                  && f.VillageId==villageId,
+                                                  [v=>v.Village, v=>v.Villa,v=>v.Images,v=>v.Amenities]);
 
-        //    string basePath = _webHostEnvironment.WebRootPath;
-        //    string filePath = basePath + @"/Exports/ExportVillaDetails.pptx";
+            if (FloorInDb is null)
+            {
+                return RedirectToAction(nameof(Error));
+            }
 
-
-        //    using IPresentation presentation = Presentation.Open(filePath);
-
-        //    ISlide slide = presentation.Slides[0];
-
-
-        //    IShape? shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaName") as IShape;
-        //    if (shape is not null)
-        //    {
-        //        shape.TextBody.Text = villa.Name;
-        //    }
-
-        //    shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaDescription") as IShape;
-        //    if (shape is not null)
-        //    {
-        //        shape.TextBody.Text = villa.Description;
-        //    }
+            //string basePath = _webHostEnvironment.WebRootPath;
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "templates", "ExportFloorDetails.pptx");
+            //string filePath = basePath + @"/Exports/ExportVillaDetails.pptx";
 
 
-        //    shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtOccupancy") as IShape;
-        //    if (shape is not null)
-        //    {
-        //        shape.TextBody.Text = string.Format("Max Occupancy : {0} adults", villa.Occupancy);
-        //    }
-        //    shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaSize") as IShape;
-        //    if (shape is not null)
-        //    {
-        //        shape.TextBody.Text = string.Format("Villa Size: {0} sqft", villa.Sqft);
-        //    }
-        //    shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtPricePerNight") as IShape;
-        //    if (shape is not null)
-        //    {
-        //        shape.TextBody.Text = string.Format("USD {0}/night", villa.Price.ToString("C"));
-        //    }
+            using IPresentation presentation = Presentation.Open(templatePath);
+
+            ISlide slide = presentation.Slides[0];
+
+            IShape? shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaName") as IShape;
+            if (shape is not null)
+            {
+                shape.TextBody.Text = $"Floor {FloorInDb.FloorNumber.ToString()} in Villa {FloorInDb.Villa.Name} in Village {FloorInDb.Village.Name}";
+            }
+
+            shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaDescription") as IShape;
+            if (shape is not null)
+            {
+                shape.TextBody.Text = FloorInDb.Description;
+            }
 
 
-        //    shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaAmenitiesHeading") as IShape;
-        //    if (shape is not null)
-        //    {
-        //        List<string> listItems = villa.VillaAmenity.Select(x => x.Name).ToList();
+            shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtOccupancy") as IShape;
+            if (shape is not null)
+            {
+                shape.TextBody.Text = string.Format("Max Occupancy : {0} adults", FloorInDb.Capacity);
+            }
 
-        //        shape.TextBody.Text = "";
+            shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaSize") as IShape;
+            if (shape is not null)
+            {
+                shape.TextBody.Text = string.Format("Floor Size: {0} sqft", FloorInDb.Area);
+            }
 
-        //        foreach (var item in listItems)
-        //        {
-        //            IParagraph paragraph = shape.TextBody.AddParagraph();
-        //            ITextPart textPart = paragraph.AddTextPart(item);
-
-        //            paragraph.ListFormat.Type = ListType.Bulleted;
-        //            paragraph.ListFormat.BulletCharacter = '\u2022';
-        //            textPart.Font.FontName = "system-ui";
-        //            textPart.Font.FontSize = 18;
-        //            textPart.Font.Color = ColorObject.FromArgb(144, 148, 152);
-
-        //        }
-
-        //    }
-
-        //    shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "imgVilla") as IShape;
-        //    if (shape is not null)
-        //    {
-        //        byte[] imageData;
-        //        string imageUrl;
-        //        try
-        //        {
-        //            imageUrl = string.Format("{0}{1}", basePath, villa.ImageUrl);
-        //            imageData = System.IO.File.ReadAllBytes(imageUrl);
-        //        }
-        //        catch (Exception)
-        //        {
-        //            imageUrl = string.Format("{0}{1}", basePath, "/images/placeholder.png");
-        //            imageData = System.IO.File.ReadAllBytes(imageUrl);
-        //        }
-        //        slide.Shapes.Remove(shape);
-        //        using MemoryStream imageStream = new(imageData);
-        //        IPicture newPicture = slide.Pictures.AddPicture(imageStream, 60, 120, 300, 200);
-
-        //    }
+            shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtPricePerNight") as IShape;
+            if (shape is not null)
+            {
+                shape.TextBody.Text = string.Format("USD {0}/night", FloorInDb.Price.ToString("C"));
+            }
 
 
+            shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "txtVillaAmenitiesHeading") as IShape;
 
-        //    MemoryStream memoryStream = new();
-        //    presentation.Save(memoryStream);
-        //    memoryStream.Position = 0;
-        //    return File(memoryStream, "application/pptx", "villa.pptx");
+            if (shape is not null)
+            {
+                List<string> listItems = FloorInDb.Amenities.Select(x => x.Name).ToList();
+
+                shape.TextBody.Text = "";
+
+                foreach (var item in listItems)
+                {
+                    IParagraph paragraph = shape.TextBody.AddParagraph();
+                    ITextPart textPart = paragraph.AddTextPart(item);
+
+                    paragraph.ListFormat.Type = ListType.Bulleted;
+                    paragraph.ListFormat.BulletCharacter = '\u2022';
+                    textPart.Font.FontName = "system-ui";
+                    textPart.Font.FontSize = 18;
+                    textPart.Font.Color = ColorObject.FromArgb(144, 148, 152);
+
+                }
+
+            }
+
+            shape = slide.Shapes.FirstOrDefault(u => u.ShapeName == "imgVilla") as IShape;
+            //if (shape is not null)
+            //{
+            //    byte[] imageData;
+            //    string imageUrl;
+            //    try
+            //    {
+            //        imageUrl = string.Format("{0}{1}", templatePath, FloorInDb.Images.FirstOrDefault().Name);
+            //        imageData = System.IO.File.ReadAllBytes(imageUrl);
+            //    }
+            //    catch (Exception)
+            //    {
+            //        imageUrl = string.Format("{0}{1}", Directory.GetCurrentDirectory(), "/images/placeholder.png");
+            //        imageData = System.IO.File.ReadAllBytes(imageUrl);
+            //    }
+            //    slide.Shapes.Remove(shape);
+            //    using MemoryStream imageStream = new(imageData);
+            //    IPicture newPicture = slide.Pictures.AddPicture(imageStream, 60, 120, 300, 200);
+
+            //}
 
 
-        //}
+
+            MemoryStream memoryStream = new();
+            presentation.Save(memoryStream);
+            memoryStream.Position = 0;
+            return File(memoryStream, "application/pptx", $"Floor-{FloorInDb.FloorNumber} Villa-{FloorInDb.Villa.Name} Village-{FloorInDb.Village.Name}.pptx");
+
+
+        }
 
 
 

@@ -12,7 +12,8 @@ namespace VillaHub.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-
+        
+        public string IsInvoiceEmailed { get; set; } = string.Empty;
 
         // User Related Fields
         [Required]

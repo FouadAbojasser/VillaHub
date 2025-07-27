@@ -20,7 +20,8 @@
     <!-- DataTables with Bootstrap 5 styling -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/css/apexcharts.css" />
-
+    <!-- Add custom styles for notifications -->
+    
 </head>
 <body>
     <header>
@@ -36,12 +37,40 @@
                     @* <img src="~/images/others/resort.jpg" style="width:35px" /> *@
                 </a>
 
-                <!-- Login Partial -->
-                <partial name="_LoginPartialAdmin" />
+                <!-- Right-aligned elements container -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Notification Bell with Badge -->
+                    <div class="position-relative">
+                        <button class="btn btn-dark position-relative p-2 rounded-circle notification-bell"
+                                type="button"
+                                id="notificationDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <i class="bi bi-bell-fill fs-5"></i>
+                            <span id="notificationBadge" class="badge rounded-pill bg-danger notification-badge" style="display: none;">
+                                0
+                            </span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notificationDropdown" style="min-width: 350px;">
+                            <div class="dropdown-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <span>Notifications</span>
+                                <span id="notificationCount" class="badge bg-white text-primary">0</span>
+                            </div>
+                            <div class="dropdown-divider m-0"></div>
+                            <div id="notificationList" class="px-2 py-1" style="max-height: 400px; overflow-y: auto;">
+                                <div class="text-center py-3 text-muted">No new notifications</div>
+                            </div>
+                            <div class="dropdown-divider m-0"></div>
+                            <a class="dropdown-item text-center small" href="#" id="clearNotifications">Clear All</a>
+                        </div>
+                    </div>
+
+                    <!-- Login Partial -->
+                    <partial name="_LoginPartialAdmin" />
+                </div>
             </div>
         </nav>
     </header>
-
     <!-- Sidebar as offcanvas -->
     <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
         <div class="offcanvas-header">
@@ -71,7 +100,6 @@
         </main>
     </div>
 
-
     <footer class="border-top footer bg-dark text-muted">
         <div class="container text-center">
             &copy; 2025 - VillaHub.Web - <a class="text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -92,6 +120,122 @@
 
     <!-- ApexCharts JS -->
     <script src="~/js/apexcharts.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (User.IsInRole(SD.Role_SuperAdmin))
+            {
+                    <text>
+                    initializeSignalR();
+                    </text>
+            }
+
+            function initializeSignalR() {
+                let notificationCount = 0;
+                const notificationBadge = document.getElementById('notificationBadge');
+                const notificationCountElement = document.getElementById('notificationCount');
+                const notificationList = document.getElementById('notificationList');
+                const clearButton = document.getElementById('clearNotifications');
+                const bellButton = document.getElementById('notificationDropdown');
+
+                // Connect to SignalR hub
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/bookingHub")
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+
+                // Start connection
+                async function start() {
+                    try {
+                        await connection.start();
+                        console.log("SignalR Connected.");
+                        await connection.invoke("JoinAdminGroup");
+                    } catch (err) {
+                        console.log(err);
+                        setTimeout(start, 5000);
+                    }
+                };
+
+                connection.onclose(async () => {
+                    await start();
+                });
+
+                // Handle new booking notification
+                connection.on("ReceiveBookingNotification", (booking) => {
+                    notificationCount++;
+                    updateNotificationCount();
+
+                    // Create notification element
+                    const notificationElement = document.createElement('div');
+                    notificationElement.className = 'alert alert-light alert-dismissible fade show mb-2';
+                    notificationElement.innerHTML = `
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <div>
+                                    <h6 class="mb-1">New Booking</h6>
+                                    <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+                                </div>
+
+                                <a href="/booking/bookingDetails?bookingId=${booking.id}" class="btn btn-outline-warning mx-4">
+                                    <i class="bi bi-pencil-square"></i> Details
+                                </a>
+                            </div>
+                           
+                        </div>
+                        <hr class="my-2">
+                        <div>
+                            <p class="mb-1"><strong>Floor:</strong> ${booking.floor}</p>
+                            <p class="mb-1"><strong>Villa:</strong> ${booking.villaName}</p>
+                            <p class="mb-1"><strong>Check-in:</strong> ${booking.checkInDate}</p>
+                            <!-- <p class="mb-1"><strong>Nights:</strong> ${booking.nights}</p> -->
+                            <p class="mb-0"><strong>Total:</strong> $${booking.totalCost.toLocaleString()}</p>
+                        </div>
+                    `;
+
+                    // Add to top of list
+                    if (notificationList.firstChild?.textContent === 'No new notifications') {
+                        notificationList.innerHTML = '';
+                    }
+                    notificationList.insertBefore(notificationElement, notificationList.firstChild);
+
+                    // Play notification sound
+                    const audio = new Audio('/sounds/notification.mp3');
+                    audio.play().catch(e => console.log("Audio play failed:", e));
+
+                    // Add pulse animation to bell
+                    bellButton.classList.add('pulse');
+                    setTimeout(() => {
+                        bellButton.classList.remove('pulse');
+                    }, 1000);
+                });
+
+                // Clear notifications
+                clearButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    notificationCount = 0;
+                    updateNotificationCount();
+                    notificationList.innerHTML = '<div class="text-center py-3 text-muted">No new notifications</div>';
+                });
+
+                function updateNotificationCount() {
+                    notificationBadge.textContent = notificationCount;
+                    notificationCountElement.textContent = notificationCount;
+
+                    if (notificationCount > 0) {
+                        notificationBadge.style.display = 'block';
+                    } else {
+                        notificationBadge.style.display = 'none';
+                    }
+                }
+
+                // Start the connection
+                start();
+            }
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

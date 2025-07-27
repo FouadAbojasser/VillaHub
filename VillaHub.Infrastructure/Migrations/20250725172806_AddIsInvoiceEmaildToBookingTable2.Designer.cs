@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VillaHub.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using VillaHub.Infrastructure.Data;
 namespace VillaHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725172806_AddIsInvoiceEmaildToBookingTable2")]
+    partial class AddIsInvoiceEmaildToBookingTable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -348,10 +351,6 @@ namespace VillaHub.Infrastructure.Migrations
 
                     b.Property<int>("FloorNumber")
                         .HasColumnType("int");
-
-                    b.Property<string>("IsInvoiceEmailed")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPaymentSuccessful")
                         .HasColumnType("bit");

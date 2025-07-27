@@ -8,6 +8,7 @@ using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
 using VillaHub.Infrastructure.Data;
 using VillaHub.Infrastructure.Repository;
+using VillaHub.Web.SignalR;
 
 
 namespace VillaHub.Web
@@ -34,6 +35,8 @@ namespace VillaHub.Web
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddTransient<ICustomEmailSender, EmailSender>();
+
 
             // Modifying Default Password Options
             builder.Services.Configure<IdentityOptions>(option =>
@@ -77,6 +80,8 @@ namespace VillaHub.Web
             //Register Strip in the Application
             StripeConfiguration.ApiKey = builder.Configuration.GetSection("Strip:SecretKey").Get<string>();
 
+            builder.Services.AddSignalR();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
 
             var app = builder.Build();
 
@@ -107,6 +112,7 @@ namespace VillaHub.Web
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            app.MapHub<BookingHub>("/bookingHub");
 
             app.Run();
         }
