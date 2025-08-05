@@ -37,16 +37,26 @@
                         
                             @if (floor.isAvailable)
                             {
-                                <a asp-controller="Booking" asp-action="FinalizeBooking"
-                                   asp-route-villageId="@floor.VillageId"
-                                   asp-route-villaId="@floor.VillaId"
-                                   asp-route-floorNumber="@floor.FloorNumber"
-                                   asp-route-checkInDate="@Model.CheckInDate"
-                                   asp-route-noOfNights="@Model.NumberOfNights"
-                                   class="btn btn-success form-control w-100 mt-auto">
-                                    <i class="bi bi-calendar-check"></i>
-                                    Book Now
-                                </a>
+                                if (floor.isInPriceRange)
+                                {
+                                    <a asp-controller="Booking" asp-action="FinalizeBooking"
+                                       asp-route-villageId="@floor.VillageId"
+                                       asp-route-villaId="@floor.VillaId"
+                                       asp-route-floorNumber="@floor.FloorNumber"
+                                       asp-route-checkInDate="@Model.CheckInDate"
+                                       asp-route-noOfNights="@Model.NumberOfNights"
+                                       class="btn btn-success form-control w-100 mt-auto">
+                                        <i class="bi bi-calendar-check"></i>
+                                        Book Now
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-outline-warning disabled form-control w-100 mt-auto">
+                                        <i class="bi bi-currency-dollar"></i>
+                                        Price Range
+                                    </a>
+                                }
                             }
                             else
                             {
@@ -213,4 +223,8 @@
         }
     </div>
 </div>
+
+
+
+
 

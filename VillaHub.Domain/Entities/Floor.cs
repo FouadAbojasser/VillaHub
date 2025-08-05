@@ -37,5 +37,9 @@ namespace VillaHub.Domain.Entities
 
         [NotMapped]
         public bool isAvailable { get; set; } = true;
+        [NotMapped]
+        public bool isInPriceRange { get; set; } = true;
+
+        
     }
 }

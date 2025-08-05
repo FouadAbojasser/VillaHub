@@ -54,13 +54,18 @@
     <form method="post" asp-action="GetVillagesByDate">
         
         <div class="d-flex flex-column flex-md-row flex-wrap gap-3 px-lg-5 m-lg-4 m-sm-0 px-sm-0 justify-content-center">
-           
+
+            <!-- min Price -->
             <div class="flex-fill">
-                <label asp-for="PriceRange" class="form-label mb-1"></label>
-                <input asp-for="PriceRange" class="form-control w-100" />
-                <span asp-validation-for="PriceRange" class="text-danger"></span>
+                <label asp-for="minPrice" class="form-label mb-1"></label>
+                <input asp-for="minPrice" type="number" min="0" class="form-control" placeholder="≥ Min" />
             </div>
 
+            <!-- max Price -->
+            <div class="flex-fill">
+                <label asp-for="maxPrice" class="form-label mb-1"></label>
+                <input asp-for="maxPrice" type="number" min="0" class="form-control" placeholder="≤ Max" />
+            </div>
 
             <div class="flex-fill">
                 <label asp-for="CheckInDate" class="form-label mb-1"></label>
@@ -117,7 +122,8 @@
             var objData = {
                 checkInDate: $("#CheckInDate").val(),
                 NumberOfNights: $("#NumberOfNights").val(),
-                PriceRange: $("#PriceRange").val()
+                minPrice: $("#minPrice").val(),
+                maxPrice: $("#maxPrice").val(),
             };
 
             $.ajax({

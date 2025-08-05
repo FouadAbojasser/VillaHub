@@ -12,7 +12,11 @@ namespace VillaHub.Web.ViewModels.Home
         public DateOnly CheckInDate { get; set; } 
         [Display(Name = "Number of Nights")]
         public int NumberOfNights { get; set; }
-        [Display(Name = "Price Range")]
-        public int PriceRange { get; set; }
+        [Display(Name = "min Price / Night")]
+        [Range(0, int.MaxValue, ErrorMessage = "Maximum price cannot be negative.")]
+        public int minPrice{ get; set; }
+        [Display(Name = "max Price / Night")]
+        [Range(0, int.MaxValue, ErrorMessage = "Minimum price cannot be negative.")]
+        public int maxPrice{ get; set; }
     }
 }

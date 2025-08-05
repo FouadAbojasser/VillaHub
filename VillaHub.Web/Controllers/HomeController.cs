@@ -34,7 +34,8 @@ namespace VillaHub.Web.Controllers
                 Villas= villaList,
                 Floors= floorList,
                 CheckInDate = DateOnly.FromDateTime(DateTime.Now),
-                PriceRange = 100,
+                minPrice = 100,
+                maxPrice= 200,
                 NumberOfNights = 1
             };
 
@@ -63,7 +64,8 @@ namespace VillaHub.Web.Controllers
             {
                 Floors = floorList,
                 CheckInDate= homeVM.CheckInDate,
-                PriceRange= homeVM.PriceRange,
+                minPrice = homeVM.minPrice,
+                maxPrice=homeVM.maxPrice,
                 NumberOfNights= homeVM.NumberOfNights
             };
 
@@ -95,9 +97,13 @@ namespace VillaHub.Web.Controllers
 
                 foreach (var floor in floorList)
                 {
-                    if (isOverlapping == true && floor.FloorNumber == booking.FloorNumber && floor.VillaId == booking.VillaId && floor.VillageId == booking.VillageId )
+                    if (isOverlapping == true && floor.FloorNumber == booking.FloorNumber && floor.VillaId == booking.VillaId && floor.VillageId == booking.VillageId)
                     {
                         floor.isAvailable = false;
+                    }
+                    if (floor.Price < homeVM.minPrice || floor.Price > homeVM.maxPrice)
+                    {
+                        floor.isInPriceRange = false;
                     }
                 }
             }
@@ -106,7 +112,8 @@ namespace VillaHub.Web.Controllers
             {
                 Floors = floorList,
                 CheckInDate = homeVM.CheckInDate,
-                PriceRange = homeVM.PriceRange,
+                minPrice = homeVM.minPrice,
+                maxPrice = homeVM.maxPrice,
                 NumberOfNights = homeVM.NumberOfNights
             };
 
