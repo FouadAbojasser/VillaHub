@@ -1,0 +1,197 @@
+﻿@using VillaHub.Application.Common.Utility
+@using VillaHub.Web.ViewModels.User
+@model UserWithBookingsWithRoles
+
+<div class="p-4 mt-0 mt-lg-4">
+    <div class="row" style="border: 1px solid #aaa; padding-top:10px;">
+
+        <!-- Left Column: Avatar and Name -->
+        <div class="col-12 col-lg-4 p-4 mt-2 mt-md-0 text-center" style="border-right:1px solid #aaa">
+            <img src="~/images/others/cast3.png" class="img-fluid rounded-circle shadow mb-3" style="max-width: 180px;" alt="@Model.AppUser.Name" />
+            <h3 class="text-success">@Model.AppUser.Name</h3>
+        </div>
+
+        <!-- Right Column: User Details -->
+        <div class="col-12 col-lg-8 p-4 mt-2 mt-md-0">
+            <div class="row p-1" style="border-radius:20px;">
+                <div class="col-4">
+                    <h3 class="text-success">User Details</h3>
+                </div>
+                <div class="col-8 text-end">
+                    <a class="btn btn-secondary my-2"
+                       asp-controller="User" asp-action="Index">
+                        <i class="bi bi-arrow-left-circle"></i> Back to Users
+                    </a>
+
+                    <a class="btn btn-success my-2"
+                       asp-controller="User" asp-action="Update"
+                       asp-route-id="@Model.AppUser.Id">
+                        <i class="bi bi-pencil-square"></i> Edit User
+                    </a>
+
+                    <a class="btn btn-danger my-2"
+                       asp-controller="User" asp-action="Delete"
+                       asp-route-id="@Model.AppUser.Id">
+                        <i class="bi bi-trash-fill"></i> Delete User
+                    </a>
+
+                    <a class="btn btn-warning my-2"
+                       asp-controller="User" asp-action="Block"
+                       asp-route-id="@Model.AppUser.Id">
+                        <i class="bi bi-slash-circle"></i> Block User
+                    </a>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Email</label>
+                    <input value="@Model.AppUser.Email" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Phone Number</label>
+                    <input value="@Model.AppUser.PhoneNumber" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Country</label>
+                    <input value="@Model.AppUser.Country" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Email Confirmed?</label>
+                    <input value="@(Model.AppUser.EmailConfirmed ? "Yes" : "No")" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Created At</label>
+                    <input value="@Model.AppUser.CreatedAt.ToString("dd-MM-yyyy")" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Login Providers</label>
+                    @if (Model.ExternalLogins != null && Model.ExternalLogins.Any())
+                    {
+                        <input value="@string.Join(", ", Model.ExternalLogins)" class="form-control" disabled />
+                    }
+                    else
+                    {
+                        <input value="Local Account" class="form-control" disabled />
+                    }
+                </div>
+
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Roles</label>
+                    <input value="@string.Join(", ", Model.UserRoles)" class="form-control" disabled />
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Separator -->
+        <div class="col-12"><hr /></div>
+
+
+        <!-- Booking Summary Table -->
+        <div class="col-12 p-4">
+            <h3 class="text-success mb-3">Bookings Summary</h3>
+        @if (Model.Bookings != null)
+        {
+            <div>
+                <!-- Margin left and right -->
+                <table class="table table-bordered text-center mb-4">
+                    <thead>
+                        <tr>
+                            <th class="bg-warning text-dark">Total</th>
+                            <th class="bg-info text-white">Pending</th>
+                            <th class="bg-success text-white">Approved</th>
+                            <th class="bg-secondary text-white">Checked-In</th>
+                            <th class="bg-primary text-white">Completed</th>
+                            <th class="bg-danger text-white">Cancelled</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@Model.Bookings.Count()</td>
+                            <td>@Model.Bookings.Count(b => b.Status == SD.StatusPending)</td>
+                            <td>@Model.Bookings.Count(b => b.Status == SD.StatusApproved)</td>
+                            <td>@Model.Bookings.Count(b => b.Status == SD.StatusCheckedIn)</td>
+                            <td>@Model.Bookings.Count(b => b.Status == SD.StatusCompleted)</td>
+                            <td>@Model.Bookings.Count(b => b.Status == SD.StatusCancelled)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+        </div>
+
+
+        <!-- User Bookings -->
+        <div class="col-12 p-4">
+            <h3 class="text-success mb-3">User Bookings</h3>
+
+            @if (Model.Bookings != null && Model.Bookings.Any())
+            {
+                <div class="row">
+                    @foreach (var booking in Model.Bookings)
+                    {
+                        // Map booking status to Bootstrap colors
+                        var headerClass = booking.Status switch
+                        {
+                            "Pending" => "bg-info",
+                            "Approved" => "bg-success",
+                            "Confirmed" => "bg-primary",
+                            "CheckedIn" => "bg-secondary",
+                            "Cancelled" => "bg-danger",
+                            _ => "bg-warning" // default
+                        };
+
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            <!-- Make card clickable -->
+                            <a asp-controller="Booking" asp-action="BookingDetails" asp-route-bookingId="@booking.Id"
+                               class="text-decoration-none text-dark"
+                                target="_blank">
+                                <div class="card shadow-sm h-100 booking-card" style="cursor: pointer;">
+                                    <!-- Dynamic Header -->
+                                    <div class="card-header @headerClass text-white fw-bold">
+                                        @booking.BookingDate.ToString("yyyy-MM-dd") -
+                                        <span>@booking.Status</span>
+                                    </div>
+
+                                    <!-- Card Body -->
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col-6"><strong>Check-In:</strong></div>
+                                            <div class="col-6 text-end">@booking.CheckInDate.ToString("yyyy-MM-dd")</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-6"><strong>Check-Out:</strong></div>
+                                            <div class="col-6 text-end">@booking.CheckOutDate.ToString("yyyy-MM-dd")</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-6"><strong>Nights:</strong></div>
+                                            <div class="col-6 text-end">@booking.Nights</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6"><strong>Total Cost:</strong></div>
+                                            <div class="col-6 text-end">@booking.TotalCost.ToString("C")</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+            }
+            else
+            {
+                <p class="text-muted">No bookings found for this user.</p>
+            }
+        </div>
+    </div>
+</div>

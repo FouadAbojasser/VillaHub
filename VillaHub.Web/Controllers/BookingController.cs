@@ -276,9 +276,9 @@ namespace VillaHub.Web.Controllers
                     //Generate the Invoice
                     await GenerateInvoiceAsync(bookingId, "pdf", "BookingConfirmation");
 
-                }
                     //Send RealTime notification to SuperAdmin
                     await _notificationService.NotifyNewBooking(bookingInDb);
+                }
 
             }
 
@@ -370,6 +370,7 @@ namespace VillaHub.Web.Controllers
         //[Authorize(Roles = SD.Role_SuperAdmin)]
         //ممكن نخلي إلغاء الحجز يتم فقط من الأدمن
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> BookingCancelAsync(Booking booking)
         {
             var bookingInDb = _unitOfWork.Booking.GetOne(b => b.Id == booking.Id);
@@ -506,7 +507,7 @@ namespace VillaHub.Web.Controllers
 
                         string emailBody = "<p>Thank you for your booking. Please find your invoice attached.</p>";
 
-                        await _customEmailSender.SendEmailWithAttachmentAsync(applicationUser!.Email, "VillaHub - Booking Invoice", emailBody, pdfBytes, $"Invoice-{bookingId}.pdf");
+                        await _customEmailSender.SendEmailWithAttachmentAsync(applicationUser!.Email!, "VillaHub - Booking Invoice", emailBody, pdfBytes, $"Invoice-{bookingId}.pdf");
 
                         // Redirect to a confirmation page or return a success message
                         TempData["success"] = "Invoice has been emailed successfully.";

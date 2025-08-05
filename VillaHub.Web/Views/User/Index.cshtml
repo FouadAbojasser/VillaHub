@@ -1,0 +1,39 @@
+﻿<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Users List</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <div class="row pb-3">
+            <div class="col-6 offset-6 text-end">
+                @* <a asp-controller="Amenity" asp-action="Create" class="btn btn-secondary">
+                    <i class="bi bi-plus-circle"></i> Create New Amenity
+                </a> *@
+            </div>
+        </div>
+
+        <table id="tbusersTable" class="table table-bordered table-striped text-center">
+            <thead>
+                <tr>
+                    <th class="align-content-start">No.</th>
+                    <th class="align-content-start text-center">Name</th>
+                    <th class="align-content-start text-center">Email</th>
+                    <th class="align-content-start text-center">Phone Number</th>
+                    <th class="align-content-start text-center">Country</th>
+                    <th class="align-content-start text-center">Date Created</th>
+                    <th class="align-content-center text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data populated by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/usersTable.js"></script>
+}

@@ -44,7 +44,7 @@ body {
 
 /* Add this to your site.css */
 .notification-bell {
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
 }
 
     .notification-bell.pulse {
@@ -73,10 +73,15 @@ body {
     }
 }
 
+.btn .badge {
+    position: relative;
+    top: -35px;
+}
+
 .notification-badge {
     position: absolute;
     top: -5px;
-    right: -5px;
+    right: -14px;
     font-size: 0.65rem;
-    padding: 0.25em 0.4em;
+/*    padding: 0.25em 0.4em;*/
 }
