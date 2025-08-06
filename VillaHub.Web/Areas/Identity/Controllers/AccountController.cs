@@ -203,54 +203,62 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
             if (applicationUser is not null)
             {
-                //UserName or Email Found
-                //Check Password
-                var result = await _userManager.CheckPasswordAsync(applicationUser, loginVM.Password);
-
-                if (result)
+                //Check Status
+                if (applicationUser.Status == SD.Active_User)
                 {
-                    // Correct Password
-                    // Check if the Email is Confirmed ot not?
-                    if (applicationUser.EmailConfirmed)
+                    //UserName or Email Found
+                    //Check Password
+                    var result = await _userManager.CheckPasswordAsync(applicationUser, loginVM.Password);
+
+                    if (result)
                     {
-                        await _signInManager.SignInAsync(applicationUser, loginVM.RememberMe);
-
-                        TempData["success"] = "Login Successfully";
-
-                        var chk1 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_Admin);
-                        var chk2 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_SuperAdmin);
-
-                        if (chk1 || chk2)
+                        // Correct Password
+                        // Check if the Email is Confirmed ot not?
+                        if (applicationUser.EmailConfirmed)
                         {
-                            if (!string.IsNullOrEmpty(loginVM.RedirectUrl) && loginVM.RedirectUrl != "/")
+                            await _signInManager.SignInAsync(applicationUser, loginVM.RememberMe);
+
+                            TempData["success"] = "Login Successfully";
+
+                            var chk1 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_Admin);
+                            var chk2 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_SuperAdmin);
+
+                            if (chk1 || chk2)
                             {
-                                return Redirect(loginVM.RedirectUrl);
+                                if (!string.IsNullOrEmpty(loginVM.RedirectUrl) && loginVM.RedirectUrl != "/")
+                                {
+                                    return Redirect(loginVM.RedirectUrl);
+                                }
+                                return RedirectToAction("Index", "Dashboard", new { area = "" });
                             }
-                            return RedirectToAction("Index", "Dashboard", new { area = "" });
+                            else
+                            {
+                                if (!string.IsNullOrEmpty(loginVM.RedirectUrl))
+                                {
+                                    return Redirect(loginVM.RedirectUrl);
+                                }
+                                return RedirectToAction("Index", "Home", new { area = "" });
+                            }
                         }
                         else
                         {
-                            if (!string.IsNullOrEmpty(loginVM.RedirectUrl))
-                            {
-                                return Redirect(loginVM.RedirectUrl);
-                            }
+                            TempData["error"] = "Please Confirm Your Email First!";
                             return RedirectToAction("Index", "Home", new { area = "" });
                         }
                     }
                     else
                     {
-                        TempData["error"] = "Please Confirm Your Email First!";
-
-                        return RedirectToAction("Index", "Home", new { area = "" });
+                        //Wrong Password
+                        ModelState.AddModelError("Password", "Invalid Password!");
+                        return View(loginVM);
                     }
                 }
                 else
                 {
-                    //Wrong Password
-                    ModelState.AddModelError("Password", "Invalid Password!");
+                    //User status is not Active
+                    ModelState.AddModelError("UserNameOrEmail", "User status is not Active!");
                     return View(loginVM);
                 }
-
             }
 
             ModelState.AddModelError("UserNameOrEmail", "Invalid User Name or Email!");
@@ -673,13 +681,29 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
+
             if (info == null)
             {
                 return RedirectToAction(nameof(Login));
             }
 
+            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+            if (user != null)
+            {
+                // 🔹 Check for soft delete status
+                if (user.Status == SD.Deleted_User)
+                {
+                    // Optionally: log attempt
+                    ModelState.AddModelError(string.Empty, "This account has been deleted and cannot log in.");
+                    TempData["error"] = "This account has been deleted and cannot log in.";
+                    return View("AccessDenied"); // or RedirectToAction("Login")
+                }
+            }
+
             // Sign in if user already exists
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true);
+
             if (result.Succeeded)
             {
                 TempData["success"] = $"Login Successful Using {info.LoginProvider}";

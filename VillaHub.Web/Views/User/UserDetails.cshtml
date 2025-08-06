@@ -7,7 +7,10 @@
 
         <!-- Left Column: Avatar and Name -->
         <div class="col-12 col-lg-4 p-4 mt-2 mt-md-0 text-center" style="border-right:1px solid #aaa">
-            <img src="~/images/others/cast3.png" class="img-fluid rounded-circle shadow mb-3" style="max-width: 180px;" alt="@Model.AppUser.Name" />
+            <img src="@(string.IsNullOrEmpty(Model.AppUser.ImageUrl)
+                                ? Url.Content("~/images/others/default-user.png")
+                                : Url.Content("~/images/users/" + Model.AppUser.ImageUrl))"
+            class="img-fluid rounded-circle shadow mb-3" style="max-width: 180px;" alt="@Model.AppUser.Name" />
             <h3 class="text-success">@Model.AppUser.Name</h3>
         </div>
 
@@ -23,23 +26,35 @@
                         <i class="bi bi-arrow-left-circle"></i> Back to Users
                     </a>
 
-                    <a class="btn btn-success my-2"
+                    <a class="btn btn-primary my-2"
                        asp-controller="User" asp-action="Update"
                        asp-route-id="@Model.AppUser.Id">
                         <i class="bi bi-pencil-square"></i> Edit User
                     </a>
 
-                    <a class="btn btn-danger my-2"
-                       asp-controller="User" asp-action="Delete"
-                       asp-route-id="@Model.AppUser.Id">
-                        <i class="bi bi-trash-fill"></i> Delete User
-                    </a>
+                    @if (Model.AppUser.Status == SD.Deleted_User)
+                    {
+                        <a class="btn btn-success my-2"
+                           asp-controller="User" asp-action="Restore"
+                           asp-route-Id="@Model.AppUser.Id">
+                            <i class="bi bi-arrow-clockwise"></i> Activate User
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger my-2"
+                           asp-controller="User" asp-action="Delete"
+                           asp-route-Id="@Model.AppUser.Id">
+                           <i class="bi bi-trash-fill"></i> Delete User
+                        </a>
+                    }
 
-                    <a class="btn btn-warning my-2"
+
+                    @* <a class="btn btn-warning my-2"
                        asp-controller="User" asp-action="Block"
                        asp-route-id="@Model.AppUser.Id">
                         <i class="bi bi-slash-circle"></i> Block User
-                    </a>
+                    </a> *@
                 </div>
             </div>
 
@@ -68,7 +83,7 @@
 
                 <div class="form-group pt-2 col-6">
                     <label class="text-warning">Created At</label>
-                    <input value="@Model.AppUser.CreatedAt.ToString("dd-MM-yyyy")" class="form-control" disabled />
+                    <input value="@Model.AppUser.CreatedAt.ToString("g")" class="form-control" disabled />
                 </div>
 
                 <div class="form-group pt-2 col-6">
@@ -88,6 +103,28 @@
                     <label class="text-warning">Roles</label>
                     <input value="@string.Join(", ", Model.UserRoles)" class="form-control" disabled />
                 </div>
+
+                 <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Status</label>
+                    <input value="@Model.AppUser.Status" class="form-control" disabled />
+                </div>
+
+                @if (Model.AppUser.Status != SD.Active_User)
+                {
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Deleted At</label>
+                        @if (@Model.AppUser.DeletedAt != default)
+                        {
+                            <input value="@Model.AppUser.DeletedAt.ToString("g")" class="form-control" disabled />
+                        }
+                        else
+                        {
+                            <input value="-" class="form-control" disabled />
+                        }
+                    </div>
+                }
+               
+
             </div>
 
         </div>
@@ -158,7 +195,7 @@
                                 <div class="card shadow-sm h-100 booking-card" style="cursor: pointer;">
                                     <!-- Dynamic Header -->
                                     <div class="card-header @headerClass text-white fw-bold">
-                                        @booking.BookingDate.ToString("yyyy-MM-dd") -
+                                        @booking.BookingDate.ToString("dd-MM-yyyy") -
                                         <span>@booking.Status</span>
                                     </div>
 
@@ -166,11 +203,11 @@
                                     <div class="card-body">
                                         <div class="row mb-2">
                                             <div class="col-6"><strong>Check-In:</strong></div>
-                                            <div class="col-6 text-end">@booking.CheckInDate.ToString("yyyy-MM-dd")</div>
+                                            <div class="col-6 text-end">@booking.CheckInDate.ToString("dd-MM-yyyy")</div>
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-6"><strong>Check-Out:</strong></div>
-                                            <div class="col-6 text-end">@booking.CheckOutDate.ToString("yyyy-MM-dd")</div>
+                                            <div class="col-6 text-end">@booking.CheckOutDate.ToString("dd-MM-yyyy")</div>
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-6"><strong>Nights:</strong></div>

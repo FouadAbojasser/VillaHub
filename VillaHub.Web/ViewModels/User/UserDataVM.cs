@@ -12,5 +12,8 @@ namespace VillaHub.Web.ViewModels.User
         public string PhoneNumber { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
+        public string Status { get; set; } = "Active";
+        public DateTime? DeletedAt { get; set; }
     }
 }

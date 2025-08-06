@@ -1,6 +1,24 @@
-﻿<ul class="navbar-nav d-none d-md-flex nav-login">
+﻿@using Microsoft.AspNetCore.Identity
+@using VillaHub.Domain.Entities
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav d-none d-md-flex nav-login">
     <li class="nav-item d-flex align-items-center">
+
+        @* Get the logged-in user and display avatar *@
+        @{
+            var currentUser = await UserManager.GetUserAsync(User);
+            var avatar = string.IsNullOrEmpty(currentUser?.ImageUrl)
+                ? Url.Content("~/images/others/default-user.png")
+                : Url.Content("~/images/users/" + currentUser.ImageUrl);
+        }
+
+        <img src="@avatar" alt="User Avatar"
+             class="rounded-circle me-4"
+             style="width:30px; height:30px; object-fit:cover;" />
+
         <span class="nav-link mb-0">Hello @User.Identity!.Name</span>
+
         <a class="nav-link ms-3 mb-0"
            asp-area="Identity"
            asp-controller="Account"

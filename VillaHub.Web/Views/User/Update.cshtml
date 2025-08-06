@@ -1,0 +1,164 @@
+﻿@using VillaHub.Web.ViewModels.User
+@model EditUserVM
+
+<div class="p-4 mt-0 mt-lg-4">
+    <form asp-action="Update" method="post" enctype="multipart/form-data" class="w-100">
+        <input type="hidden" asp-for="AppUser.Id" />
+
+        <div class="row" style="border: 1px solid #aaa; padding-top:10px;">
+
+            <!-- Left Column: Avatar and Upload -->
+            <div class="col-12 col-lg-4 p-4 mt-2 mt-md-0 text-center" style="border-right:1px solid #aaa">
+
+                <!-- Profile Image Preview -->
+                <img src="@(string.IsNullOrEmpty(Model.AppUser.ImageUrl)
+                                                              ? Url.Content("~/images/others/default-user.png")
+                                                              : Url.Content("~/images/users/" + Model.AppUser.ImageUrl))"
+                     class="img-fluid rounded-circle shadow mb-3"
+                     style="max-width: 180px; height:180px; object-fit: cover;"
+                     id="profileImagePreview"
+                     alt="@Model.AppUser.Name" />
+
+                <h3 class="text-success">@Model.AppUser.Name</h3>
+
+                <!-- Upload Image Button -->
+                <div class="mt-3">
+                    <input type="file" class="form-control d-none" id="profileImageInput" name="ProfileImage" accept="image/*" />
+                    <button type="button" class="btn btn-outline-primary btn-sm"
+                            onclick="document.getElementById('profileImageInput').click();">
+                        <i class="bi bi-upload"></i> Upload Image
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: User Fields -->
+            <div class="col-12 col-lg-8 p-4 mt-2 mt-md-0">
+
+                <div class="row p-1 mb-2" style="border-radius:20px;">
+                    <div class="col-6">
+                        <h3 class="text-success">Update User</h3>
+                    </div>
+                    <div class="col-6 text-end">
+                        <a class="btn btn-secondary my-2" asp-controller="User" asp-action="Index">
+                            <i class="bi bi-arrow-left-circle"></i> Back to Users
+                        </a>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row">
+                    <!-- Email (Read Only) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Email</label>
+                        <input asp-for="AppUser.Email" class="form-control" disabled />
+                    </div>
+
+                    <!-- Email Confirmed (Read Only) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Email Confirmed?</label>
+                        <select class="form-control" disabled>
+                            <option value="true" selected="@(Model.AppUser.EmailConfirmed)">Yes</option>
+                            <option value="false" selected="@(!Model.AppUser.EmailConfirmed)">No</option>
+                        </select>
+                    </div>
+
+                    <!-- Username (Read Only) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Username</label>
+                        <input asp-for="AppUser.UserName" class="form-control" disabled />
+                    </div>
+
+                    <!-- Created At (Read Only) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Created At</label>
+                        <input value="@Model.AppUser.CreatedAt.ToString("g")" class="form-control" disabled />
+                    </div>
+
+                    <!-- Login Providers (Read Only) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Login Providers</label>
+                        <input value="@(Model.ExternalLogins != null && Model.ExternalLogins.Any()
+                                                                                    ? string.Join(", ", Model.ExternalLogins)
+                                                                                    : "Local Account")"
+                               class="form-control" disabled />
+                    </div>
+
+                    <!-- Status (Read Only) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Status</label>
+                        <select class="form-control" disabled>
+                            <option>@Model.AppUser.Status</option>
+                        </select>
+                    </div>
+
+                    <!-- Deleted At (Show if not Active) -->
+                    @if (Model.AppUser.Status != "Active")
+                    {
+                        <div class="form-group pt-2 col-6">
+                            <label class="text-warning">Deleted At</label>
+                            <input value="@(Model.AppUser.DeletedAt == default ? "-" : Model.AppUser.DeletedAt.ToString("g"))"
+                                   class="form-control" disabled />
+                        </div>
+                    }
+
+                    <!-- Full Name (Editable) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Full Name</label>
+                        <input asp-for="AppUser.Name" class="form-control" />
+                        <span asp-validation-for="AppUser.Name" class="text-danger"></span>
+                    </div>
+
+                    <!-- Phone Number (Editable) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <!-- Country (Dropdown Editable) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Country</label>
+                        <select asp-for="AppUser.Country" asp-items="Model.CountryList" class="form-select">
+                            <option disabled selected>-Select Country-</option>
+                        </select>
+                        <span asp-validation-for="AppUser.Country" class="text-danger"></span>
+                    </div>
+
+                    <!-- Roles (Editable) -->
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning">Roles</label>
+                        <select asp-for="UserRole" asp-items="Model.RolesList" class="form-select">
+                            <option disabled selected>-Select Role-</option>
+                        </select>
+                        <span asp-validation-for="UserRole" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Preview image when user selects a new file
+        document.getElementById('profileImageInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImagePreview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

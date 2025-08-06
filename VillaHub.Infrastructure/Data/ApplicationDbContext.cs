@@ -29,6 +29,11 @@ namespace VillaHub.Infrastructure.Data
         {
             base.OnModelCreating(builder);
 
+            //// Global Query Filter for soft delete
+            //builder.Entity<ApplicationUser>()
+            //    .HasQueryFilter(u => !u.IsDeleted);
+
+
             // ✅ Villa → Village (safe to cascade)
             builder.Entity<Villa>()
                 .HasOne(v => v.Village)
@@ -75,6 +80,23 @@ namespace VillaHub.Infrastructure.Data
                 .HasForeignKey(i => new { i.FloorVillageId, i.FloorVillaId, i.FloorNumber })
                 .HasPrincipalKey(f => new { f.VillageId, f.VillaId, f.FloorNumber })
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+            //// Bookings
+            //builder.Entity<Booking>()
+            //    .HasOne(b => b.User)
+            //    .WithMany()
+            //    .HasForeignKey(b => b.UserId)
+            //    .OnDelete(DeleteBehavior.SetNull);
+
+
+            //// Reviews
+            //builder.Entity<Review>()
+            //    .HasOne(r => r.User)
+            //    .WithMany()
+            //    .HasForeignKey(r => r.UserId)
+            //    .OnDelete(DeleteBehavior.SetNull);
+
         }
 
 

@@ -1,0 +1,83 @@
+﻿@using VillaHub.Application.Common.Utility
+@using VillaHub.Web.ViewModels.User
+@model UserWithBookingsWithRoles
+
+<div class="p-4 mt-0 mt-lg-4">
+    <div class="row" style="border: 1px solid #aaa; padding-top:10px;">
+
+        <!-- Left Column: Avatar and Name -->
+        <div class="col-12 col-lg-4 p-4 text-center" style="border-right:1px solid #aaa">
+            <img src="@(string.IsNullOrEmpty(Model.AppUser.ImageUrl)
+                                                 ? Url.Content("~/images/others/default-user.png")
+                                                 : Url.Content("~/images/users/" + Model.AppUser.ImageUrl))" class="img-fluid rounded-circle shadow mb-3" style="max-width: 180px;" alt="@Model.AppUser.Name" />
+            <h3 class="text-danger">@Model.AppUser.Name</h3>
+            
+        </div>
+
+        <!-- Right Column: User Details -->
+        <div class="col-12 col-lg-8 p-4">
+            <h3 class="text-danger mb-3">User Details</h3>
+            <hr />
+
+            <div class="row">
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Email</label>
+                    <input value="@Model.AppUser.Email" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Phone Number</label>
+                    <input value="@Model.AppUser.PhoneNumber" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Country</label>
+                    <input value="@Model.AppUser.Country" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Email Confirmed?</label>
+                    <input value="@(Model.AppUser.EmailConfirmed ? "Yes" : "No")" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Created At</label>
+                    <input value="@Model.AppUser.CreatedAt.ToString("dd-MM-yyyy")" class="form-control" disabled />
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Login Providers</label>
+                    @if (Model.ExternalLogins != null && Model.ExternalLogins.Any())
+                    {
+                        <input value="@string.Join(", ", Model.ExternalLogins)" class="form-control" disabled />
+                    }
+                    else
+                    {
+                        <input value="Local Account" class="form-control" disabled />
+                    }
+                </div>
+
+                <div class="form-group pt-2 col-6">
+                    <label class="text-warning">Roles</label>
+                    <input value="@string.Join(", ", Model.UserRoles)" class="form-control" disabled />
+                </div>
+
+            </div>
+
+            <hr />
+
+            <!-- Confirm Delete Form -->
+            <form asp-action="Delete" asp-controller="User" method="post">
+                <input type="hidden" name="id" value="@Model.AppUser.Id" />
+                <div class="text-end">
+                    <a asp-action="UserDetails" asp-controller="User" asp-route-Id="@Model.AppUser.Id" class="btn btn-secondary me-2">
+                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash-fill"></i> Confirm Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

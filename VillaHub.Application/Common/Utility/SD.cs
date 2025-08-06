@@ -13,6 +13,10 @@ namespace VillaHub.Application.Common.Utility
         public const string Role_Admin = "Admin";
         public const string Role_Customer = "Customer";
 
+        public const string Active_User = "Active";
+        public const string Blocked_User = "Blocked";
+        public const string Deleted_User = "Deleted";
+
 
         public const string StatusPending = "Pending";
         public const string StatusApproved = "Approved";
