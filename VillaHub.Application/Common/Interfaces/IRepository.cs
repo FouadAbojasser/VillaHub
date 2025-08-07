@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using VillaHub.Domain.Entities;
 
 namespace VillaHub.Application.Common.Interfaces
 {
@@ -20,6 +21,8 @@ namespace VillaHub.Application.Common.Interfaces
             Expression<Func<T, object>>[]? includes = null,
             bool NoTracking = true
             );
+
+
 
         IEnumerable<T> Get(
             Expression<Func<T, bool>>? expression = null,

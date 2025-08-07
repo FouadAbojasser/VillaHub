@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Domain.Entities;
 using VillaHub.Infrastructure.Migrations;
@@ -12,13 +13,15 @@ namespace VillaHub.Web.Areas.Customer.Controllers
     public class ReviewController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
 
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ReviewController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public ReviewController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
 
@@ -35,15 +38,18 @@ namespace VillaHub.Web.Areas.Customer.Controllers
         public IActionResult FloorReview(int villageId, int villaId, int floorNumber)
         {
             var FloorInDB = _unitOfWork.Floor.GetOne(
-                    f => f.FloorNumber == floorNumber &&
-                         f.VillaId == villaId &&
-                         f.VillageId == villageId,
-                    [f => f.Village,
-                     f => f.Villa,
-                     f => f.Images,
-                     f => f.Amenities,
-                     f => f.Reviews.OrderByDescending(r=>r.CreatedAt).ThenBy(r=>r.UpdatedAt)],
-                    false);
+                f => f.FloorNumber == floorNumber &&
+                     f.VillaId == villaId &&
+                     f.VillageId == villageId,
+
+            include: q => q
+                .Include(f => f.Villa)
+                .Include(f => f.Images)
+                .Include(f => f.Amenities)
+                .Include(f => f.Reviews)
+                    .ThenInclude(r => r.User),
+
+             noTracking: false);
 
             if (FloorInDB is not null)
             {
@@ -56,6 +62,8 @@ namespace VillaHub.Web.Areas.Customer.Controllers
 
             return BadRequest();
         }
+
+
 
 
         public async Task<IActionResult> AddCustomerReviewAsync (int FloorNumber,int VillaId, int VillageId, string UserId, string reviewText, int ratingValue)
@@ -75,8 +83,12 @@ namespace VillaHub.Web.Areas.Customer.Controllers
                     CommentInDb.Comment = reviewText;
                     CommentInDb.Rate = ratingValue;
                     CommentInDb.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+                    CommentInDb.User = applicationUser;
 
                     _unitOfWork.Review.Update(CommentInDb);
+
+                    //Send RealTime notification to SuperAdmin
+                    await _notificationService.NotifyNewComment(CommentInDb);
                 }
                 else
                 //Add New Comment
@@ -88,6 +100,7 @@ namespace VillaHub.Web.Areas.Customer.Controllers
                             Comment = reviewText,
                             Rate = ratingValue,
                             UserId = applicationUser.Id,
+                            User = applicationUser,
                             CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
                             FloorNumber = FloorNumber,
                             FloorVillaId = VillaId,
@@ -97,11 +110,17 @@ namespace VillaHub.Web.Areas.Customer.Controllers
                         };
 
                         await _unitOfWork.Review.CreateAsync(userReviw);
+
+                        //Send RealTime notification to SuperAdmin
+                        await _notificationService.NotifyNewComment(userReviw);
                     }
                 }
 
                 await _unitOfWork.Review.CommitAsync();
+
+               
             }
+
             return PartialView("_ThankYouMessage");
         }
 

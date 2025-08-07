@@ -28,4 +28,15 @@ public class NotificationService : INotificationService
                 TotalCost = booking?.TotalCost
             });
     }
+
+
+    public async Task NotifyNewComment(Review review)
+    {
+        await _hubContext.Clients.Group(SD.Role_SuperAdmin).SendAsync("ReceiveReviewNotification",
+            new
+            {
+                Id = review?.Id,
+
+            });
+    }
 }

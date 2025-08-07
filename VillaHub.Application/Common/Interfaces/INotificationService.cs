@@ -10,6 +10,7 @@ namespace VillaHub.Application.Common.Interfaces
     public interface INotificationService
     {
         Task NotifyNewBooking(Booking booking);
+        Task NotifyNewComment(Review review);
     }
 
 }
