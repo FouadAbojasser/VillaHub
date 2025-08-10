@@ -33,9 +33,9 @@ namespace VillaHub.Web.Controllers
                 Villages = villageList,
                 Villas= villaList,
                 Floors= floorList,
-                CheckInDate = DateOnly.FromDateTime(DateTime.Now),
+                CheckInDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
                 minPrice = 100,
-                maxPrice= 200,
+                maxPrice= 400,
                 NumberOfNights = 1
             };
 

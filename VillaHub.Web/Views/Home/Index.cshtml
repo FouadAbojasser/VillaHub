@@ -59,19 +59,27 @@
             <div class="flex-fill">
                 <label asp-for="minPrice" class="form-label mb-1"></label>
                 <input asp-for="minPrice" type="number" min="0" class="form-control" placeholder="≥ Min" />
+                <span asp-validation-for="minPrice" class="text-danger"></span>
             </div>
 
             <!-- max Price -->
             <div class="flex-fill">
                 <label asp-for="maxPrice" class="form-label mb-1"></label>
                 <input asp-for="maxPrice" type="number" min="0" class="form-control" placeholder="≤ Max" />
+                <span asp-validation-for="maxPrice" class="text-danger"></span>
             </div>
+
 
             <div class="flex-fill">
                 <label asp-for="CheckInDate" class="form-label mb-1"></label>
-                <input asp-for="CheckInDate" type="date" class="form-control w-100" />
+                <input asp-for="CheckInDate"
+                       type="date"
+                       class="form-control w-100"
+                       min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="CheckInDate" class="text-danger"></span>
             </div>
+
+
 
 
             <div class="flex-fill">
@@ -82,6 +90,7 @@
                         <option value="@i">@i</option>
                     }
                 </select>
+                <span asp-validation-for="NumberOfNights" class="text-danger"></span>
             </div>
 
 
@@ -113,6 +122,9 @@
 
 
 @section scripts{
+
+     <partial name="_ValidationScriptsPartial" />
+
     <script>
         function fnLoadVillaList()
         {
