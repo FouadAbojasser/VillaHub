@@ -1,4 +1,5 @@
 ﻿@using VillaHub.Web.ViewModels.User
+@using VillaHub.Application.Common.Utility
 @model EditUserVM
 
 <div class="p-4 mt-0 mt-lg-4">
@@ -39,9 +40,19 @@
                         <h3 class="text-success">Update User</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn btn-secondary my-2" asp-controller="User" asp-action="Index">
-                            <i class="bi bi-arrow-left-circle"></i> Back to Users
-                        </a>
+                        @if (User.IsInRole(SD.Role_SuperAdmin))
+                        {
+                            <a class="btn btn-secondary my-2" asp-controller="User" asp-action="Index">
+                                <i class="bi bi-arrow-left-circle"></i> Back to Users
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-secondary my-2" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-arrow-left-circle"></i> Back to Home
+                            </a>
+                        }
+
                     </div>
                 </div>
 
@@ -125,14 +136,17 @@
                         <span asp-validation-for="AppUser.Country" class="text-danger"></span>
                     </div>
 
-                    <!-- Roles (Editable) -->
-                    <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Roles</label>
-                        <select asp-for="UserRole" asp-items="Model.RolesList" class="form-select">
-                            <option disabled selected>-Select Role-</option>
-                        </select>
-                        <span asp-validation-for="UserRole" class="text-danger"></span>
-                    </div>
+                    @if (User.IsInRole(SD.Role_SuperAdmin))
+                    {
+                        <!-- Roles (Editable) -->
+                        <div class="form-group pt-2 col-6">
+                            <label class="text-warning">Roles</label>
+                            <select asp-for="UserRole" asp-items="Model.RolesList" class="form-select">
+                                <option disabled selected>-Select Role-</option>
+                            </select>
+                            <span asp-validation-for="UserRole" class="text-danger"></span>
+                        </div>
+                    }
                 </div>
 
                 <div class="mt-4">

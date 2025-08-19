@@ -11,6 +11,7 @@
         height: 25%;
         object-fit: cover; /* Keeps aspect ratio and fills container */
     }
+
 </style>
 
 <div>
@@ -66,8 +67,9 @@
             <div class="flex-fill">
                 <label asp-for="maxPrice" class="form-label mb-1"></label>
                 <input asp-for="maxPrice" type="number" min="0" class="form-control" placeholder="≤ Max" />
-                <span asp-validation-for="maxPrice" class="text-danger"></span>
+                <span asp-validation-for="maxPrice" class="text-danger" ></span>
             </div>
+
 
 
             <div class="flex-fill">
@@ -76,7 +78,7 @@
                        type="date"
                        class="form-control w-100"
                        min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
-                <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                @* <span asp-validation-for="CheckInDate" class="text-danger"></span> *@
             </div>
 
 

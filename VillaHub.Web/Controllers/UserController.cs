@@ -12,7 +12,7 @@ using VillaHub.Web.ViewModels.User;
 
 namespace VillaHub.Web.Controllers
 {
-    [Authorize(Roles = SD.Role_SuperAdmin)]
+    
     public class UserController : Controller
     {
 
@@ -27,12 +27,13 @@ namespace VillaHub.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Roles = SD.Role_SuperAdmin)]
         public IActionResult Index()
         {
             return View();
         }
 
-
+        [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> UserDetailsAsync(string Id)
         {
 
@@ -60,7 +61,7 @@ namespace VillaHub.Web.Controllers
             return NotFound();
         }
 
-
+        [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> DeleteAsync(string Id)
         {
             var applicationUser = await _userManager.FindByIdAsync(Id);
@@ -86,6 +87,7 @@ namespace VillaHub.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> DeleteAsync(ApplicationUser applicationUser)
         {
             var applicationUserInDB = await _userManager.FindByIdAsync(applicationUser.Id);
@@ -130,6 +132,7 @@ namespace VillaHub.Web.Controllers
 
         }
 
+        [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> RestoreAsync(string id)
         {
             var applicationUserInDB= await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
@@ -266,7 +269,14 @@ namespace VillaHub.Web.Controllers
 
                 TempData["success"] = "User Updated Successfully";
 
-                return RedirectToAction(nameof(Index));
+                if (await _userManager.IsInRoleAsync(user.AppUser, SD.Role_SuperAdmin))
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return RedirectToAction("Index","Home");
+                }
             }
 
             EditUserVM editUserVMReturn = new();

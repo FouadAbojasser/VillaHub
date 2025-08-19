@@ -43,7 +43,7 @@ function loadDataTable() {
                 render: function (data) {
                     if (!data) return "";
                     var date = new Date(data);
-                    return date.toLocaleDateString();
+                    return date.toISOString().split('T')[0];
                 }
             },
             {
@@ -75,7 +75,7 @@ function loadDataTable() {
                     }
 
                     // Otherwise, format as local date
-                    return date.toLocaleDateString();
+                    return date.toISOString().split('T')[0];
                 }
             },
             {

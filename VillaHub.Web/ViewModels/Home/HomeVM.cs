@@ -9,6 +9,7 @@ namespace VillaHub.Web.ViewModels.Home
         public IEnumerable<VillaHub.Domain.Entities.Villa>? Villas { get; set; }
         public IEnumerable<Village>? Villages { get; set; }
         [Display(Name = "Check In Date")]
+        [Required(ErrorMessage = "Date must be greater than today.")]
         public DateOnly CheckInDate { get; set; } 
         [Display(Name = "Number of Nights")]
         public int NumberOfNights { get; set; }

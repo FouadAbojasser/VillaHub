@@ -16,7 +16,10 @@
             <img src="@avatar" alt="User Avatar"
                  class="rounded-circle me-2"
                  style="width:30px; height:30px; object-fit:cover;" />
-            <a class="nav-link" href="#">Hello @User.Identity!.Name</a>
+            <a class="nav-link" 
+            asp-action="Update"
+            asp-controller="User"
+            asp-route-id="@currentUser!.Id"> Hello @User.Identity!.Name</a>
         </li>
 
         <li class="nav-item">
