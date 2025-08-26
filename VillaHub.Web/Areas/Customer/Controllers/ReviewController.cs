@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Domain.Entities;
 using VillaHub.Infrastructure.Migrations;
+using VillaHub.Web.ViewModels.ContactUs;
 using VillaHub.Web.ViewModels.Home;
 using VillaHub.Web.ViewModels.Review;
 
@@ -123,14 +124,6 @@ namespace VillaHub.Web.Areas.Customer.Controllers
 
             return PartialView("_ThankYouMessage");
         }
-
-
-
-
-
-
-
-
 
 
 

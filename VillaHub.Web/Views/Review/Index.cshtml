@@ -1,0 +1,115 @@
+﻿@using VillaHub.Domain.Entities
+@model IEnumerable<Review>
+
+
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Reviews List</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <table class="table table-bordered table-striped text-center">
+            <thead>
+                <tr class="text-center align-middle" style="height: 60px;">
+                    <th>No.</th>
+                    <th>Village</th>
+                    <th>Villa</th>
+                    <th>Floor</th>
+                    <th>User</th>
+                    <th>Review</th>
+                    <th>Rate</th>
+                    <th>Date Created</th>
+                    <th>Date Updated</th>
+                    <th>Reply</th>
+                    <th>Replied At</th>
+                    <th>Replied By</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int i = 0;}
+                @foreach (var review in Model)
+                {
+                    i++;
+                    <tr>
+                        <td>@i</td>
+                        <td>@review.Floor.Village.Name</td>
+                        <td>@review.Floor.Villa.Name</td>
+                        <td>@review.Floor.FloorNumber</td>
+                        <td>@review.UserName</td>
+                        <td class="text-start">@review.Comment</td>
+                        <td>@review.Rate</td>
+                        <td>@review.CreatedAt</td>
+                        <td>
+                            @if (review.UpdatedAt == default)
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                            else
+                            {
+                                @review.UpdatedAt
+                            }
+                        </td>
+                        <td class="text-start" id="reply-cell-@review.Id">
+                            <span id="reply-text-@review.Id">@review.Reply</span>
+                            <form id="reply-form-@review.Id" method="post" asp-controller="Review" asp-action="AddReply" asp-route-id="@review.Id" class="d-none mt-2" style="min-width: 180px;">
+                                <div class="mb-2">
+                                    <textarea name="ReplyText" class="form-control" rows="2" placeholder="Type reply...">@review.Reply</textarea>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="bi bi-send"></i> Submit
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="cancelReply(@review.Id)">
+                                        <i class="bi bi-x"></i> Cancel
+                                    </button>
+                                </div>
+                                <input type="hidden" name="RepliedBy" value="@User.Identity!.Name" />
+                            </form>
+                        </td>
+                        <td>
+                            @if (review.RepliedAt == default)
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                            else
+                            {
+                                @review.RepliedAt
+                            }
+                        </td>
+                        <td>@review.ReplyUserId</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button"
+                                        class="btn btn-success mx-2"
+                                        onclick="showReplyForm(@review.Id)">
+                                    <i class="bi bi-pencil-square"></i> Reply
+                                </button>
+                                <a asp-controller="Review" asp-action="Delete" asp-route-id="@review.Id"
+                                   class="btn btn-danger mx-2">
+                                    <i class="bi bi-trash-fill"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showReplyForm(id) {
+            document.getElementById('reply-text-' + id).style.display = 'none';
+            document.getElementById('reply-form-' + id).classList.remove('d-none');
+        }
+        function cancelReply(id) {
+            document.getElementById('reply-form-' + id).classList.add('d-none');
+            document.getElementById('reply-text-' + id).style.display = '';
+        }
+    </script>
+}

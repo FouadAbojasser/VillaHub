@@ -46,7 +46,7 @@
                         </li>
 
                         <!-- Dropdown for Contents -->
-                        @* @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_SuperAdmin))
+                        @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_SuperAdmin))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" style="text-decoration: none; color: inherit;" id="propertiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -67,21 +67,27 @@
                                     </li>
                                 </ul>
                             </li>
-                        } *@
+                        }
                         @if (User.Identity is not null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">Your Bookings</a>
                             </li>
                         }
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="ContactUs" asp-action="ContactUsForm">Contact Us</a>
+                        </li>
                         
                     </ul>
 
                     <!-- Language Dropdown -->
                     <div class="dropdown mx-1">
                         <button class="btn btn-link dropdown-toggle text-decoration-none text-white-50" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://flagcdn.com/w20/gb.png" width="20" height="15" class="me-1" alt="English">
-                            English
+                            <span id="selectedLanguage">
+                                <img src="https://flagcdn.com/w20/gb.png" width="20" height="15" class="me-1" alt="English">
+                                English
+                            </span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                             <li>
@@ -134,12 +140,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     
     <script>
-        function changeLanguage(lang) {
-            // Implement your language change logic here
-            console.log('Changing language to: ' + lang);
-            // This would typically involve setting a cookie or localStorage value
-            // and then reloading the page or making an API call
+        function setLanguageUI(lang) {
+            const langMap = {
+                en: {
+                    flag: "https://flagcdn.com/w20/gb.png",
+                    text: "English",
+                    alt: "English"
+                },
+                ar: {
+                    flag: "https://flagcdn.com/w20/sa.png",
+                    text: "العربية (Arabic)",
+                    alt: "Arabic"
+                }
+            };
+            const selected = langMap[lang] || langMap.en;
+            document.getElementById('selectedLanguage').innerHTML =
+                `<img src="${selected.flag}" width="20" height="15" class="me-1" alt="${selected.alt}"> ${selected.text}`;
         }
+
+        function changeLanguage(lang) {
+            localStorage.setItem('selectedLanguage', lang);
+            setLanguageUI(lang);
+            // Optionally reload or redirect here if you want to actually change the site language
+            // location.reload();
+        }
+
+        // On page load, set the dropdown to the stored language
+        document.addEventListener('DOMContentLoaded', function () {
+            const lang = localStorage.getItem('selectedLanguage') || 'en';
+            setLanguageUI(lang);
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

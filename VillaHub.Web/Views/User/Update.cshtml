@@ -147,6 +147,18 @@
                             <span asp-validation-for="UserRole" class="text-danger"></span>
                         </div>
                     }
+                    else
+                    {
+                        <!-- Roles (Editable) -->
+                        <div class="form-group pt-2 col-6">
+                            <label class="text-warning">Roles</label>
+                            <select asp-for="UserRole" asp-items="Model.RolesList" class="form-select" disabled>
+                                <option disabled selected>-Select Role-</option>
+                            </select>
+                            <span asp-validation-for="UserRole" class="text-danger"></span>
+                        </div>
+                        <input type="hidden" asp-for="UserRole" />
+                    }
                 </div>
 
                 <div class="mt-4">

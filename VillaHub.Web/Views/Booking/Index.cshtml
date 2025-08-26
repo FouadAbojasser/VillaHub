@@ -1,94 +1,93 @@
 ﻿@using VillaHub.Application.Common.Utility
 
-    @{
-        var status = Context.Request.Query["status"];
+@{
+    var status = Context.Request.Query["status"];
 
-        var approved = "";
-        var pending = "";
-        var checkedIn = "";
-        var completed = "";
-        var cancelled = "";
+    var approved = "";
+    var pending = "";
+    var checkedIn = "";
+    var completed = "";
+    var cancelled = "";
 
-        switch (status)
-        {
-            case SD.StatusPending:
-                pending = "text-white bg-success";
-                break;
-            case SD.StatusApproved:
-                approved = "text-white bg-success";
-                break;
-            case SD.StatusCheckedIn:
-                checkedIn = "text-white bg-success";
-                break;
-            case SD.StatusCompleted:
-                completed = "text-white bg-success";
-                break;
-            case SD.StatusCancelled:
-                cancelled = "text-white bg-success";
-                break;
-            default:
-                break;
-        }
+    switch (status)
+    {
+        case SD.StatusPending:
+            pending = "text-white bg-success";
+            break;
+        case SD.StatusApproved:
+            approved = "text-white bg-success";
+            break;
+        case SD.StatusCheckedIn:
+            checkedIn = "text-white bg-success";
+            break;
+        case SD.StatusCompleted:
+            completed = "text-white bg-success";
+            break;
+        case SD.StatusCancelled:
+            cancelled = "text-white bg-success";
+            break;
+        default:
+            break;
     }
-
+}
 
 <div class="w-100 card border-0 p-4">
-
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Bookings List</h2>
+            <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 70px;">
+                <h2 class="text-white py-2 m-0">Bookings List</h2>
             </div>
         </div>
     </div>
 
-
     <div class="card-body border">
         <div class="table-responsive pb-4 pt-2">
 
-            <div class="d-flex justify-content-center pb-4 pt-2">
-                <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item @pending">
-                        <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusPending">
-                            @SD.StatusPending
-                        </a>
-                    </li>
-                    <li class="list-group-item @approved">
-                        <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">
-                            @SD.StatusApproved
-                        </a>
-                    </li>
-                    <li class="list-group-item @checkedIn">
-                        <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCheckedIn">
-                            @SD.StatusCheckedIn
-                        </a>
-                    </li>
-                    <li class="list-group-item @completed">
-                        <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCompleted">
-                            @SD.StatusCompleted
-                        </a>
-                    </li>
-                    <li class="list-group-item @cancelled">
-                        <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCancelled">
-                            @SD.StatusCancelled
-                        </a>
-                    </li>
-                </ul>
+            <!-- Responsive status filter -->
+            <div class="pb-4 pt-2 d-flex justify-content-center align-items-center" style="min-height: 60px;">
+                <div class="overflow-auto">
+                    <ul class="list-group list-group-horizontal flex-nowrap m-0">
+                        <li class="list-group-item @pending">
+                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusPending">
+                                @SD.StatusPending
+                            </a>
+                        </li>
+                        <li class="list-group-item @approved">
+                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">
+                                @SD.StatusApproved
+                            </a>
+                        </li>
+                        <li class="list-group-item @checkedIn">
+                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCheckedIn">
+                                @SD.StatusCheckedIn
+                            </a>
+                        </li>
+                        <li class="list-group-item @completed">
+                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCompleted">
+                                @SD.StatusCompleted
+                            </a>
+                        </li>
+                        <li class="list-group-item @cancelled">
+                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCancelled">
+                                @SD.StatusCancelled
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-
-            <table id="tblBookings" class="table table-bordered table-striped text-center">
+            <table id="tblBookings" class="table table-bordered table-striped w-100">
                 <thead>
-                    <tr>
-                        <th class="text-center">ID</th>
-                        <th class="text-center">Name</th>
-                        <th class="text-center">Phone</th>
-                        <th class="text-center">Email</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Check-In</th>
-                        <th class="text-center">Nights</th>
-                        <th class="text-center">Total</th>
-                        <th class="text-center">Actions</th>
+                    <tr class="text-center align-middle" style="height: 60px;">
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Check-In</th>
+                        <th>Nights</th>
+                        <th>Total</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>

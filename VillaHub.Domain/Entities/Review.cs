@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -15,9 +16,13 @@ namespace VillaHub.Domain.Entities
         public int Rate { get; set; }
         public DateOnly CreatedAt { get; set; }
         public DateOnly UpdatedAt { get; set; }
+        [MaxLength(100)]
+        public string Reply { get; set; } = string.Empty;
+        public DateOnly RepliedAt { get; set; }
+        public string ReplyUserId { get; set; } = string.Empty;
 
         // ===> Foreign Keys
-        
+
         [Required]
         public string UserId { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;

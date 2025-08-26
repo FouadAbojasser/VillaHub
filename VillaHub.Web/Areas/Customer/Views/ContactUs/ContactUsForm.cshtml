@@ -1,0 +1,56 @@
+﻿@using VillaHub.Web.ViewModels.ContactUs
+@model ContactUsVM
+
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-success bg-gradient text-white text-center">
+                    <h3 class="mb-0">Contact Us</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        @* <div class="mb-3">
+                            <label asp-for="@Model.Name" class="form-label">Name</label>
+                            <input asp-for="@Model.Name" class="form-control" placeholder="Your Name" />
+                            <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                        </div> *@
+                        
+                        <div class="mb-3">
+                            <label asp-for="@Model.Email" class="form-label">Email</label>
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                <input asp-for="@Model.Email" class="form-control" value="@User.Identity.Name" />
+                            }
+                            else
+                            {
+                                <input asp-for="@Model.Email" class="form-control" placeholder="you@example.com" />
+                            }
+                            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="@Model.Subject" class="form-label">Subject</label>
+                            <input asp-for="@Model.Subject" class="form-control" placeholder="Subject" />
+                            <span asp-validation-for="@Model.Subject" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="@Model.Message" class="form-label">Message</label>
+                            <textarea asp-for="@Model.Message" class="form-control" rows="5" placeholder="Type your message here..."></textarea>
+                            <span asp-validation-for="@Model.Message" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-envelope-fill me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -18,26 +18,26 @@
             </div>
         </div>
 
-        <table class="table table-bordered table-striped text-center">
+        <table class="table table-bordered table-striped align-middle text-center">
             <thead>
                 <tr>
-                    <th class ="align-content-center">Image</th>
-                    <th class="align-content-center">Name</th>
-                    <th class ="align-content-center">Village</th>
-                    <th class ="align-content-center">Description</th>
-                    <th class ="align-content-center">Number Of Floors</th>
-                    <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
-                    <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
-                    <th class="align-content-center">Amenities</th>
-                    <th class="align-content-center">Location</th>
-                    <th class="align-content-center">Actions</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Village</th>
+                    <th>Description</th>
+                    <th>Number Of Floors</th>
+                    <th>Area<br /><small>(Sqm)</small></th>
+                    <th>Capacity<br /><small>(Person)</small></th>
+                    <th>Amenities</th>
+                    <th>Location</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var villa in Model)
                 {
                     <tr>
-                        <td class="align-content-center">
+                        <td>
                             @if (!string.IsNullOrEmpty(villa.MainImg))
                             {
                                 var imagePath = Url.Content($"~/images/villas/" + villa.MainImg);
@@ -54,20 +54,20 @@
                                 <span class="text-muted">No image</span>
                             }
                         </td>
-                        <td class="align-content-center">@villa.Name</td>
-                        <td class="align-content-center">@villa.Village!.Name</td>
-                        <td class="text-start">@villa.Description</td>
-                        <td class="align-content-center">@villa.Floors.Count()</td>
-                        <td class="align-content-center">@villa.Area</td>
-                        <td class="align-content-center">@villa.Capacity</td>
-                        <td class="align-content-center">
+                        <td>@villa.Name</td>
+                        <td>@villa.Village!.Name</td>
+                        <td class="text-start align-middle">@villa.Description</td>
+                        <td>@villa.Floors.Count()</td>
+                        <td>@villa.Area</td>
+                        <td>@villa.Capacity</td>
+                        <td>
                             <a href="#" class="text-decoration-none text-primary"
                                data-bs-toggle="modal" data-bs-target="#villaAmenityModal"
                                onclick="loadVillaAmenities('@villa.Id')">
                                 Amenities (@villa.Amenities.Count())
                             </a>
                         </td>
-                        <td class="align-content-center">
+                        <td>
                             @if (villa.Latitude != 0 && villa.Longitude != 0)
                             {
                                 <a href="https://www.google.com/maps?q=@villa.Latitude,@villa.Longitude"
@@ -80,8 +80,8 @@
                                 <span class="text-muted">No location</span>
                             }
                         </td>
-                        <td class="align-content-center">
-                            <div class="w-75 btn-group" role="group">
+                        <td>
+                            <div class="btn-group" role="group">
                                 <a asp-controller="Villa" asp-action="Update" asp-route-id="@villa.Id"
                                    class="btn btn-success mx-1">
                                     <i class="bi bi-pencil-square"></i> Update

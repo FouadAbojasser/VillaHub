@@ -33,6 +33,8 @@ namespace VillaHub.Web.Controllers
             return View();
         }
 
+
+
         [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> UserDetailsAsync(string Id)
         {
@@ -61,6 +63,8 @@ namespace VillaHub.Web.Controllers
             return NotFound();
         }
 
+
+
         [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> DeleteAsync(string Id)
         {
@@ -85,6 +89,8 @@ namespace VillaHub.Web.Controllers
             return NotFound();
            
         }
+
+
 
         [HttpPost]
         [Authorize(Roles = SD.Role_SuperAdmin)]
@@ -131,6 +137,8 @@ namespace VillaHub.Web.Controllers
             return RedirectToAction("Index");
 
         }
+
+
 
         [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> RestoreAsync(string id)
@@ -269,7 +277,8 @@ namespace VillaHub.Web.Controllers
 
                 TempData["success"] = "User Updated Successfully";
 
-                if (await _userManager.IsInRoleAsync(user.AppUser, SD.Role_SuperAdmin))
+                
+                if (User.IsInRole(SD.Role_SuperAdmin))
                 {
                     return RedirectToAction(nameof(Index));
                 }
