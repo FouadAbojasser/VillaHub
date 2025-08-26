@@ -17,76 +17,78 @@
             </div>
         </div>
 
-        <table class="table table-bordered table-striped text-center">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th class="align-items-center justify-content-center text-center">Villas Count</th>
-                    <th>Location</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var village in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped w-100 align-middle text-center">
+                <thead>
                     <tr>
-                        <td class="align-content-center">
-                            @if (!string.IsNullOrEmpty(village.ImgUrl))
-                            {
-                                var imagePath = Url.Content("~/images/villages/" + village.ImgUrl);
-                                <img src="@imagePath"
-                                     alt="Village Image"
-                                     style="width: 100px; height: 75px; cursor: pointer;"
-                                     class="img-thumbnail"
-                                     data-bs-toggle="modal"
-                                     data-bs-target="#imageModal"
-                                     onclick="showFullImage('@imagePath')" />
-                            }
-                            else
-                            {
-                                <span class="text-muted">No image</span>
-                            }
-                        </td>
-                        <td class="align-content-center">@village.Name</td>
-                        <td class="text-start">@village.Description</td>
-                        <td class="align-content-center">@village.Villas.Count()</td>
-                        <td class="align-content-center">
-                            @if (village.Latitude != 0 && village.Longitude != 0)
-                            {
-                                <a href="https://www.google.com/maps?q=@village.Latitude,@village.Longitude"
-                                   target="_blank" class="btn btn-sm btn-outline-primary">
-                                    View on Map
-                                </a>
-                            }
-                            else
-                            {
-                                <span class="text-muted">No location</span>
-                            }
-                        </td>
-                        <td class="align-content-center">
-                            <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Village" asp-action="Update" asp-route-id="@village.Id"
-                                   class="btn btn-success mx-1">
-                                    <i class="bi bi-pencil-square"></i> Update
-                                </a>
-                                <a asp-controller="Village" asp-action="Delete" asp-route-id="@village.Id"
-                                   class="btn btn-danger mx-1">
-                                    <i class="bi bi-trash-fill"></i> Delete
-                                </a>
-                                <a asp-controller="Villa" asp-action="Create" asp-route-id="@village.Id"
-                                   class="btn btn-primary mx-1 d-flex flex-column align-items-center justify-content-center text-center"
-                                   style="min-width: 90px; white-space: nowrap;">
-                                    <i class="bi bi-plus-circle mb-1"></i>
-                                    Add Villas
-                                </a>
-                            </div>
-                        </td>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Villas Count</th>
+                        <th>Location</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var village in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(village.ImgUrl))
+                                {
+                                    var imagePath = Url.Content("~/images/villages/" + village.ImgUrl);
+                                    <img src="@imagePath"
+                                         alt="Village Image"
+                                         class="img-thumbnail img-fluid"
+                                         style="width: 100px; height: 75px; cursor: pointer;"
+                                         data-bs-toggle="modal"
+                                         data-bs-target="#imageModal"
+                                         onclick="showFullImage('@imagePath')" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No image</span>
+                                }
+                            </td>
+                            <td>@village.Name</td>
+                            <td class="text-start">@village.Description</td>
+                            <td>@village.Villas.Count()</td>
+                            <td>
+                                @if (village.Latitude != 0 && village.Longitude != 0)
+                                {
+                                    <a href="https://www.google.com/maps?q=@village.Latitude,@village.Longitude"
+                                       target="_blank" class="btn btn-sm btn-outline-primary">
+                                        View on Map
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No location</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Village" asp-action="Update" asp-route-id="@village.Id"
+                                       class="btn btn-success mx-1 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-pencil-square"></i> Update
+                                    </a>
+                                    <a asp-controller="Village" asp-action="Delete" asp-route-id="@village.Id"
+                                       class="btn btn-danger mx-1 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </a>
+                                    <a asp-controller="Villa" asp-action="Create" asp-route-id="@village.Id"
+                                       class="btn btn-primary mx-1 d-flex flex-column align-items-center justify-content-center text-center"
+                                       style="white-space;">
+                                        <i class="bi bi-plus-circle mb-1"></i>
+                                        Add Villas
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -100,8 +102,6 @@
         </div>
     </div>
 </div>
-
-
 
 @section Scripts {
     <script>

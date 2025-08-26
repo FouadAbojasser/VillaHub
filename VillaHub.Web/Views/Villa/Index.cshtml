@@ -18,93 +18,94 @@
             </div>
         </div>
 
-        <table class="table table-bordered table-striped align-middle text-center">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Village</th>
-                    <th>Description</th>
-                    <th>Number Of Floors</th>
-                    <th>Area<br /><small>(Sqm)</small></th>
-                    <th>Capacity<br /><small>(Person)</small></th>
-                    <th>Amenities</th>
-                    <th>Location</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var villa in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped w-100 align-middle text-center">
+                <thead>
                     <tr>
-                        <td>
-                            @if (!string.IsNullOrEmpty(villa.MainImg))
-                            {
-                                var imagePath = Url.Content($"~/images/villas/" + villa.MainImg);
-                                <img src="@imagePath"
-                                     alt="Villa Image"
-                                     style="width: 100px; height: auto; cursor: pointer;"
-                                     class="img-thumbnail"
-                                     data-bs-toggle="modal"
-                                     data-bs-target="#imageModal"
-                                     onclick="showFullImage('@imagePath')" />
-                            }
-                            else
-                            {
-                                <span class="text-muted">No image</span>
-                            }
-                        </td>
-                        <td>@villa.Name</td>
-                        <td>@villa.Village!.Name</td>
-                        <td class="text-start align-middle">@villa.Description</td>
-                        <td>@villa.Floors.Count()</td>
-                        <td>@villa.Area</td>
-                        <td>@villa.Capacity</td>
-                        <td>
-                            <a href="#" class="text-decoration-none text-primary"
-                               data-bs-toggle="modal" data-bs-target="#villaAmenityModal"
-                               onclick="loadVillaAmenities('@villa.Id')">
-                                Amenities (@villa.Amenities.Count())
-                            </a>
-                        </td>
-                        <td>
-                            @if (villa.Latitude != 0 && villa.Longitude != 0)
-                            {
-                                <a href="https://www.google.com/maps?q=@villa.Latitude,@villa.Longitude"
-                                   target="_blank" class="btn btn-sm btn-outline-primary">
-                                    View on Map
-                                </a>
-                            }
-                            else
-                            {
-                                <span class="text-muted">No location</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a asp-controller="Villa" asp-action="Update" asp-route-id="@villa.Id"
-                                   class="btn btn-success mx-1">
-                                    <i class="bi bi-pencil-square"></i> Update
-                                </a>
-                                <a asp-controller="Villa" asp-action="Delete" asp-route-id="@villa.Id"
-                                   class="btn btn-danger mx-1">
-                                    <i class="bi bi-trash-fill"></i> Delete
-                                </a>
-                                <a asp-controller="Floor" asp-action="Create" asp-route-id="@villa.Id"
-                                   class="btn btn-primary mx-1 d-flex flex-column align-items-center justify-content-center text-center"
-                                   style="min-width: 90px; white-space: nowrap;">
-                                    <i class="bi bi-plus-circle mb-1"></i>
-                                    Add Floor
-                                </a>
-                            </div>
-                        </td>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Village</th>
+                        <th>Description</th>
+                        <th>Number Of Floors</th>
+                        <th>Area<br /><small>(Sqm)</small></th>
+                        <th>Capacity<br /><small>(Person)</small></th>
+                        <th>Amenities</th>
+                        <th>Location</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var villa in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(villa.MainImg))
+                                {
+                                    var imagePath = Url.Content($"~/images/villas/" + villa.MainImg);
+                                    <img src="@imagePath"
+                                         alt="Villa Image"
+                                         class="img-thumbnail img-fluid"
+                                         style="width: 100px; height: auto; cursor: pointer;"
+                                         data-bs-toggle="modal"
+                                         data-bs-target="#imageModal"
+                                         onclick="showFullImage('@imagePath')" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No image</span>
+                                }
+                            </td>
+                            <td>@villa.Name</td>
+                            <td>@villa.Village!.Name</td>
+                            <td class="text-start align-middle">@villa.Description</td>
+                            <td>@villa.Floors.Count()</td>
+                            <td>@villa.Area</td>
+                            <td>@villa.Capacity</td>
+                            <td>
+                                <a href="#" class="text-decoration-none text-primary"
+                                   data-bs-toggle="modal" data-bs-target="#villaAmenityModal"
+                                   onclick="loadVillaAmenities('@villa.Id')">
+                                    Amenities (@villa.Amenities.Count())
+                                </a>
+                            </td>
+                            <td>
+                                @if (villa.Latitude != 0 && villa.Longitude != 0)
+                                {
+                                    <a href="https://www.google.com/maps?q=@villa.Latitude,@villa.Longitude"
+                                       target="_blank" class="btn btn-sm btn-outline-primary">
+                                        View on Map
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No location</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Villa" asp-action="Update" asp-route-id="@villa.Id"
+                                       class="btn btn-success mx-1">
+                                        <i class="bi bi-pencil-square"></i> Update
+                                    </a>
+                                    <a asp-controller="Villa" asp-action="Delete" asp-route-id="@villa.Id"
+                                       class="btn btn-danger mx-1">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </a>
+                                    <a asp-controller="Floor" asp-action="Create" asp-route-id="@villa.Id"
+                                       class="btn btn-primary mx-1 d-flex flex-column align-items-center justify-content-center text-center"
+                                       style="min-width: 90px; white-space: nowrap;">
+                                        <i class="bi bi-plus-circle mb-1"></i>
+                                        Add Floor
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
 
 <!-- Villa Amenity Modal -->
 <div class="modal fade" id="villaAmenityModal" tabindex="-1" aria-labelledby="villaAmenityModalLabel" aria-hidden="true">
@@ -121,7 +122,6 @@
     </div>
 </div>
 
-
 <!-- Image Preview Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -132,8 +132,6 @@
         </div>
     </div>
 </div>
-
-
 
 @section Scripts {
     <script>

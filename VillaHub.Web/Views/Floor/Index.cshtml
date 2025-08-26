@@ -1,5 +1,4 @@
-﻿
-@using VillaHub.Domain.Entities
+﻿@using VillaHub.Domain.Entities
 @model IEnumerable<Floor>
 
 <div class="w-100 card border-0 p-4">
@@ -12,84 +11,80 @@
     </div>
     <div class="card-body border p-4">
         <div class="row pb-3">
-            @* <div class="col-6 offset-6 text-end"> *@
-            @*     <a asp-controller="Floor" asp-action="Create" class="btn btn-secondary"> *@
-            @*         <i class="bi bi-plus-circle"></i> Create New Floor *@
-            @*     </a> *@
-            @* </div> *@
+            @* <div class="col-6 offset-6 text-end">
+                <a asp-controller="Floor" asp-action="Create" class="btn btn-secondary">
+                    <i class="bi bi-plus-circle"></i> Create New Floor
+                </a>
+            </div> *@
         </div>
 
-        <table class="table table-bordered table-striped text-center">
-            <thead>
-                <tr>
-
-                    <th class="align-content-center">Floor Number</th>
-                    <th class="align-content-center">Villa Name</th>
-                    <th class="align-content-center">Village Name</th>
-                    <th class="align-content-center">Description</th>
-                    <th class="align-content-center">Price</th>
-                    <th class="align-content-center">Area<h6><small>(Sqm)</small></h6></th>
-                    <th class="align-content-center">Capacity <h6><small>(Person)</small></h6></th>
-                    <th class="align-content-center">Amenities</th>
-                    <th class="align-content-center">Galary</th>
-                    <th class="align-content-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var floor in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped w-100 align-middle text-center">
+                <thead>
                     <tr>
-                        <td class="align-content-center">@floor.FloorNumber</td>
-                        <td class="align-content-center">@floor.Villa!.Name</td>
-                        <td class="align-content-center">@floor.Villa!.Village.Name</td>
-                        <td class="text-start">@floor.Description</td>
-                        <td class="align-content-center">@floor.Price</td>
-                        <td class="align-content-center">@floor.Area</td>
-                        <td class="align-content-center">@floor.Capacity</td>
-
-                        <td class="align-content-center">
-                            <a href="#" class="text-decoration-none text-primary"
-                               data-bs-toggle="modal" data-bs-target="#amenityModal"
-                               onclick="loadAmenities('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId')">
-                                Amenities (@floor.Amenities.Count())
-                            </a>
-                        </td>
-
-                        <td class="align-content-center">
-                            <a href="#" class="text-decoration-none text-primary" data-bs-toggle="modal" data-bs-target="#galleryModal"
-                            onclick="loadFloorGallery('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId', '@floor.Villa.Name')">
-                                Gallery (@floor.Images.Count())
-                            </a>
-                        </td>
-
-                        <td class="text-center align-middle">
-                            <div class="d-inline-flex justify-content-center">
-                                <div class="btn-group" role="group">
-                                    <a asp-controller="Floor" asp-action="Update"
-                                       asp-route-floorNumber="@floor.FloorNumber"
-                                       asp-route-villaId="@floor.VillaId"
-                                       asp-route-villageId="@floor.VillageId"
-                                       class="btn btn-success mx-1">
-                                        <i class="bi bi-pencil-square"></i> Update
-                                    </a>
-
-                                    <a asp-controller="Floor" asp-action="Delete"
-                                       asp-route-floorNumber="@floor.FloorNumber"
-                                       asp-route-villaId="@floor.VillaId"
-                                       asp-route-villageId="@floor.VillageId"
-                                       class="btn btn-danger mx-1">
-                                        <i class="bi bi-trash-fill"></i> Delete
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
+                        <th>Floor Number</th>
+                        <th>Villa Name</th>
+                        <th>Village Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Area<br /><small>(Sqm)</small></th>
+                        <th>Capacity<br /><small>(Person)</small></th>
+                        <th>Amenities</th>
+                        <th>Gallery</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var floor in Model)
+                    {
+                        <tr>
+                            <td>@floor.FloorNumber</td>
+                            <td>@floor.Villa!.Name</td>
+                            <td>@floor.Villa!.Village.Name</td>
+                            <td class="text-start">@floor.Description</td>
+                            <td>@floor.Price</td>
+                            <td>@floor.Area</td>
+                            <td>@floor.Capacity</td>
+                            <td>
+                                <a href="#" class="text-decoration-none text-primary"
+                                   data-bs-toggle="modal" data-bs-target="#amenityModal"
+                                   onclick="loadAmenities('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId')">
+                                    Amenities (@floor.Amenities.Count())
+                                </a>
+                            </td>
+                            <td>
+                                <a href="#" class="text-decoration-none text-primary" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                                   onclick="loadFloorGallery('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId', '@floor.Villa.Name')">
+                                    Gallery (@floor.Images.Count())
+                                </a>
+                            </td>
+                            <td>
+                                <div class="d-inline-flex justify-content-center">
+                                    <div class="btn-group" role="group">
+                                        <a asp-controller="Floor" asp-action="Update"
+                                           asp-route-floorNumber="@floor.FloorNumber"
+                                           asp-route-villaId="@floor.VillaId"
+                                           asp-route-villageId="@floor.VillageId"
+                                           class="btn btn-success mx-1">
+                                            <i class="bi bi-pencil-square"></i> Update
+                                        </a>
+                                        <a asp-controller="Floor" asp-action="Delete"
+                                           asp-route-floorNumber="@floor.FloorNumber"
+                                           asp-route-villaId="@floor.VillaId"
+                                           asp-route-villageId="@floor.VillageId"
+                                           class="btn btn-danger mx-1">
+                                            <i class="bi bi-trash-fill"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
 
 <!-- Amenity Modal -->
 <div class="modal fade" id="amenityModal" tabindex="-1" aria-labelledby="amenityModalLabel" aria-hidden="true">
@@ -106,7 +101,6 @@
     </div>
 </div>
 
-
 <!-- Gallery Modal -->
 <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -122,14 +116,13 @@
     </div>
 </div>
 
-
 @section Scripts {
     <script>
         function showFullImage(imgSrc) {
             document.getElementById('modalImage').src = imgSrc;
         }
 
-            function loadFloorGallery(floorNumber, villaId, villageId) {
+        function loadFloorGallery(floorNumber, villaId, villageId) {
             const galleryContainer = document.getElementById("galleryContent");
             galleryContainer.innerHTML = "";
 
@@ -140,7 +133,6 @@
                 villageId = f.VillageId,
                 name = img.Name
             }))));
-
 
             const filtered = images.filter(img =>
                 img.floorNumber === parseInt(floorNumber) &&
@@ -155,18 +147,15 @@
 
             filtered.forEach(img => {
                 const col = document.createElement("div");
-                col.className = "col-md-4";
-
+                col.className = "col-md-4 col-12 mb-3";
                 col.innerHTML = `
-                    <img src="/images/floors/${img.name}" class="img-thumbnail w-100 shadow-sm"
+                    <img src="/images/floors/${img.name}" class="img-thumbnail w-100 shadow-sm img-fluid"
                          style="height: 150px; object-fit: cover;" alt="Floor Image" />
                 `;
                 galleryContainer.appendChild(col);
             });
         }
 
-        //Amenity Script
-      
         function loadAmenities(floorNumber, villaId, villageId) {
             const amenityList = document.getElementById("amenityList");
             amenityList.innerHTML = "";
@@ -176,7 +165,7 @@
                 villaId = f.VillaId,
                 villageId = f.VillageId,
                 villaName = f.Villa.Name,
-               amenities = f.Amenities.Select(a => a.Name.Trim())
+                amenities = f.Amenities.Select(a => a.Name.Trim())
             })));
 
             const floor = floors.find(f =>
@@ -196,8 +185,7 @@
                 li.textContent = amenity;
                 amenityList.appendChild(li);
             });
-            
-            // Update modal title with floor info
+
             document.querySelector('#amenityModal .modal-title').textContent =
                 `Amenities for Floor ${floorNumber} in Villa ${floor.villaName}`;
         }

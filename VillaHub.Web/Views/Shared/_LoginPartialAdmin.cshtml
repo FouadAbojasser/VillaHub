@@ -2,28 +2,50 @@
 @using VillaHub.Domain.Entities
 @inject UserManager<ApplicationUser> UserManager
 
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var avatar = string.IsNullOrEmpty(currentUser?.ImageUrl)
+        ? Url.Content("~/images/others/default-user.png")
+        : Url.Content("~/images/users/" + currentUser.ImageUrl);
+}
+
+<!-- Desktop / Tablet -->
 <ul class="navbar-nav d-none d-md-flex nav-login">
     <li class="nav-item d-flex align-items-center">
-
-        @* Get the logged-in user and display avatar *@
-        @{
-            var currentUser = await UserManager.GetUserAsync(User);
-            var avatar = string.IsNullOrEmpty(currentUser?.ImageUrl)
-                ? Url.Content("~/images/others/default-user.png")
-                : Url.Content("~/images/users/" + currentUser.ImageUrl);
-        }
-
         <img src="@avatar" alt="User Avatar"
              class="rounded-circle me-4"
              style="width:30px; height:30px; object-fit:cover;" />
-
         <span class="nav-link mb-0">Hello @User.Identity!.Name</span>
-
         <a class="nav-link ms-3 mb-0"
            asp-area="Identity"
            asp-controller="Account"
            asp-action="Logout">
             Logout
         </a>
+    </li>
+</ul>
+
+<!-- Mobile: Dropdown menu -->
+<ul class="navbar-nav d-md-none nav-login">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="@avatar" alt="User Avatar"
+                 class="rounded-circle me-2"
+                 style="width:30px; height:30px; object-fit:cover;" />
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li class="dropdown-item-text">
+                <span>Hello</span>
+            </li>
+            <li class="dropdown-item-text text-muted">@User.Identity!.Name</li>
+            <li>
+                <a class="dropdown-item"
+                   asp-area="Identity"
+                   asp-controller="Account"
+                   asp-action="Logout">
+                    Logout
+                </a>
+            </li>
+        </ul>
     </li>
 </ul>

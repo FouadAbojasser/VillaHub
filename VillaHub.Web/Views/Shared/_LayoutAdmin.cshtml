@@ -17,11 +17,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/spinner.css" />
-    <!-- DataTables with Bootstrap 5 styling -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/css/apexcharts.css" />
-    <!-- Add custom styles for notifications -->
-    
 </head>
 <body>
     <header>
@@ -50,7 +47,6 @@
                             <span id="notificationBadge" class="badge rounded-pill bg-danger notification-badge" style="display: none;">
                                 0
                             </span>
-                           
                         </button>
                         <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notificationDropdown" style="min-width: 350px;">
                             <div class="dropdown-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -95,8 +91,8 @@
         </div>
     </div>
 
-    <div class="">
-        <main role="main" class="">
+    <div class="container-fluid px-0">
+        <main role="main">
             <div class="loading spinner" style="display:none;"></div>
             <partial name="_Notification" />
             @RenderBody()
@@ -129,9 +125,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             @if (User.IsInRole(SD.Role_SuperAdmin))
             {
-                    <text>
-                    initializeSignalR();
-                    </text>
+                <text>
+                initializeSignalR();
+                </text>
             }
 
             function initializeSignalR() {

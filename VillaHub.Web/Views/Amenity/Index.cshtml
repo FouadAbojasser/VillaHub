@@ -18,47 +18,44 @@
             </div>
         </div>
 
-        <table class="table table-bordered table-striped text-center">
-            <thead>
-                <tr>
-                    <th class="align-content-center">Name</th>
-                    <th class ="align-content-center">Type</th>
-                    <th class ="align-content-center">Description</th>
-                    <th class ="align-content-center">Price</th>
-                    <th class ="align-content-center">Date Created</th>
-                    <th class ="align-content-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var amenity in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped w-100 align-middle text-center">
+                <thead>
                     <tr>
-                        
-                        <td>@amenity.Name</td>
-                        <td>@amenity.Type</td>
-                        <td class="text-start">@amenity.Description</td>
-                        <td>@amenity.Price</td>
-                        <td>@amenity.CreateDate</td>
-                                               
-                        <td class="align-content-center">
-                            <div class="w-75 btn-group" role="group">
-
-                                <a asp-controller="Amenity" asp-action="Update" asp-route-id="@amenity.Id"
-                                   class="btn btn-success mx-2">
-                                    <i class="bi bi-pencil-square"></i> Update
-                                </a>
-
-                                <a asp-controller="Amenity" asp-action="Delete" asp-route-id="@amenity.Id"
-                                   class="btn btn-danger mx-2">
-                                    <i class="bi bi-trash-fill"></i> Delete
-                                </a>
-
-                            </div>
-                        </td>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var amenity in Model)
+                    {
+                        <tr>
+                            <td>@amenity.Name</td>
+                            <td>@amenity.Type</td>
+                            <td class="text-start">@amenity.Description</td>
+                            <td>@amenity.Price</td>
+                            <td>@amenity.CreateDate</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Amenity" asp-action="Update" asp-route-id="@amenity.Id"
+                                       class="btn btn-success mx-2">
+                                        <i class="bi bi-pencil-square"></i> Update
+                                    </a>
+                                    <a asp-controller="Amenity" asp-action="Delete" asp-route-id="@amenity.Id"
+                                       class="btn btn-danger mx-2">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
