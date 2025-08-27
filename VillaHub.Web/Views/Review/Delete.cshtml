@@ -1,0 +1,81 @@
+﻿@{
+        ViewData["Title"] = "Delete Review";
+}
+
+@using VillaHub.Domain.Entities
+@model Review
+
+<div class="w-100 card border-0 p-4">
+    <div class="card-header bg-success bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Delete Review</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body border p-4">
+        <form method="post" class="row">
+            <input asp-for="Id" hidden />
+            <div class="col-12">
+                <div class="p-3">
+                    <div class="form-floating py-1 col-12">
+                        <input value="@Model.Floor?.Village?.Name" disabled class="form-control border shadow" />
+                        <label class="ms-2">Village</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@Model.Floor?.Villa?.Name" disabled class="form-control border shadow" />
+                        <label class="ms-2">Villa</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@Model.Floor?.FloorNumber" disabled class="form-control border shadow" />
+                        <label class="ms-2">Floor</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@Model.UserName" disabled class="form-control border shadow" />
+                        <label class="ms-2">User</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <textarea disabled class="form-control border shadow" style="height: 80px">@Model.Comment</textarea>
+                        <label class="ms-2">Review</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@Model.Rate" disabled class="form-control border shadow" />
+                        <label class="ms-2">Rate</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@Model.CreatedAt" disabled class="form-control border shadow" />
+                        <label class="ms-2">Date Created</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@(Model.UpdatedAt == default ? "-" : Model.UpdatedAt.ToString())" disabled class="form-control border shadow" />
+                        <label class="ms-2">Date Updated</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <textarea disabled class="form-control border shadow" style="height: 60px">@Model.Reply</textarea>
+                        <label class="ms-2">Reply</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@(Model.RepliedAt == default ? "-" : Model.RepliedAt.ToString())" disabled class="form-control border shadow" />
+                        <label class="ms-2">Replied At</label>
+                    </div>
+                    <div class="form-floating py-1 col-12">
+                        <input value="@Model.ReplyUserId" disabled class="form-control border shadow" />
+                        <label class="ms-2">Replied By</label>
+                    </div>
+                    <div class="row pt-2">
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-trash-fill"></i> Delete
+                            </button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a asp-controller="Review" asp-action="Index" class="btn btn-secondary w-100">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

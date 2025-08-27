@@ -1,6 +1,60 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <h1 class="mb-4 text-success">@ViewData["Title"]</h1>
+                    <p class="lead">This Privacy Policy describes how VillaHub ("we", "us", or "our") collects, uses, and protects your personal information when you use our website and services.</p>
+
+                    <h4 class="mt-4 mb-2 text-primary">1. Information We Collect</h4>
+                    <ul>
+                        <li><strong>Personal Information:</strong> Name, email address, phone number, and other information you provide when registering or using our services.</li>
+                        <li><strong>Usage Data:</strong> Information about how you use our website, including IP address, browser type, device information, and pages visited.</li>
+                        <li><strong>Cookies:</strong> We use cookies and similar technologies to enhance your experience and analyze site usage.</li>
+                    </ul>
+
+                    <h4 class="mt-4 mb-2 text-primary">2. How We Use Your Information</h4>
+                    <ul>
+                        <li>To provide, operate, and maintain our services.</li>
+                        <li>To improve, personalize, and expand our website and services.</li>
+                        <li>To communicate with you, including sending updates and notifications.</li>
+                        <li>To process transactions and manage bookings.</li>
+                        <li>To comply with legal obligations and protect our rights.</li>
+                    </ul>
+
+                    <h4 class="mt-4 mb-2 text-primary">3. How We Share Your Information</h4>
+                    <ul>
+                        <li>We do <strong>not</strong> sell your personal information.</li>
+                        <li>We may share information with trusted third parties who assist us in operating our website and providing services, subject to confidentiality agreements.</li>
+                        <li>We may disclose information if required by law or to protect our rights and safety.</li>
+                    </ul>
+
+                    <h4 class="mt-4 mb-2 text-primary">4. Data Security</h4>
+                    <p>We implement appropriate technical and organizational measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.</p>
+
+                    <h4 class="mt-4 mb-2 text-primary">5. Your Rights</h4>
+                    <ul>
+                        <li>You may access, update, or delete your personal information by contacting us.</li>
+                        <li>You may opt out of receiving marketing communications at any time.</li>
+                    </ul>
+
+                    <h4 class="mt-4 mb-2 text-primary">6. Changes to This Policy</h4>
+                    <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.</p>
+
+                    <h4 class="mt-4 mb-2 text-primary">7. Contact Us</h4>
+                    <p>If you have any questions or concerns about this Privacy Policy or your data, please contact the project owner:</p>
+                    <ul>
+                        <li><strong>Name:</strong> Fouad AboJasser</li>
+                        <li><strong>Email:</strong> <a href="mailto:fouad.abojasser@gmial.com">fouad.abojasser@gmail.com</a></li>
+                    </ul>
+
+                    <p class="text-muted mt-4">Effective Date: @DateTime.Now.ToString("MMMM dd, yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

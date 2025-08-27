@@ -1,4 +1,7 @@
-﻿<div class="w-100 card border-0 p-4">
+﻿@{
+    ViewData["Title"] = "User List";
+}
+<div class="w-100 card border-0 p-4">
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
@@ -16,9 +19,9 @@
         </div>
 
         <div class="table-responsive">
-            <table id="tbusersTable" class="table table-bordered table-striped w-100">
+            <table id="tbusersTable" class="table table-bordered table-striped w-100 align-middle text-center">
                 <thead>
-                    <tr class="text-center align-middle">
+                    <tr>
                         <th>No.</th>
                         <th>Image</th>
                         <th>Name</th>

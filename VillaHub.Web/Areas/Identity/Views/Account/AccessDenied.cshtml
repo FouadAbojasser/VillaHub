@@ -1,4 +1,8 @@
-﻿<div class="d-flex justify-content-center align-items-center vh-100">
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
     <div class="text-center w-50">
         @if (!ViewData.ModelState.IsValid)
         {
