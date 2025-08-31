@@ -5,18 +5,24 @@ namespace VillaHub.Web.ViewModels.Identity
     public class NewPasswordOTPVM
     {
         public string ApplicationUserId { get; set; } = null!;
-        [Required(ErrorMessage = "OTP is required!")]
-        [Display(Name ="Received OTP")]
-        public int? OTP { get; set; } 
+
+        [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
+        [Display(Name = "ReceivedOTP", ResourceType = typeof(Resources.SharedResources))]
+        public int? OTP { get; set; }
+        
+
         public string Token { get; set; } = null!;
-        [Required]
+
+
+        [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
         [DataType(DataType.Password)]
-        [Display(Name = "New Password")]
+        [Display(Name = "NewPassword", ResourceType = typeof(Resources.SharedResources))]
         public string NewPassword { get; set; } = null!;
-        [Required]
-        [Compare(nameof(NewPassword))]
+
+        [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
+        [Compare(nameof(NewPassword), ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "PasswordMismatch")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm New Password")]
+        [Display(Name = "ConfirmNewPassword", ResourceType = typeof(Resources.SharedResources))]
         public string ConfirmNewPassword { get; set; } = null!;
     }
 }

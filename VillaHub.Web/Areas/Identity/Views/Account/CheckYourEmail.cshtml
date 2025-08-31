@@ -2,12 +2,15 @@
     ViewData["Title"] = "Email Check";
 }
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 <div class="container pt-5">
     <div class="card shadow border">
         <div class="card-header bg-success bg-gradient py-4">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h2 class="py-2 text-white">Reset Password Using Confirmation Link</h2>
+                    <h2 class="py-2 text-white">@Localizer["Title"]</h2>
                 </div>
             </div>
         </div>
@@ -18,14 +21,14 @@
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="text-md-left" style="font-size: 1.1rem;">
-                                    A password reset link has been sent to your email address.
+                                   @Localizer["CheckYourEmial1"]
                                     <br><br>
-                                    Please check your inbox and follow the instructions to reset your password.
+                                    @Localizer["CheckYourEmial2"]
                                 </div>
                             </div>
                         </div>
                         <div class="text-center">
-                            <a href="/Home/Index" class="btn btn-outline-success w-100">Back Home</a>
+                            <a href="/Home/Index" class="btn btn-outline-success w-100"> @Localizer["BackHome"]</a>
                         </div>
                     </section>
                 </div>

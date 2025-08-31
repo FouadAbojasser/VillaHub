@@ -1,9 +1,14 @@
-﻿@{
-        ViewData["Title"] = "Home Page";
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@using VillaHub.Web.ViewModels.Home
+@inject IViewLocalizer Localizer;
+@model HomeVM
+
+
+@{
+    ViewData["Title"] = Localizer["Title"];
 }
 
-@using VillaHub.Web.ViewModels.Home
-@model HomeVM
 
 <style>
     .custom-carousel {
@@ -17,7 +22,7 @@
 </style>
 
 <div class="container-fluid px-0">
-    <div id="carouselExampleIndicators" class="carousel slide custom-carousel">
+   <div id="carouselExampleIndicators" class="carousel slide custom-carousel">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -50,24 +55,28 @@
         <div class="d-flex flex-column flex-md-row flex-wrap gap-3 px-3 px-md-5 m-lg-4 m-0 justify-content-center">
             <div class="flex-fill">
                 <label asp-for="minPrice" class="form-label mb-1"></label>
-                <input asp-for="minPrice" type="number" min="0" class="form-control" placeholder="≥ Min" />
+                <input asp-for="minPrice" type="number" min="0" class="form-control" placeholder="@Localizer["minPricePlaceHolder"]" />
                 <span asp-validation-for="minPrice" class="text-danger"></span>
             </div>
             <div class="flex-fill">
                 <label asp-for="maxPrice" class="form-label mb-1"></label>
-                <input asp-for="maxPrice" type="number" min="0" class="form-control" placeholder="≤ Max" />
+                <input asp-for="maxPrice" type="number" min="0" class="form-control" placeholder="@Localizer["maxPricePlaceHolder"]" />
                 <span asp-validation-for="maxPrice" class="text-danger"></span>
             </div>
             <div class="flex-fill">
                 <label asp-for="CheckInDate" class="form-label mb-1"></label>
-                <input asp-for="CheckInDate"
-                       type="date"
-                       class="form-control w-100"
-                       min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                <div class="input-group @(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "rtl-date-group" : "")">
+                    <input asp-for="CheckInDate"
+                           type="date"
+                           dir="ltr"
+                           value="@(Model.CheckInDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture))"
+                           min="@(DateOnly.FromDateTime(DateTime.Now).AddDays(1).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture))"
+                           class="form-control" />
+                </div>
             </div>
             <div class="flex-fill">
                 <label asp-for="NumberOfNights" class="form-label mb-1"></label>
-                <select class="form-select w-100" asp-for="NumberOfNights">
+                <select class="form-select w-100 @(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft? "form-select-rtl" : "" )" asp-for="NumberOfNights">
                     @for (var i = 1; i < 11; i++)
                     {
                         <option value="@i">@i</option>
@@ -77,7 +86,7 @@
             </div>
             <div class="d-flex align-items-end">
                 <button type="button" onclick="fnLoadVillaList()" class="btn btn-success w-100">
-                    <i class="bi bi-search"></i> &nbsp; Check Availability
+                    <i class="bi bi-search"></i> &nbsp; @Localizer["Search"]
                 </button>
             </div>
         </div>
@@ -86,49 +95,50 @@
 
 <div class="container-fluid px-0">
     <div class="border-bottom pb-4 px-3 px-md-5 my-5">
-        <h2 class="text-success mb-2">Floors</h2>
+        <h2 class="text-success mb-2">
+            @Localizer["Floors"]</h2>
         <partial name="_FloorList" model="@Model" />
     </div>
     <div class="border-bottom pb-4 px-3 px-md-5 my-5">
-        <h2 class="text-primary mb-2">Villas</h2>
+        <h2 class="text-primary mb-2">
+            @Localizer["Villas"]</h2>
         <partial name="_VillaList" model="@Model" />
     </div>
     <div class="px-3 px-md-5 my-5">
-        <h2 class="text-warning mb-2">Villages</h2>
+        <h2 class="text-warning mb-2">
+            @Localizer["Villages"]</h2>
         <partial name="_VillageList" model="@Model" />
     </div>
 </div>
 
 @section scripts{
+
     <partial name="_ValidationScriptsPartial" />
+}
+
     <script>
         function fnLoadVillaList()
         {
             $('.spinner').show();
             var objData = {
-                checkInDate: $("#CheckInDate").val(),
+                CheckInDate: $("#CheckInDate").val(),
                 NumberOfNights: $("#NumberOfNights").val(),
                 minPrice: $("#minPrice").val(),
                 maxPrice: $("#maxPrice").val(),
             };
             $.ajax({
-                type: "POST",
-                data: objData,
-                url: "@Url.Action("CheckFloorAvailability", "Home")",
-                success: function (data) {
-                    $("#FloorList").empty();
-                    $("#FloorList").html(data);
-                    $('.spinner').hide();
-                },
-                failure: function (response) {
-                    $('.spinner').hide();
-                    alert(response.responseText);
-                },
-                error: function (response) {
-                    $('.spinner').hide();
-                    alert(response.responseText);
-                }
-           });
+            type: "POST",
+            url: "@Url.Action("CheckFloorAvailability", "Home")",
+            data: objData,
+            success: function (data) {
+                $("#FloorList").html(data);
+                $('.spinner').hide();
+            },
+            error: function (xhr) {
+                $('.spinner').hide();
+                alert(xhr.responseText);
+            }
+            });
+
         }
     </script>
-}

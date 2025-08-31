@@ -28,20 +28,23 @@ namespace VillaHub.Application.Common.Utility
         public const string StatusRefunded = "Refunded";
 
 
-        public static List<SelectListItem> CountryList = new List<SelectListItem>
+        public static List<SelectListItem> CountryList_en => new()
         {
-            new SelectListItem { Text = "Egypt", Value = "+2" },
+            new SelectListItem { Text = "Egypt", Value = "+20" },
             new SelectListItem { Text = "Palestine", Value = "+970" },
-            new SelectListItem { Text = "United States", Value = "+1" },
             new SelectListItem { Text = "Germany", Value = "+49" },
-            new SelectListItem { Text = "Saudi Arabia", Value = "+966" },
+            new SelectListItem { Text = "United States", Value = "+1" }, 
+            new SelectListItem { Text = "Saudi Arabia", Value = "+966" }
         };
 
-        
-
-
-
-
+        public static List<SelectListItem> CountryList_ar => new()
+        {
+            new SelectListItem { Text = "مصر", Value = "+20" },
+            new SelectListItem { Text = "فلسطين", Value = "+970" },
+            new SelectListItem { Text = "ألمانيا", Value = "+49" },
+            new SelectListItem { Text = "الولايات المتحدة الأمريكية", Value = "+1" },
+            new SelectListItem { Text = "المملكة العربية السعودية", Value = "+966" }
+        };
 
     }
 }

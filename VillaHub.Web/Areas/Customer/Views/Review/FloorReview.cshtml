@@ -1,11 +1,13 @@
-﻿@{
-    ViewData["Title"] = "Floor Reviews";
-}
-
-@using VillaHub.Application.Common.Utility
+﻿@using VillaHub.Application.Common.Utility
 @using VillaHub.Domain.Entities
-
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model Floor
+
+@{
+    ViewData["Title"] = @Localizer["Title"];
+}
 
 @if (Model == null)
 {
@@ -15,21 +17,27 @@ else
 {
     <div class="p-4 mt-0 mt-lg-4">
         <div class="row" style="border: 1px solid #aaa; border-radius: 10px;">
-
-            <!-- Left Side: Floor Details -->
-            <div class="col-12 col-lg-6 p-4 mt-2 mt-md-0">
+            @{
+                var isRTL = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+                var separatorClass = isRTL ? "border-start border-2" : "border-end border-2";
+            }
+            <!-- Floor Details - Separator - Customer Reviews (Header Section) -->
+            <div class="col-12 col-lg-6 p-4 mt-2 mt-md-0 @separatorClass">
                 <div class="row p-1" style="border-radius: 20px;">
 
                     <div class="col-6">
-                        <h3 class="text-success">Floor Details</h3>
+                        <h3 class="text-success">@Localizer["FloorDetails"]</h3>
                     </div>
 
-                    <div class="col-6 text-end">
+                    <div class="col-6 @(isRTL ? "text-start" : "text-end")">
                         <a class="btn btn-secondary my-2"
                            asp-area=""
                            asp-controller="Home"
                            asp-action="Index">
-                            <i class="bi bi-arrow-left-circle"></i> Back to Home
+                            <div class="d-inline-flex align-items-start @(isRTL ? "flex-row-reverse" : "")">
+                                <i class="bi bi-arrow-left-circle me-2"></i>
+                                <span>@Localizer["BackToHome"]</span>
+                            </div>
                         </a>
                     </div>
 
@@ -41,14 +49,12 @@ else
             </div>
 
             <!-- Right Side: Customer Reviews -->
-            <div class="col-12 col-lg-6 p-4 mt-4 mt-md-0" style="border-left: 1px solid #aaa;">
+            <div class="col-12 col-lg-6 p-4 mt-4 mt-md-0">
                 <div class="row pt-1 mb-3" style="border-radius: 20px;">
-                    <div class="col-6">
-                        <h3 class="text-success">Customer Reviews</h3>
+                    <div class="col-12">
+                        <h3 class="text-success">@Localizer["CustomerReviews"]</h3>
                     </div>
                 </div>
-
-                <hr />
 
                 <!-- Scrollable Reviews Section -->
                 <div style="max-height: 500px; overflow-y: auto;">
@@ -59,50 +65,62 @@ else
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-body d-flex">
                                     <img src="@(string.IsNullOrEmpty(review.User?.ImageUrl)
-                                                                         ? Url.Content("~/images/others/default-user.png")
-                                                                         : Url.Content("~/images/users/" + review.User.ImageUrl))"
-                                         class="rounded-circle me-3"
-                                         alt="Avatar"
-                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                            ? Url.Content("~/images/others/default-user.png")
+                                            : Url.Content("~/images/users/" + review.User.ImageUrl))"
+                             class="rounded-circle @(isRTL? "ms-3": "me-3") "
+                             alt="Avatar"
+                             style="width: 60px; height: 60px; object-fit: cover;">
 
                                     <div class="flex-grow-1">
                                         <h5 class="card-title mb-1">
                                             @review.UserName
-                                            <small class="text-muted ms-0">(@review.CreatedAt.ToString("dd-MMM-yyyy"))</small>
+                                            <small class="text-muted @(isRTL ? "ms-3" : "me-3")">(@review.CreatedAt.ToString("dd-MMM-yyyy"))</small>
                                         </h5>
                                         <p class="card-text mb-1">@review.Comment</p>
+
                                         <div>
                                             @for (int star = 1; star <= 5; star++)
-                                            {
-                                                if (star <= review.Rate)
                                                 {
-                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                    if (star <= review.Rate)
+                                                    {
+                                                        <i class="bi bi-star-fill text-warning"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="bi bi-star text-muted"></i>
+                                                    }
                                                 }
-                                                else
-                                                {
-                                                    <i class="bi bi-star text-muted"></i>
-                                                }
-                                            }
                                         </div>
 
-                                        @* Admin Reply as sub-comment, directly below the comment *@
+                                        @* Admin Reply *@
                                         @if (!string.IsNullOrWhiteSpace(review.Reply))
                                         {
-                                            <div class="d-flex align-items-start mt-3 ms-4 ps-3 border-start border-3 border-success position-relative">
+                                            <div class="d-flex align-items-start mt-3 @(isRTL ? "me-4 pe-3 border-end" : "ms-4 ps-3 border-start") border-3 border-success position-relative">
                                                 <img src="@(Url.Content("~/images/others/default-user.png"))"
-                                                     class="rounded-circle me-2"
+                                                     class="rounded-circle @(isRTL ? "ms-3" : "me-3")"
                                                      alt="Admin"
                                                      style="width: 40px; height: 40px; object-fit: cover;">
+
                                                 <div>
-                                                    <div class="d-flex align-items-center mb-1">
-                                                        <span class="fw-bold text-success me-2">Admin Reply</span>
+
+                                                    <h6 class="card-title mb-1">
+                                                        <span class="fw-bold text-success ">@Localizer["AdminReply"]</span>
+                                                        <small class="text-muted @(isRTL ? "ms-3" : "me-3")">(@review.RepliedAt.ToString("dd-MMM-yyyy"))</small>
+                                                    </h6>
+                                                    <p class="card-text mb-1">@review.Reply</p>
+
+
+                                                    @* <div class="d-flex align-items-center mb-1">
+                                                        <span class="fw-bold text-success @(isRTL ? "ms-3" : "me-3")">Admin Reply</span>
                                                         @if (review.RepliedAt != null)
                                                         {
                                                             <small class="text-muted">(@review.RepliedAt.ToString("dd-MMM-yyyy"))</small>
                                                         }
                                                     </div>
-                                                    <div class="text-white">@review.Reply</div>
+                                                    <div class="text-white">@review.Reply</div> *@
+
                                                 </div>
+
                                             </div>
                                         }
                                     </div>
@@ -112,7 +130,7 @@ else
                     }
                     else
                     {
-                        <p class="text-muted">No reviews available yet.</p>
+                        <p class="text-muted">@Localizer["NoReviewsYet"].</p>
                     }
                 </div>
             </div>

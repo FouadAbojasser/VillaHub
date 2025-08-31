@@ -1,15 +1,17 @@
-﻿@using VillaHub.Web.ViewModels.Home
+﻿@using System.Globalization
+@using VillaHub.Web.ViewModels.Home
 @model HomeVM
 
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <div id="FloorList">
 
-    <div class="mb-3 text-end" id="compare-button-container" style="display:none;">
+    @* <div class="mb-3 text-end" id="compare-button-container" style="display:none;">
         <button class="btn btn-primary" id="compare-btn">
             <i class="bi bi-columns-gap"></i> Compare
         </button>
-    </div>
+    </div> *@
 
     <div class="row px-lg-5 m-lg-4 m-sm-0 px-sm-0" style="--bs-gutter-x:0">
 
@@ -52,11 +54,11 @@
                                         asp-route-noOfNights="@Model.NumberOfNights"
                                         class="btn btn-success form-control w-100 mt-auto">
                                         <i class="bi bi-calendar-check"></i>
-                                        Book Now
+										@Localizer["BookNow"]
                                     </a>
 
 
-                                    <div class="form-check mt-2 d-flex justify-content-center">
+                                    @* <div class="form-check mt-2 d-flex justify-content-center">
                                         <input class="form-check-input me-2" type="checkbox"
                                                id="compare-@floor.FloorNumber-@floor.VillaId-@floor.VillageId"
                                                value="@floor.FloorNumber" />
@@ -64,13 +66,13 @@
                                                for="compare-@floor.FloorNumber-@floor.VillaId-@floor.VillageId">
                                             Add to Compare
                                         </label>
-                                    </div>
+                                    </div> *@
                                 }
                                 else
                                 {
                                     <a class="btn btn-outline-warning disabled form-control w-100 mt-auto">
                                         <i class="bi bi-currency-dollar"></i>
-                                        Price Range
+										@Localizer["OutOfBudget"]
                                     </a>
                                 }
                             }
@@ -78,7 +80,7 @@
                             {
                                 <a class="btn btn-outline-danger disabled form-control w-100 mt-auto">
                                     <i class="bi bi-calendar-check"></i>
-                                    Sold Out
+									@Localizer["NotAvailable"]
                                 </a>
                             }
                         }
@@ -119,27 +121,36 @@
                                     }
                                     else
                                     {
-                                        <div class="small text-muted">No Ratings Available</div>
+                                        <div class="small text-muted">@Localizer["NoRatingsAvailable"]</div>
                                     }
                                 </div>
 
                                 
                                 <button type="button" class="btn btn-sm btn-outline-success"
                                         data-bs-toggle="modal" data-bs-target="#exampleModal-@($"{floor.VillageId}-{floor.VillaId}-{floor.FloorNumber}")">
-
-                                    Details
+                                    @Localizer["Details"]
                                 </button>
+
                             </div>
 
                             <div class="mb-2 text-muted" style="font-size: 0.9rem;">
                                 @if(floor.Description!.Length > 100)
                                 {
-                                    @Html.Raw(floor.Description.Substring(0,100));
+                                    @(
+                                        CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ?
+                                        @Html.Raw(floor.Description_ar!.Substring(0, 100))
+                                            : @Html.Raw(floor.Description.Substring(0, 100))
+                                    )
+
                                     <span>. . .</span>
                                 }
                                 else
                                 {
-                                    @Html.Raw(floor.Description);
+                                    @(
+                                        CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ?
+                                        @Html.Raw(floor.Description_ar)
+                                        : @Html.Raw(floor.Description)
+                                     )
                                 }
                             </div>
                         </div>
@@ -152,23 +163,23 @@
                                 {
                                     <div class="small">
                                         @* <div>No. of Villas: <strong>@floor.Villas.Count</strong></div> *@
-                                        <div>Capacity (Avg): <strong>@floor.Capacity</strong> persons</div>
-                                        <div>Area (Avg): <strong>@floor.Area</strong> sqm</div>
+                                        <div>@Localizer["CapacityAvg"]: <strong>@floor.Capacity</strong> @Localizer["persons"]</div>
+                                        <div>@Localizer["AreaAvg"]: <strong>@floor.Area</strong> @Localizer["sqm"]</div>
                                     </div>
                                 }
                             </div>
 
-                            <div class="col-6 text-end">
-                                <div class="text-warning fw-bold text-end" style="font-size: 1rem; line-height: 1.4;">
-                                    Price / Night <br />
+                            <div class="col-6 @(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "text-start" : "text-end")">
+                                <div class="text-warning fw-bold @(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "text-start" : "text-end")" style="font-size: 1rem; line-height: 1.4;">
+                                    @Localizer["PricePerNight"] <br />
                                     <span style="border-bottom: 1px solid #ff6a00; display: inline-block;">
                                         @if (floor is not null)
                                         {
-                                            @floor.Price.ToString("c")
+                                            @floor.Price.ToString("c", new System.Globalization.CultureInfo("en-US"))
                                         }
                                         else
                                         {
-                                            <span>No floor pricing data</span>
+                                            <span>@Localizer["NoPricingData"]</span>
                                         }
                                     </span>
                                 </div>
@@ -182,13 +193,11 @@
             <div class="modal fade" id="exampleModal-@($"{floor!.VillageId}-{floor.VillaId}-{floor.FloorNumber}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl" style="border: 1px solid #aaa; border-radius:7px;">
                     <div class="modal-content">
-                        <div class="modal-header">
-                            
-                            <h1 class="modal-title fs-3 text-success" id="exampleModalLabel">
-                                Floor Details – Floor: @floor.FloorNumber, Villa: @floor.Villa.Name, Village: @floor.Village.Name
-                            </h1>
 
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-3 text-success" id="exampleModalLabel">
+                                @Localizer["FloorDetails"] – @Localizer["Floor"]: @floor.FloorNumber, @Localizer["Villa"]: @floor.Villa.Name, @Localizer["Village"]: @floor.Village.Name
+                            </h1>
                         </div>
 
                         <div class="modal-body m-0">
@@ -205,7 +214,7 @@
                                asp-route-floorNumber="@floor.FloorNumber"
                                target="_blank"
                                class="btn btn-outline-info">
-                                <i class="bi bi-chat-dots"></i> Customers Reviews
+								<i class="bi bi-chat-dots"></i> @Localizer["CustomersReviews"]
                             </a>
 
                           @*<button type="button"
@@ -217,7 +226,7 @@
 
                             <button onclick="window.open('https://www.google.com/maps?q=@floor.Villa.Latitude,@floor.Villa.Longitude', '_blank')"
                                     type="button" class="btn btn-outline-primary">
-                                <i class="bi bi-google"></i> View On Google
+								<i class="bi bi-google"></i> @Localizer["ViewOnGoogleMaps"]
                             </button>
 
                             <a asp-controller="Home"
@@ -226,10 +235,10 @@
                                asp-route-villaId="@floor.VillaId"
                                asp-route-floorNumber="@floor.FloorNumber"
                                class="btn btn-outline-warning">
-                                <i class="bi bi-file-earmark-ppt"></i> Download Floor PPT
+								<i class="bi bi-file-earmark-ppt"></i> @Localizer["DownloadPPT"]
                             </a>
 
-                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">@Localizer["Close"]</button>
 
                         </div>
 

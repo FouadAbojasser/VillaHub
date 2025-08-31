@@ -1,6 +1,11 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Stripe;
 using Syncfusion.Licensing;
 using VillaHub.Application.Common.Interfaces;
@@ -10,7 +15,6 @@ using VillaHub.Infrastructure.Data;
 using VillaHub.Infrastructure.Repository;
 using VillaHub.Web.SignalR;
 
-
 namespace VillaHub.Web
 {
     public class Program
@@ -19,94 +23,123 @@ namespace VillaHub.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            // -----------------------------
+            // Culture Configuration
+            // -----------------------------
+            var cultureInfo = new CultureInfo("en-US")
+            {
+                DateTimeFormat = { Calendar = new GregorianCalendar() }
+            };
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-            // Register ApplicationDbContext Service
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("ar-AE")
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
+
+            // -----------------------------
+            // MVC + Localization
+            // -----------------------------
+            builder.Services.AddControllersWithViews()
+            .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+            .AddDataAnnotationsLocalization();
+
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            // -----------------------------
+            // Database & Identity
+            // -----------------------------
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-            // Register Identity Service
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
-            // Register Unit Of Work
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            builder.Services.AddTransient<IEmailSender, EmailSender>();
-            builder.Services.AddTransient<ICustomEmailSender, EmailSender>();
-
-
-            // Modifying Default Password Options
             builder.Services.Configure<IdentityOptions>(option =>
             {
-                option.Password.RequiredLength = 6;  //Default Lenght
-                option.SignIn.RequireConfirmedEmail = true; //Change to true to allow only confioremd emails to login
+                option.Password.RequiredLength = 6;
+                option.SignIn.RequireConfirmedEmail = true;
             });
 
-            //Change login path if it is under Area
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = "/Identity/Account/Login"; // Include the Area in the path
+                options.LoginPath = "/Identity/Account/Login";
+                // options.AccessDeniedPath = "/Home/Account/AccessDenied";
             });
 
-
-            builder.Services.AddAuthentication()
-            .AddGoogle(options =>
-            {
-                options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-                options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-            })
-            .AddFacebook(facebookOptions =>
-            {
-                facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
-                facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
-            });
-
+            // -----------------------------
+            // Dependency Injection
+            // -----------------------------
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddTransient<ICustomEmailSender, EmailSender>();
             builder.Services.AddTransient<TwilioService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
 
-            // Modifying Default Login and Access denied paths
-            builder.Services.ConfigureApplicationCookie(option =>
-            {
-               // option.AccessDeniedPath = "/Home/Account/AccessDenied";
+            // -----------------------------
+            // External Authentication
+            // -----------------------------
+            builder.Services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+                    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+                })
+                .AddFacebook(options =>
+                {
+                    options.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
+                    options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
+                });
 
-            });
+            // -----------------------------
+            // Third-Party Integrations
+            // -----------------------------
+            SyncfusionLicenseProvider.RegisterLicense(
+                builder.Configuration.GetSection("Syncfusion:Licensekey").Get<string>());
 
-
-            // Register Syncfusion License
-            SyncfusionLicenseProvider.RegisterLicense(builder.Configuration.GetSection("Syncfusion:Licensekey").Get<string>());
-            
-            //Register Strip in the Application
             StripeConfiguration.ApiKey = builder.Configuration.GetSection("Strip:SecretKey").Get<string>();
 
             builder.Services.AddSignalR();
-            builder.Services.AddScoped<INotificationService, NotificationService>();
 
+            // -----------------------------
+            // Build App
+            // -----------------------------
             var app = builder.Build();
 
-
-            // Configure the HTTP request pipeline.
+            // -----------------------------
+            // Middleware Pipeline
+            // -----------------------------
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
-
             app.UseStaticFiles();
-
             app.UseRouting();
 
-            app.UseAuthentication();
+            app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            // -----------------------------
+            // Endpoints
+            // -----------------------------
             app.MapControllerRoute(
-            name: "areas",
-            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",
@@ -117,4 +150,6 @@ namespace VillaHub.Web
             app.Run();
         }
     }
+
+   
 }

@@ -29,6 +29,7 @@
                         <th>Villa Name</th>
                         <th>Village Name</th>
                         <th>Description</th>
+                        <th>Description Arabic</th>
                         <th>Price</th>
                         <th>Area<br /><small>(Sqm)</small></th>
                         <th>Capacity<br /><small>(Person)</small></th>
@@ -45,6 +46,7 @@
                             <td>@floor.Villa!.Name</td>
                             <td>@floor.Villa!.Village.Name</td>
                             <td class="text-start">@floor.Description</td>
+                            <td class="text-end"  style="white-space: pre-wrap; direction: rtl;">@floor.Description_ar</td>
                             <td>@floor.Price</td>
                             <td>@floor.Area</td>
                             <td>@floor.Capacity</td>

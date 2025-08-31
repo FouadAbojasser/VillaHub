@@ -79,6 +79,8 @@ namespace VillaHub.Web.Controllers
         {
             Thread.Sleep(1000);
 
+            var x = homeVM.CheckInDate;
+            
             //Get All floors
             var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e => e.Amenities, e=>e.Reviews]);
 

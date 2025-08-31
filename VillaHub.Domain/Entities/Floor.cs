@@ -16,6 +16,8 @@ namespace VillaHub.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public required int FloorNumber { get; set; }
         public string? Description { get; set; }
+        [Display(Name = "Description (Arabic)")]
+        public string? Description_ar { get; set; }
         public double Price { get; set; }
         public double Area { get; set; }
         public int Capacity { get; set; }

@@ -51,6 +51,13 @@
                             <span asp-validation-for="@Model.Floor!.Description" class="text-danger"></span>
                         </div>
                     </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="@Model.Floor!.Description_ar" class="form-control border shadow" />
+                            <label asp-for="@Model.Floor!.Description_ar" class="ms-2"></label>
+                            <span asp-validation-for="@Model.Floor!.Description_ar" class="text-danger"></span>
+                        </div>
+                    </div>
                     <div class="col-6 col-md-3">
                         <div class="form-floating">
                             <input asp-for="@Model.Floor!.Price" class="form-control border shadow" />

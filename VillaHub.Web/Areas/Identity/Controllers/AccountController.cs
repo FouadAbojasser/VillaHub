@@ -1,19 +1,22 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using System.Globalization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using static System.Net.WebRequestMethods;
-using VillaHub.Domain.Entities;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Tokens;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using static System.Net.Mime.MediaTypeNames;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VillaHub.Domain.Entities;
+using VillaHub.Web.Resources;
 using VillaHub.Web.ViewModels.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Net.WebRequestMethods;
 
 
 namespace VillaHub.Web.Areas.Identity.Controllers
@@ -28,11 +31,13 @@ namespace VillaHub.Web.Areas.Identity.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IUnitOfWork _unitOfWork;
         private readonly TwilioService _twilioService;
+        private readonly IStringLocalizer<SharedResources> _localizer;
 
         public AccountController(
                         UserManager<ApplicationUser> userManager,
                         SignInManager<ApplicationUser> signInManager,
                         RoleManager<IdentityRole> roleManager,
+                        IStringLocalizer<SharedResources> localizer,
                         IEmailSender emailSender, IUnitOfWork unitOfWork,
                         TwilioService twilioService)
         {
@@ -42,8 +47,22 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
             _twilioService = twilioService;
+            _localizer = localizer;
         }
 
+        private List<SelectListItem> GetLocalizedCountryList()
+        {
+            var currentCulture = CultureInfo.CurrentCulture.Name;
+
+            if (currentCulture.StartsWith("ar"))
+            {
+                return SD.CountryList_ar;
+            }
+            else
+            {
+                return SD.CountryList_en;
+            }
+        }
 
         public async Task<IActionResult> RegisterAsync(string returnUrl = null!)
         {
@@ -62,18 +81,13 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             {
                 RoleList = _roleManager.Roles.Select(x => new SelectListItem
                 {
-                    Text = x.Name,
+                    Text = _localizer[x.Name!],
                     Value = x.Name
                 }),
 
                 RedirectUrl = returnUrl,
 
-                CountryList = SD.CountryList.Select(c => new SelectListItem
-                {
-                    Text = c.Text,
-                    Value = c.Text 
-
-                }).ToList()
+                CountryList = GetLocalizedCountryList().ToList()
 
             };
 
@@ -91,7 +105,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                 return View(registerVM);
             }
 
-            var countryPrefix = SD.CountryList
+            var countryPrefix = GetLocalizedCountryList()
             .FirstOrDefault(c => c.Text == registerVM.Country)?.Value ?? "";
 
             ApplicationUser applicationUser = new ApplicationUser()
@@ -160,10 +174,10 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             }
             registerVM.RoleList = _roleManager.Roles.Select(x => new SelectListItem
             {
-                Text = x.Name,
+                Text = _localizer[x.Name!],
                 Value = x.Name
             });
-            registerVM.CountryList = SD.CountryList;
+            registerVM.CountryList = GetLocalizedCountryList();
             return View(registerVM);
 
         }
@@ -716,11 +730,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             var model = new ExternalLoginConfirmationVM
             {
                 Email = email!,
-                CountryList = SD.CountryList.Select(c => new SelectListItem
-                {
-                    Text = c.Text,
-                    Value = c.Text
-                }).ToList()
+                CountryList = GetLocalizedCountryList()
             };
 
             return View("ExternalLoginConfirmation", model);
@@ -742,7 +752,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             if (ModelState.IsValid)
             {
                 // Get the selected country's phone prefix
-                var countryPrefix = SD.CountryList.FirstOrDefault(c => c.Text == model.Country)?.Value ?? "";
+                var countryPrefix = GetLocalizedCountryList().FirstOrDefault(c => c.Text == model.Country)?.Value ?? "";
 
                 var applicationUser = new ApplicationUser
                 {
@@ -776,11 +786,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
             }
 
             // Repopulate CountryList if something failed
-            model.CountryList = SD.CountryList.Select(c => new SelectListItem
-            {
-                Text = c.Text,
-                Value = c.Text
-            }).ToList();
+            model.CountryList = GetLocalizedCountryList();
 
             return View(model);
         }

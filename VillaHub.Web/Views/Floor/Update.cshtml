@@ -1,6 +1,7 @@
 ﻿@{
 	ViewData["Title"] = "Update Floor";
 }
+@using System.Globalization
 @using VillaHub.Web.ViewModels.Floor
 @model FloorWithVillasVM
 
@@ -50,11 +51,28 @@
                     <!-- Editable Fields -->
                     <div class="col-12 col-md-6">
                         <div class="form-floating">
-                            <input asp-for="Floor.Description" class="form-control border shadow" />
+                            <textarea asp-for="Floor.Description"
+                                      class="form-control border shadow text-start"
+                                      placeholder="Description"
+                                      style="height: 100px; white-space: pre-wrap; direction: ltr;"></textarea>
                             <label asp-for="Floor.Description" class="ms-2"></label>
                             <span asp-validation-for="Floor.Description" class="text-danger"></span>
                         </div>
                     </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating">
+                            <textarea asp-for="Floor.Description_ar"
+                                      class="form-control border shadow text-end"
+                                      placeholder="الوصف"
+                                      style="height: 100px; white-space: pre-wrap; direction: rtl;"></textarea>
+                            <label asp-for="Floor.Description_ar"
+                                   class="@(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "me-2" : "ms-2")"></label>
+                            <span asp-validation-for="Floor.Description_ar" class="text-danger"></span>
+                        </div>
+                    </div>
+
+
                     <div class="col-6 col-md-3">
                         <div class="form-floating">
                             <input asp-for="Floor.Price" class="form-control border shadow" />

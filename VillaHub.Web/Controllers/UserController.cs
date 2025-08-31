@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -34,6 +35,19 @@ namespace VillaHub.Web.Controllers
         }
 
 
+        private List<SelectListItem> GetLocalizedCountryList()
+        {
+            var currentCulture = CultureInfo.CurrentCulture.Name;
+
+            if (currentCulture.StartsWith("ar"))
+            {
+                return SD.CountryList_ar;
+            }
+            else
+            {
+                return SD.CountryList_en;
+            }
+        }
 
         [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> UserDetailsAsync(string Id)
@@ -184,12 +198,7 @@ namespace VillaHub.Web.Controllers
                     Text = x.Name,
                     Value = x.Name
                 }),
-                CountryList = SD.CountryList.Select(c => new SelectListItem
-                {
-                    Text = c.Text,
-                    Value = c.Text
-
-                }).ToList()
+                CountryList = GetLocalizedCountryList()
 
             };
 
@@ -301,12 +310,8 @@ namespace VillaHub.Web.Controllers
                     Text = x.Name,
                     Value = x.Name
                 });
-                editUserVMReturn.CountryList = SD.CountryList.Select(c => new SelectListItem
-                {
-                    Text = c.Text,
-                    Value = c.Text
 
-                }).ToList();
+                editUserVMReturn.CountryList = GetLocalizedCountryList();
             }
             
             return View(editUserVMReturn);

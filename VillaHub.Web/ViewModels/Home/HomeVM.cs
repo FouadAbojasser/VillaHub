@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using VillaHub.Domain.Entities;
+using VillaHub.Web.Resources;
 
 namespace VillaHub.Web.ViewModels.Home
 {
@@ -8,16 +9,27 @@ namespace VillaHub.Web.ViewModels.Home
         public IEnumerable<VillaHub.Domain.Entities.Floor>? Floors { get; set; }
         public IEnumerable<VillaHub.Domain.Entities.Villa>? Villas { get; set; }
         public IEnumerable<Village>? Villages { get; set; }
-        [Display(Name = "Check In Date")]
+
+
+        [Display(Name = "CheckInDate", ResourceType = typeof(SharedResources))]
+        [DataType(DataType.Date)] // tells the UI it's a date
+        [DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Date must be greater than today.")]
-        public DateOnly CheckInDate { get; set; } 
-        [Display(Name = "Number of Nights")]
+        public DateOnly CheckInDate { get; set; }
+
+
+        [Display(Name = "NumberOfNights", ResourceType = typeof(SharedResources))]
+        [Required]
         public int NumberOfNights { get; set; }
-        [Display(Name = "min Price / Night")]
+
+        [Display(Name = "MinPricePerNight",ResourceType =typeof(SharedResources))]
         [Range(0, int.MaxValue, ErrorMessage = "Maximum price cannot be negative.")]
+        [Required]
         public int minPrice{ get; set; }
-        [Display(Name = "max Price / Night")]
+
+        [Display(Name = "MaxPricePerNight", ResourceType = typeof(SharedResources))]
         [Range(0, int.MaxValue, ErrorMessage = "Minimum price cannot be negative.")]
+        [Required]
         public int maxPrice{ get; set; }
     }
 }

@@ -221,7 +221,15 @@ namespace VillaHub.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Description_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name_ar")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -433,6 +441,9 @@ namespace VillaHub.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description_ar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")

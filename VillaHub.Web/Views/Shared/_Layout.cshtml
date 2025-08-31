@@ -1,18 +1,32 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using VillaHub.Application.Common.Utility
 @using VillaHub.Domain.Entities
+
+@using System.Globalization
+@{
+    var culture = CultureInfo.CurrentUICulture.Name;
+    var dir = culture.StartsWith("ar-AE") ? "rtl" : "ltr";
+}
+
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="@culture" dir="@dir" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] VillaHub</title>
+    <title>@ViewData["Title"] - VillaHub</title>
+
     <link rel="icon" type="image/png" href="~/favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="~/favicon/favicon.svg" />
     <link rel="shortcut icon" href="~/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="~/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="~/favicon/site.webmanifest" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
     <link rel="stylesheet" href="~/css/site.css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -42,7 +56,7 @@
                     <ul class="navbar-nav flex-grow-1">
 
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">@Localizer["Home"]</a>
                         </li>
 
                         <!-- Dropdown for Contents -->
@@ -71,12 +85,12 @@
                         @if (User.Identity is not null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">Your Bookings</a>
+                                <a class="nav-link" asp-area="" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">@Localizer["YourBookings"]</a>
                             </li>
                         }
 
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="Customer" asp-controller="ContactUs" asp-action="ContactUsForm">Contact Us</a>
+                            <a class="nav-link" asp-area="Customer" asp-controller="ContactUs" asp-action="ContactUsForm">@Localizer["ContactUs"]</a>
                         </li>
                         
                     </ul>
@@ -86,18 +100,18 @@
                         <button class="btn btn-link dropdown-toggle text-decoration-none text-white-50" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <span id="selectedLanguage">
                                 <img src="https://flagcdn.com/w20/gb.png" width="20" height="15" class="me-1" alt="English">
-                                English
+                                English (الإنجليزية)
                             </span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                             <li>
-                                <a class="dropdown-item text-decoration-none text-white-50" href="#" onclick="changeLanguage('en')">
+                                <a class="dropdown-item text-decoration-none text-white-50" href="#" onclick="changeLanguage('en-US')">
                                     <img src="https://flagcdn.com/w20/gb.png" width="20" height="15" class="me-1" alt="English">
-                                    English
+                                    English (الإنجليزية)
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-decoration-none text-white-50" href="#" onclick="changeLanguage('ar')">
+                                <a class="dropdown-item text-decoration-none text-white-50" href="#" onclick="changeLanguage('ar-AE')">
                                     <img src="https://flagcdn.com/w20/sa.png" width="20" height="15" class="me-1" alt="Arabic">
                                     العربية (Arabic)
                                 </a>
@@ -107,6 +121,12 @@
 
                     <partial name="_LoginPartial" />
                 </div>
+
+                <form id="langForm" method="get" action="/Language/Change" class="d-none">
+                    <input type="hidden" name="culture" id="cultureInput" />
+                    <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")" />
+                </form>
+
 
             </div>
         </nav>
@@ -121,7 +141,7 @@
 
     <footer class="border-top footer bg-dark text-muted">
         <div class="container text-center">
-            &copy; 2025 - VillaHub.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - VillaHub - <a asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privecy"]</a>
         </div>
     </footer>
 
@@ -138,39 +158,40 @@
     <!-- Site custom JS (after all libraries) -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
-        function setLanguageUI(lang) {
+        function changeLanguage(culture) {
+            // Save the selection in localStorage to show in dropdown
+            localStorage.setItem('selectedLanguage', culture);
+
+            // Update the dropdown UI immediately
             const langMap = {
-                en: {
-                    flag: "https://flagcdn.com/w20/gb.png",
-                    text: "English",
-                    alt: "English"
-                },
-                ar: {
-                    flag: "https://flagcdn.com/w20/sa.png",
-                    text: "العربية (Arabic)",
-                    alt: "Arabic"
-                }
+                "en-US": { flag: "https://flagcdn.com/w20/gb.png", text: "English (الإنجليزية)", alt: "English" },
+                "ar-AE": { flag: "https://flagcdn.com/w20/sa.png", text: "العربية (Arabic)", alt: "Arabic" }
             };
-            const selected = langMap[lang] || langMap.en;
+            const selected = langMap[culture] || langMap["en-US"];
             document.getElementById('selectedLanguage').innerHTML =
                 `<img src="${selected.flag}" width="20" height="15" class="me-1" alt="${selected.alt}"> ${selected.text}`;
-        }
 
-        function changeLanguage(lang) {
-            localStorage.setItem('selectedLanguage', lang);
-            setLanguageUI(lang);
-            // Optionally reload or redirect here if you want to actually change the site language
-            // location.reload();
+            // Submit the hidden form to LanguageController to set the cookie
+            document.getElementById("cultureInput").value = culture;
+            document.getElementById("langForm").submit();
         }
 
         // On page load, set the dropdown to the stored language
         document.addEventListener('DOMContentLoaded', function () {
-            const lang = localStorage.getItem('selectedLanguage') || 'en';
-            setLanguageUI(lang);
+            const storedLang = localStorage.getItem('selectedLanguage') || '@CultureInfo.CurrentUICulture.Name';
+            const langMap = {
+                "en-US": { flag: "https://flagcdn.com/w20/gb.png", text: "English (الإنجليزية)", alt: "English" },
+                "ar-AE": { flag: "https://flagcdn.com/w20/sa.png", text: "العربية (Arabic)", alt: "Arabic" }
+            };
+            const selected = langMap[storedLang] || langMap["en-US"];
+            document.getElementById('selectedLanguage').innerHTML =
+                `<img src="${selected.flag}" width="20" height="15" class="me-1" alt="${selected.alt}"> ${selected.text}`;
         });
     </script>
+
 
     @await RenderSectionAsync("Scripts", required: false)
 

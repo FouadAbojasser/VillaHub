@@ -1,5 +1,11 @@
-﻿@using VillaHub.Domain.Entities
+﻿
+@using VillaHub.Domain.Entities
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model Floor
+
+
 
 <div class="row">
 
@@ -33,8 +39,8 @@
     <div class="col-12 col-md-7">
         <div class="row p-2">
             <div class="col-12">
-                <div>
-                    <p class="card-title text-warning" style="font-size:xx-large">Floor: @Model.FloorNumber in Villa: @Model.Villa.Name</p>
+                <div class="mb-2">
+                    <p class="card-title text-warning my-2" style="font-size:xx-large">@Localizer["Floor"]: @Model.FloorNumber - @Localizer["Villa"]: @Model.Villa.Name</p>
                     @if (Model.Reviews.Any())
                     {
                         var average = Model.Reviews.Average(r => r.Rate);
@@ -59,33 +65,47 @@
                     }
                     else
                     {
-                        <div class="small text-muted">No Ratings Available</div>
+                        <div class="small text-muted">@Localizer["NoRatingsAvailable"]</div>
                     }
                 </div>
 
-                <p class="card-text" style="font-size:large">
-                    @Html.Raw(Model.Description)
+                <p class="card-text" style="font-size: large; line-height: 1.8;">
+                    @(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft 
+                    ? @Html.Raw(Model.Description_ar)
+                    : @Html.Raw(Model.Description))
                 </p>
+
                 @if (Model.Amenities != null && Model.Amenities.Count() > 0)
                 {
-                    <p class="h5 text-white">Floor Amenities</p>
+                    <p class="h5 text-white">@Localizer["FloorAmenities"]</p>
                     <ul>
-                        @foreach (var amenity in Model.Amenities)
+                        @if(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft)
                         {
-                            <li>@amenity.Name</li>
+                            @foreach (var amenity in Model.Amenities)
+                            {
+                                <li>@amenity.Name_ar</li> //Arabic
+                            }
                         }
+                        else
+                        {
+                            @foreach (var amenity in Model.Amenities)
+                            {
+                                <li>@amenity.Name</li>
+                            }
+						}
+                        
                     </ul>
                 }
             </div>
         </div>
         <div class="row col-12">
-            <span class="text-end p-0 pt-3 m-0">
-                <span class="float-right">Max Occupancy: @Model.Capacity  adults </span><br />
-                <span class="float-right pt-1">Villa Size:  @Model.Area  sqft</span><br />
+            <span class="p-0 pt-3 m-0 @(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "text-start" : "text-end")">
+                <span class="float-right">@Localizer["MaxOccupancy"]: @Model.Capacity  @Localizer["adults"] </span><br />
+                <span class="float-right pt-1">@Localizer["VillaSize"]:  @Model.Area  @Localizer["sqft"]</span><br />
                 <p class="text-warning font-weight-bold pt-1">
-                    USD
+                    
                     <span style="#ff6a00">
-                        @Model.Price.ToString("c") / night
+						@Model.Price.ToString("c", new System.Globalization.CultureInfo("en-US")) / @Localizer["night"]
                     </span>
                 </p>
             </span>

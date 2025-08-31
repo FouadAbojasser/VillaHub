@@ -52,6 +52,7 @@ namespace VillaHub.Web.Controllers
         [Authorize]
         public async Task<IActionResult> FinalizeBookingAsync(int villageId, int villaId, int floorNumber, DateOnly checkInDate, int noOfNights)
         {
+           
             var claimIdentity = (ClaimsIdentity)User.Identity!;
             var UserId = claimIdentity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 

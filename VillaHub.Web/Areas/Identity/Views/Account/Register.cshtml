@@ -1,17 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Register";
-}
-
+﻿@using System.Globalization
 @using VillaHub.Web.ViewModels
 @using VillaHub.Web.ViewModels.Identity
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model RegisterVM
 
-<div class="container pt-5">
+@{
+    ViewData["Title"] = Localizer["Register"];
+}
+
+
+<div class="container pt-5 pb-5">
     <div class="card shadow border ">
         <div class="card-header bg-success bg-gradient ml-0 py-4">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h2 class="py-2 text-white">Register</h2>
+                    <h2 class="py-2 text-white">@Localizer["Register"]</h2>
                 </div>
             </div>
         </div>
@@ -21,55 +25,57 @@
                     <form class="row" asp-area="Identity" method="post">
                         <input asp-for="RedirectUrl" hidden />
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                         <div class="form-floating mb-3 col-md-12">
                             <input asp-for="Email" class="form-control" aria-required="true" />
-                            <label asp-for="Email" class="ms-2 text-muted"></label>
-                            <span asp-validation-for="Email" class="text-danger" />
+                            <label asp-for="Email" class="ms-2 text-muted">@Localizer["Email"]</label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
+
+
                         <div class="form-floating mb-3 col-md-6">
                             <input asp-for="Name" class="form-control" />
-                            <label asp-for="Name" class="ms-2 text-muted"></label>
+                            <label asp-for="Name" class="ms-2 text-muted">@Localizer["Name"]</label>
                             <span asp-validation-for="Name" class="text-danger" />
                         </div>
+
                         <div class="form-floating mb-3 col-md-6">
                             <input asp-for="PhoneNumber" class="form-control" />
-                            <label asp-for="PhoneNumber" class="ms-2 text-muted"></label>
+                            <label asp-for="PhoneNumber" class="ms-2 text-muted">@Localizer["PhoneNumber"]</label>
                             <span asp-validation-for="PhoneNumber" class="text-danger" />
                         </div>
+
                         <div class="form-floating mb-3 col-md-6">
                             <input asp-for="Password" class="form-control" />
-                            <label asp-for="Password" class="ms-2 text-muted"></label>
+                            <label asp-for="Password" class="ms-2 text-muted">@Localizer["Password"]</label>
                             <span asp-validation-for="Password" class="text-danger" />
                         </div>
+
                         <div class="form-floating mb-3 col-md-6">
                             <input asp-for="ConfirmPassword" class="form-control" />
-                            <label asp-for="ConfirmPassword" class="ms-2 text-muted">Confirm Password</label>
+                            <label asp-for="ConfirmPassword" class="ms-2 text-muted">@Localizer["ConfirmPassword"]</label>
                             <span asp-validation-for="ConfirmPassword" class="text-danger" />
                         </div>
-                        @* <div class="form-floating mb-3 col-md-6">
-                            <select asp-for="Role" asp-items="@Model.RoleList" class="form-select">
-                                <option disabled selected>-Select Role-</option>
-                            </select>
-                            <label asp-for="Role" class="ms-2 text-muted"></label>
-                        </div> *@
+
                         <div class="form-floating mb-3 col-md-6">
-                            <select asp-for="Country" asp-items="@Model.CountryList" class="form-select">
-                                <option disabled selected>-Select Country-</option>
+                            <select asp-for="Country" asp-items="@Model.CountryList" class="form-select @(CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "form-select-rtl" : "")">
+                                <option disabled selected>@Localizer["SelectCountry"]</option>
                             </select>
-                            <label asp-for="Country" class="ms-2 text-muted"></label>
+                            <label asp-for="Country" class="ms-2 text-muted">@Localizer["Country"]</label>
                             <span asp-validation-for="Country" class="text-danger" />
                         </div>
+
                         <div class="d-grid gap-3">
-                            <button type="submit" class="w-100 btn btn-lg btn-outline-success">Register</button>
-                            <a href="/" class="btn btn-lg btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="w-100 btn btn-lg btn-outline-success">
+                                @Localizer["Register_Button"]
+                            </button>
+                            <a href="/" class="btn btn-lg btn-outline-secondary">@Localizer["Cancel"]</a>
                         </div>
-                        
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 @section Scripts {
