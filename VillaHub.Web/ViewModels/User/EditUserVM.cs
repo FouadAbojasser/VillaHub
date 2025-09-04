@@ -7,16 +7,22 @@ namespace VillaHub.Web.ViewModels.User
 {
     public class EditUserVM
     {
+        [Display(Name = "Email", ResourceType = typeof(Resources.SharedResources))]
         public ApplicationUser AppUser { get; set; } = null!;
+
+        [Display(Name = "ExternalLogins", ResourceType =typeof(Resources.SharedResources))]
         public List<string> ExternalLogins { get; set; } = [];
+
+        [Display(Name = "Country", ResourceType = typeof(Resources.SharedResources))]
         public string Country { get; set; } = string.Empty;
         public IEnumerable<SelectListItem>? CountryList { get; set; }
+
+
         public string? UserRole { get; set; }
         public IEnumerable<SelectListItem>? RolesList { get; set; }
 
-        [Display(Name = "Phone Number")]
-        [Required(ErrorMessage = "Phone Number is required")]
-        [Phone(ErrorMessage = "Please enter a valid phone number")]
+        [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
+        [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.SharedResources))]
         public string? PhoneNumber { get; set; }
     }
 }

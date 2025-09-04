@@ -117,83 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MaxPricePerNight" xml:space="preserve">
-    <value>أقصى سعر لليلة</value>
+  <data name="AppUserCreatedAt" xml:space="preserve">
+    <value>أنشئ في تاريخ</value>
   </data>
-  <data name="MinPricePerNight" xml:space="preserve">
-    <value>أدنى سعر لليلة</value>
-  </data>
-  <data name="NumberOfNights" xml:space="preserve">
-    <value>عدد الليالي</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>الاسم</value>
-  </data>
-  <data name="Email" xml:space="preserve">
+  <data name="AppUserEmail" xml:space="preserve">
     <value>البريد الإلكتروني</value>
   </data>
-  <data name="Password" xml:space="preserve">
-    <value>كلمة المرور</value>
+  <data name="AppUserEmailConfirmed" xml:space="preserve">
+    <value>هل تم تأكيد البريد الإلكتروني؟</value>
   </data>
-  <data name="ConfirmPassword" xml:space="preserve">
-    <value>تأكيد كلمة المرور</value>
+  <data name="AppUserStatus" xml:space="preserve">
+    <value>حالة الحساب</value>
   </data>
-  <data name="PhoneNumber" xml:space="preserve">
-    <value>رقم الهاتف</value>
+  <data name="AppUserUserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="BackToHome" xml:space="preserve">
+    <value>الصفحة الرئيسية</value>
   </data>
   <data name="Country" xml:space="preserve">
     <value>الدولة</value>
   </data>
-  <data name="Role_SuperAdmin" xml:space="preserve">
-    <value>مدير عام</value>
+  <data name="FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
   </data>
-  <data name="Role_Admin" xml:space="preserve">
-    <value>مدير</value>
+  <data name="No" xml:space="preserve">
+    <value>لا ، غير مؤكد</value>
   </data>
-  <data name="Role_Customer" xml:space="preserve">
-    <value>عميل</value>
+  <data name="Roles" xml:space="preserve">
+    <value>صلاحيات المستخدم</value>
   </data>
-  <data name="StatusPending" xml:space="preserve">
-    <value>قيد الانتظار</value>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>حفظ التغييرات</value>
   </data>
-  <data name="StatusApproved" xml:space="preserve">
-    <value>موافق عليه</value>
+  <data name="SelectCountry" xml:space="preserve">
+    <value>-اختر الدولة-</value>
   </data>
-  <data name="StatusCheckedIn" xml:space="preserve">
-    <value>تم تسجيل الوصول</value>
+  <data name="Title" xml:space="preserve">
+    <value>بيانات المستخدم</value>
   </data>
-  <data name="StatusCompleted" xml:space="preserve">
-    <value>مكتمل</value>
+  <data name="UpdateUser" xml:space="preserve">
+    <value>تحديث بيانات المستخدم</value>
   </data>
-  <data name="StatusCancelled" xml:space="preserve">
-    <value>ملغى</value>
+  <data name="UploadImage" xml:space="preserve">
+    <value>تحميل صورة</value>
   </data>
-  <data name="StatusRefunded" xml:space="preserve">
-    <value>مسترد</value>
+  <data name="Yes" xml:space="preserve">
+    <value>نعم ، مؤكد</value>
   </data>
-  <data name="UserNameorEmial" xml:space="preserve">
-    <value>اسم المستخدم أو البريد الإلكتروني</value>
-  </data>
-  <data name="CheckInDate" xml:space="preserve">
-    <value>تاريخ الوصول</value>
-  </data>
-  <data name="Subject" xml:space="preserve">
-    <value>الموضوع</value>
-  </data>
-  <data name="Message" xml:space="preserve">
-    <value>الرسالة</value>
-  </data>
-  <data name="NewPassword" xml:space="preserve">
-    <value>كلمة المرور الجديدة</value>
-  </data>
-  <data name="ConfirmNewPassword" xml:space="preserve">
-    <value>تأكيد كلمة المرور الجديدة</value>
-  </data>
-  <data name="ReceivedOTP" xml:space="preserve">
-    <value>رمز التحقق</value>
-  </data>
-  <data name="ExternalLogins" xml:space="preserve">
-    <value>مصدر تسجيل الدخول</value>
-  </data>
-
 </root>

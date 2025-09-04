@@ -106,6 +106,15 @@ namespace VillaHub.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Login Provider.
+        /// </summary>
+        public static string ExternalLogins {
+            get {
+                return ResourceManager.GetString("ExternalLogins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to max Price / Night.
         /// </summary>
         public static string MaxPricePerNight {

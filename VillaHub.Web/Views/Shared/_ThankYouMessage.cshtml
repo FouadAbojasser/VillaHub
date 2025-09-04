@@ -1,3 +1,15 @@
-﻿<div class="alert alert-success mt-3">
-    <h5 class="text-center">Thank you for your feedback! </h5>
+﻿@using System.Globalization
+@{
+    var isRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+}
+
+<div class="alert alert-success mt-3">
+    @if (isRTL)
+    {
+        <h5 class="text-center">شكرا جزيلا لك على تقييمك! </h5>
+    }
+    else
+    {
+        <h5 class="text-center">Thank you for your feedback! </h5>
+	}
 </div>

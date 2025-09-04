@@ -2,21 +2,16 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Tokens;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
 using VillaHub.Web.Resources;
 using VillaHub.Web.ViewModels.Identity;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Net.WebRequestMethods;
 
 
 namespace VillaHub.Web.Areas.Identity.Controllers
@@ -239,6 +234,17 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                             if (chk1 || chk2)
                             {
+                                if (await _userManager.IsInRoleAsync(applicationUser, SD.Role_SuperAdmin))
+                                {
+                                    // Force English for SD.Role_SuperAdmin
+                                    var culture = "en-US";
+                                    Response.Cookies.Append(
+                                        CookieRequestCultureProvider.DefaultCookieName,
+                                        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                                        new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+                                    );
+                                }
+
                                 if (!string.IsNullOrEmpty(loginVM.RedirectUrl) && loginVM.RedirectUrl != "/")
                                 {
                                     return Redirect(loginVM.RedirectUrl);
@@ -709,8 +715,10 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                 if (user.Status == SD.Deleted_User)
                 {
                     // Optionally: log attempt
-                    ModelState.AddModelError(string.Empty, "This account has been deleted and cannot log in.");
-                    TempData["error"] = "This account has been deleted and cannot log in.";
+                    //ModelState.AddModelError(string.Empty, "This account has been deleted and cannot log in.");
+                    //TempData["error"] = "This account has been deleted and cannot log in.";
+                    ModelState.AddModelError(string.Empty, _localizer["AccountDeletedError"]);
+                    TempData["error"] = _localizer["AccountDeletedError"];
                     return View("AccessDenied"); // or RedirectToAction("Login")
                 }
             }

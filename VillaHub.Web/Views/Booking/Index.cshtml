@@ -1,7 +1,122 @@
-﻿@{
-    ViewData["Title"] = "Booking List";
+﻿@using VillaHub.Application.Common.Utility
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    var isRTL = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
 }
-@using VillaHub.Application.Common.Utility
+
+
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+
+<style>
+    /* ================= RTL for THIS table (tblBookings) ================= */
+
+    /* Force RTL direction on the table itself */
+    table#tblBookings.table-rtl.dataTable {
+        direction: rtl;
+    }
+
+    [dir="rtl"] .list-group-horizontal {
+        flex-direction: row-reverse !important;
+    }
+
+
+        /* Header text alignment & spacing for sort icons */
+        table#tblBookings.table-rtl.dataTable thead th {
+            text-align: right;
+            padding-left: 1.5rem; /* room for the icons on the LEFT */
+            padding-right: 0.5rem;
+            position: relative;
+        }
+
+            /* Move BOTH sort icons (asc/desc) to the LEFT and align them */
+            table#tblBookings.table-rtl.dataTable thead th.sorting:before,
+            table#tblBookings.table-rtl.dataTable thead th.sorting_asc:before,
+            table#tblBookings.table-rtl.dataTable thead th.sorting_desc:before,
+            table#tblBookings.table-rtl.dataTable thead th.sorting:after,
+            table#tblBookings.table-rtl.dataTable thead th.sorting_asc:after,
+            table#tblBookings.table-rtl.dataTable thead th.sorting_desc:after {
+                left: 0.5rem !important;
+                right: auto !important;
+            }
+
+        /* Phone column: data always LTR */
+        table#tblBookings.table-rtl.dataTable td.phone-field {
+            direction: ltr !important;
+            text-align: left !important;
+        }
+
+        /* Only the LAST column: thin, dark left border in RTL */
+        table#tblBookings.table-rtl.dataTable th:last-child,
+        table#tblBookings.table-rtl.dataTable td:last-child {
+            border-left: 1px solid #343a40 !important; /* darker than #495057 */
+        }
+
+    /* ================= Wrapper-scoped rules (ONLY when this wrapper is RTL) ================= */
+
+    /* Your JS sets: $("#tblBookings_wrapper").attr("dir","rtl").addClass("rtl") */
+    #tblBookings_wrapper[dir="rtl"] .dataTables_filter {
+        text-align: left !important; /* search box to the left in RTL */
+       
+    }
+
+    #tblBookings_wrapper[dir="rtl"] .dataTables_paginate .pagination {
+        flex-direction: row-reverse; /* reverse button order */
+    }
+
+    /* Prev button (right side in RTL) rounded on the right */
+    #tblBookings_wrapper[dir="rtl"] .page-item.previous .page-link {
+        border-top-right-radius: .25rem !important;
+        border-bottom-right-radius: .25rem !important;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+
+    /* Next button (left side in RTL) rounded on the left */
+    #tblBookings_wrapper[dir="rtl"] .page-item.next .page-link {
+        border-top-left-radius: .25rem !important;
+        border-bottom-left-radius: .25rem !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+
+    /* Pagination style only for RTL wrapper of this table */
+    #tblBookings_wrapper[dir="rtl"] div.dataTables_paginate ul.pagination {
+        margin: 2px 0;
+		direction: rtl; /* reverse the order of the buttons */
+        white-space: nowrap;
+        justify-content: end; /* keep aligned at the end (left in RTL) */
+    }
+
+    /* Apply only for RTL wrapper */
+    /* RTL pagination wrapper */
+    #tblBookings_wrapper[dir="rtl"] .dataTables_paginate .pagination {
+        display: flex;
+        flex-direction: row; /* keep natural order for numbers */
+    }
+
+        /* Move "previous" to the far right */
+        #tblBookings_wrapper[dir="rtl"] .dataTables_paginate .pagination .previous {
+            order: -1;
+        }
+
+        /* Move "next" to the far left */
+        #tblBookings_wrapper[dir="rtl"] .dataTables_paginate .pagination .next {
+            order: 99;
+        }
+
+
+
+
+       
+
+</style>
+
+
 
 @{
     var status = Context.Request.Query["status"];
@@ -34,11 +149,12 @@
     }
 }
 
-<div class="w-100 card border-0 p-4">
+
+<div class="w-100 card border-0 p-4 @(isRTL ? "rtl-container" : "")">
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 70px;">
-                <h2 class="text-white py-2 m-0">Bookings List</h2>
+                <h2 class="text-white py-2 m-0">@Localizer["Title"]</h2>
             </div>
         </div>
     </div>
@@ -47,60 +163,74 @@
         <div class="table-responsive pb-4 pt-2">
 
             <!-- Responsive status filter -->
-            <div class="pb-4 pt-2 d-flex justify-content-center align-items-center" style="min-height: 60px;">
+            <div class="pb-4 pt-2 d-flex justify-content-center align-items-center"
+                 style="min-height: 60px;">
                 <div class="overflow-auto">
-                    <ul class="list-group list-group-horizontal flex-nowrap m-0">
+                    <ul class="list-group list-group-horizontal flex-nowrap m-0 ">
                         <li class="list-group-item @pending">
-                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusPending">
-                                @SD.StatusPending
+                            <a class="text-decoration-none text-white"
+                               asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusPending">
+                                @(isRTL? @SD.StatusPending_ar: @SD.StatusPending)
                             </a>
                         </li>
                         <li class="list-group-item @approved">
-                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">
-                                @SD.StatusApproved
+                            <a class="text-decoration-none text-white"
+                               asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusApproved">
+                                @(isRTL? @SD.StatusApproved_ar: @SD.StatusApproved)
                             </a>
                         </li>
                         <li class="list-group-item @checkedIn">
-                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCheckedIn">
-                                @SD.StatusCheckedIn
+                            <a class="text-decoration-none text-white"
+                               asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCheckedIn">
+                                @(isRTL? @SD.StatusCheckedIn_ar: @SD.StatusCheckedIn)
                             </a>
                         </li>
                         <li class="list-group-item @completed">
-                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCompleted">
-                                @SD.StatusCompleted
+                            <a class="text-decoration-none text-white"
+                               asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCompleted">
+                                @(isRTL? @SD.StatusCompleted_ar: @SD.StatusCompleted)
                             </a>
                         </li>
                         <li class="list-group-item @cancelled">
-                            <a class="text-decoration-none text-white" asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCancelled">
-                                @SD.StatusCancelled
+                            <a class="text-decoration-none text-white"
+                               asp-controller="Booking" asp-action="Index" asp-route-status="@SD.StatusCancelled">
+                                @(isRTL? @SD.StatusCancelled_ar: @SD.StatusCancelled)
                             </a>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <table id="tblBookings" class="table table-bordered table-striped w-100">
-                <thead>
-                    <tr class="text-center align-middle" style="height: 60px;">
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th>Check-In</th>
-                        <th>Nights</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data populated by JS -->
-                </tbody>
-            </table>
+            <div class="table-responsive pb-4 pt-2" @(isRTL ? "dir=rtl" : "")>
+                <table id="tblBookings"
+                        class="table table-bordered table-striped w-100 @(isRTL ? "table-rtl" : "")">
+                    <thead>
+                        <tr class="text-center align-middle" style="height: 60px;">
+                            <th>@Localizer["BookingID"]</th>
+                            <th>@Localizer["CustomerName"]</th>
+                            <th>@Localizer["Phone"]</th>
+                            <th>@Localizer["Email"]</th>
+                            <th>@Localizer["Status"]</th>
+                            <th>@Localizer["CheckInDate"]</th>
+                            <th>@Localizer["Nights"]</th>
+                            <th>@Localizer["TotalAmount"]</th>
+                            <th>@Localizer["Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data populated by JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="~/js/booking.js"></script>
+
+    <script>
+        var isRTL = @(isRTL.ToString().ToLower()); // true / false in JS
+    </script>
 }
+

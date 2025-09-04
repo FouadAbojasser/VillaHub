@@ -1,10 +1,17 @@
 ﻿@using VillaHub.Domain.Entities
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model Booking
+
+@{
+    var isRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+}
 
 <div id="userReviewSection">
     <div class="row mt-4" style="border-top: 2px dashed #ccc;">
         <div class="col-12">
-            <h4 class="text-primary mt-3">Rate Your Stay</h4>
+            <h4 class="text-primary mt-3">@Localizer["RateYourStay"]</h4>
             <form method="post" asp-area="Customer" asp-controller="Review" asp-action="AddCustomerReview">
 
                 <input asp-for="FloorNumber" hidden id="FloorNumber" />
@@ -13,12 +20,12 @@
                 <input asp-for="UserId" hidden id="UserId" />
 
                 <div class="mb-3">
-                    <label class="form-label text-warning">Your Review</label>
-                    <textarea name="reviewText" id="reviewText" class="form-control" rows="4" placeholder="Write your feedback here..." required></textarea>
+                    <label class="form-label text-warning">@Localizer["YourReview"]</label>
+                    <textarea name="reviewText" id="reviewText" class="form-control" rows="4" placeholder="@Localizer["FeedBackPlaceHolder"]" required></textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-warning">Your Rating</label>
+                    <label class="form-label text-warning">@Localizer["YourRating"]</label>
                     <div id="starRating">
                         @for (int i = 1; i <= 5; i++)
                         {
@@ -29,7 +36,8 @@
                 </div>
 
                 <button type="button" onclick="submitCustomerReview()" class="btn btn-success">
-                    <i class="bi bi-send-check"></i> Submit Review
+                    <span>@Localizer["SubmitReview"]</span> <i class="bi bi-send-check ms-auto" style="transform: scaleY(-1);"></i>
+
                 </button>
             </form>
         </div>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,11 +20,15 @@ namespace VillaHub.Domain.Entities
         [Required]
         public string UserId { get; set; } = string.Empty;
         [ForeignKey("UserId")]
+
         public ApplicationUser User { get; set; } = null!;
         [Required]
+       
         public string Name { get; set; } = string.Empty;
+
         [Required]
         public string Email { get; set; } = string.Empty;
+
         public string Phone { get; set; } = string.Empty;
 
 
@@ -51,12 +56,21 @@ namespace VillaHub.Domain.Entities
         //Booking Related Fields
         [Required]
         public DateTime BookingDate { get; set; }
+
         [Required]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         public DateOnly CheckInDate { get; set; }
+
+
         [Required]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         public DateOnly CheckOutDate { get; set; }
+
+
         //[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ActualCheckInDate { get; set; }
+
+
         //[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ActualCheckOutDate { get; set; }
 

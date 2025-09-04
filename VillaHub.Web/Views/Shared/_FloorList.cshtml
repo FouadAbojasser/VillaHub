@@ -50,7 +50,7 @@
                                         asp-route-villageId="@floor.VillageId"
                                         asp-route-villaId="@floor.VillaId"
                                         asp-route-floorNumber="@floor.FloorNumber"
-                                        asp-route-checkInDate="@Model.CheckInDate"
+                                        asp-route-checkInDate="@Model.CheckInDate.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture)"
                                         asp-route-noOfNights="@Model.NumberOfNights"
                                         class="btn btn-success form-control w-100 mt-auto">
                                         <i class="bi bi-calendar-check"></i>

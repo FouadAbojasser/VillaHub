@@ -27,6 +27,13 @@ namespace VillaHub.Application.Common.Utility
         public const string StatusCancelled = "Cancelled";
         public const string StatusRefunded = "Refunded";
 
+        public const string StatusPending_ar = "مُعلق";
+        public const string StatusApproved_ar = "مُؤكد";
+        public const string StatusCheckedIn_ar = "تم الدخول";
+        public const string StatusCompleted_ar = "مُكتمل";
+        public const string StatusCancelled_ar = "مُلغى";
+        public const string StatusRefunded_ar = "مٌعاد دفعه";
+
 
         public static List<SelectListItem> CountryList_en => new()
         {

@@ -1,5 +1,8 @@
-﻿@{
-    ViewData["Title"] = "Access Denied";
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Title"];
 }
 
 <div class="d-flex justify-content-center align-items-center vh-100">
@@ -7,12 +10,18 @@
         @if (!ViewData.ModelState.IsValid)
         {
             <div class="alert alert-danger fw-bold mb-3">
+                <strong>@Localizer["ErrorTitle"]</strong>
                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    <div>@error.ErrorMessage</div>
+                    <div class="mt-3">@Localizer[error.ErrorMessage]</div>
                 }
             </div>
         }
+        else
+        {
+            <h1 class="text-danger">@Localizer["AccountDeletedError"]</h1>
+        }
     </div>
 </div>
+
 

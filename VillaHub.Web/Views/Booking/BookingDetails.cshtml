@@ -1,9 +1,20 @@
-﻿@{
-    ViewData["Title"] = "Booking Details";
-}
+﻿
+
 @using VillaHub.Application.Common.Utility
 @using VillaHub.Domain.Entities
 @model Booking
+
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+
+@{
+	var isRTL = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+}
 
 <div class="p-4 mt-0 mt-lg-4">
     <div class="row" style="border: 1px solid #aaa;">
@@ -11,25 +22,44 @@
         <div class="col-12 col-lg-6 p-4 2 mt-2 mt-md-0">
             <div class="row p-1 " style="border-radius:20px; ">
                 <div class="col-6">
-                    <h3 class="text-success">Booked Floor Details</h3>
+                    <h3 class="text-success">@Localizer["BookedFloorDetails"]</h3>
                 </div>
-                <div class="col-6 text-end">
+                <div class="col-6 @(isRTL ? "text-start" : "text-end")">
                     <a class="btn btn-secondary my-2"
-                       asp-controller="Booking" asp-action="Index" asp-route-status=@SD.StatusApproved><i class="bi bi-arrow-left-circle"></i> Back to Bookings</a>
+                       asp-controller="Booking" asp-action="Index" asp-route-status=@SD.StatusApproved>
+                        @if (isRTL)
+                        {
+                          <span> @Localizer["BackToBookings"]</span><i class= "bi bi-arrow-right-circle me-2"></i>
+
+                        }
+                        else
+                        {
+                          <i class="bi bi-arrow-left-circle me-2"></i><span calss="mx-2">@Localizer["BackToBookings"]</span>  
+                        }
+                       
+					</a>
                 </div>
                 <hr />
+
                 <partial name="_FloorDetail" model="@Model.Floor" />
+
                 <hr />
-                <div class="text-end">
-                    <h4 class="text-danger font-weight-bold mb-3">
-                        Booking Total :
-                        <span style="border-bottom:1px solid #ff6a00">
-                            @Model.TotalCost.ToString("c")
+
+               
+                <div class="@(isRTL ? "text-start" : "text-end")">
+                    <h4 class="text-danger font-weight-bold">
+                        @Localizer["BookingTotal"] :
+                        @{
+                            var culture = new System.Globalization.CultureInfo("en-US");
+                            culture.NumberFormat.CurrencyPositivePattern = 1; // 0=$n, 1=n$, 2=$ n, 3=n $
+                        }
+                        <span style="border-bottom:1px solid #ff6a00;">
+                            @Model.TotalCost.ToString("c", culture)
                         </span>
                     </h4>
                 </div>
 
-                <hr/>
+                <hr class="mt-3"/>
 
                 <form method="post">
                     <div class="row pt-1 mb-3 " style="border-radius:20px; ">
@@ -40,13 +70,15 @@
                                 <button asp-controller="Booking" asp-action="GenerateInvoice" asp-route-bookingId="@Model.Id"
                                         asp-route-downloadType="word" type="submit"
                                        class="btn btn-sm btn-secondary my-1">
-                                    <i class="bi bi-file-earmark-word"></i> Generate Invoice (word)
+                                        <span>@Localizer["GenerateInvoiceWord"]</span>
+                                        <i class="bi bi-file-earmark-word"></i>
                                 </button>
 
                                 <button asp-controller="Booking" asp-action="GenerateInvoice" asp-route-bookingId="@Model.Id"
                                         asp-route-downloadType="pdf" type="submit"
                                         class="btn btn-sm btn-secondary my-1">
-                                    <i class="bi bi-file-earmark-pdf"></i> Generate Invoice (pdf)
+                                        <span>@Localizer["GenerateInvoicePDF"]</span>
+                                        <i class="bi bi-file-earmark-pdf"></i>
                                 </button>
                             }
                             
@@ -55,7 +87,9 @@
                 </form>
             </div>
         </div>
-        <div class="col-12 col-lg-6 p-4 2 mt-4 mt-md-0" style="border-left:1px solid #aaa">
+
+        <div class="col-12 col-lg-6 p-4 2 mt-4 mt-md-0" style="@(isRTL ? "border-right" : "border-left"):1px solid #aaa">
+
             <form method="post">
                 <input asp-for="Id" hidden />
                 <input asp-for="FloorNumber" hidden />
@@ -68,14 +102,16 @@
                 <input asp-for="Nights" hidden />
                 <div class="row pt-1 mb-3 " style="border-radius:20px; ">
                     <div class="col-6">
-                        <h3 class="text-success">Booking Details</h3>
+                        <h3 class="text-success">@Localizer["BookingDetails"]</h3>
                     </div>
                     <div class="col-6">
                         @if ((Model.Status == SD.StatusApproved || Model.Status == SD.StatusPending)
                                                 && (User.IsInRole(SD.Role_SuperAdmin) || User.IsInRole(SD.Role_Customer)))
                         {
-                            <button type="submit" asp-controller="Booking" asp-action="BookingCancel" class="btn btn-sm btn-outline-danger form-control my-1">
-                                <i class="bi bi-x-circle"></i> &nbsp; Cancel Booking
+                            <button type="submit" asp-controller="Booking" asp-action="BookingCancel"
+                            class="btn btn-sm btn-outline-danger form-control my-1">
+                                &nbsp;
+                                <span> @Localizer["CancelBooking"] </span> <i class="bi bi-x-circle @(isRTL?"me-3":"ms-3")"></i>
                             </button>
                         }
                     </div>
@@ -83,69 +119,81 @@
                 <div class="row">
 
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Name</label>
+                        <label asp-for="Name" class="text-warning mb-1">@Localizer["Name"]</label>
                         <input asp-for="Name" class="form-control" />
                     </div>
 
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Phone</label>
-                        <input asp-for="Phone" class="form-control" />
+                        <label asp-for="Phone" class="text-warning mb-1">@Localizer["PhoneNo"]</label>
+                        <input asp-for="Phone" class="form-control @(isRTL ? "text-end" : "text-start")"
+                               style="direction:ltr; text-align:left;" />
                     </div>
 
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Email</label>
+                        <label asp-for="Email" class="text-warning mb-1">@Localizer["Email"]</label>
                         <input asp-for="Email" class="form-control" />
                     </div>
 
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">No. of nights</label>
+                        <label asp-for="Nights" class="text-warning mb-1">@Localizer["NoOfNights"]</label>
                         <input asp-for="Nights" disabled class="form-control" />
                     </div>
 
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Status</label>
+                        <label asp-for="Status" class="text-warning mb-1">@Localizer["Status"]</label>
                         <input asp-for="Status" disabled class="form-control" />
                     </div>
 
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Booking Date</label>
-                        <input asp-for="BookingDate" disabled class="form-control" />
+                        <label asp-for="BookingDate" class="text-warning mb-1">@Localizer["BookingDate"]</label>
+                        <input class="form-control @(isRTL ? "text-end" : "text-start")"
+                               style="direction:@(isRTL ? "rtl" : "ltr"); text-align:right;"
+                               value="@Model.BookingDate.ToString("yyyy/MM/dd HH:mm")" disabled />
+                    </div>
+
+
+                    <div class="form-group pt-2 col-6">
+                        <label asp-for="CheckInDate" class="text-warning mb-1">@Localizer["CheckInDate"]</label>
+                        <input asp-for="CheckInDate" disabled class="form-control @(isRTL ? "text-end" : "text-start")"
+                               style="direction:rtl; text-align:left;" />
                     </div>
 
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Check-in Date</label>
-                        <input asp-for="CheckInDate" disabled class="form-control" />
-                    </div>
-
-                    <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Actual Check-in Date</label>
+                        <label class="text-warning mb-1">@Localizer["ActualCheckInDate"]</label>
                         @if (Model.ActualCheckInDate == default)
                         {
                             <input disabled class="form-control" placeholder="" />
                         }
                         else
                         {
-                            <input asp-for="ActualCheckInDate" disabled class="form-control" />
+                            <input class="form-control @(isRTL ? "text-end" : "text-start")"
+                                   style="@(isRTL ? "direction:rtl;" : "direction:ltr;")"
+                                   value="@Model.ActualCheckInDate.ToString("yyyy/MM/dd HH:mm")" disabled />
                         }
                     </div>
 
 
+
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Check-out Date</label>
+                        <label asp-for="CheckOutDate" class="text-warning mb-1">@Localizer["CheckOutDate"]</label>
                         <input asp-for="CheckOutDate" disabled class="form-control" />
                     </div>
 
+
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Actual Check-out Date</label>
-                        @if(Model.ActualCheckOutDate == default)
+                        <label class="text-warning mb-1">@Localizer["ActualCheckOutDate"]</label>
+                        @if (Model.ActualCheckOutDate == default)
                         {
                             <input disabled class="form-control" placeholder="" />
                         }
                         else
                         {
-                            <input asp-for="ActualCheckOutDate" disabled class="form-control" />
+                            <input class="form-control @(isRTL ? "text-end" : "text-start")"
+                                   style="@(isRTL ? "direction:rtl;" : "direction:ltr;")"
+                                   value="@Model.ActualCheckOutDate.ToString("yyyy/MM/dd HH:mm")" disabled />
                         }
                     </div>
+
 
                     @* @if (Model.Status == SD.StatusApproved && User.IsInRole(SD.Role_SuperAdmin))
                     {
@@ -188,24 +236,29 @@
                         </div>
                     }
 
-                        <div class="form-group pt-2 col-6">
-                            <label class="text-warning">Payment Date</label>
-                            @if (Model.PaymentDate == default)
-                            {
-                                <input disabled class="form-control" placeholder="" />
-                            }
-                            else
-                            {
-                                <input asp-for="PaymentDate" disabled class="form-control" />
-                            }
-                        </div>
+
+                    <div class="form-group pt-2 col-6">
+                        <label class="text-warning mb-1">@Localizer["PaymentDate"]</label>
+                        @if (Model.PaymentDate == default)
+                        {
+                            <input disabled class="form-control" placeholder="" />
+                        }
+                        else
+                        {
+                            <input class="form-control @(isRTL ? "text-end" : "text-start")"
+                                   style="@(isRTL ? "direction:rtl;" : "direction:ltr;")"
+                                   value="@Model.PaymentDate.ToString("yyyy/MM/dd HH:mm")" disabled />
+                        }
+                    </div>
                     
 
                     @* <div class="form-group pt-2 col-6">
                         <label class="text-warning">Status</label>
                         <input asp-for="Status" disabled class="form-control" />
                     </div> *@
+
                 </div>
+
                 <div class="form-group pt-2 pt-md-4">
                     @if (User.IsInRole(SD.Role_SuperAdmin))
                     {
@@ -230,7 +283,7 @@
                     {
                         <button type="submit" asp-controller="Booking" asp-action="FinalizeBooking"
                                 class="btn btn-success form-control">
-                            Looks Good! Book Now
+							@Localizer["CompleteBooking"]
                         </button>
                        
                     }

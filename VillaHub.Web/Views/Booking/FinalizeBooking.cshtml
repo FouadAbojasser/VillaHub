@@ -1,36 +1,55 @@
-﻿@{
-    ViewData["Title"] = "Finalize Booking";
-}
-@using VillaHub.Domain.Entities
+﻿@using VillaHub.Domain.Entities
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @model Booking
+
+@{
+    ViewData["Title"] = @Localizer["Title"];
+}
+
+@{
+    var isRTL = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+}
+
 <div class="container pt-4 mt-0 mt-lg-4 mb-5 pb-5">
     <div class="row" style="border: 1px solid #aaa;">
         
         <div class="col-12 col-lg-7 p-4 2 mt-4 mt-md-0">
-            <div class="row p-1 my-1 " style="border-radius:20px; ">
+            <div class="row p-1 my-1" style="border-radius:20px;">
+
                 <div class="col-6">
-                    <h3 class="text-success">Floor Details</h3>
+                    <h3 class="text-success">@Localizer["FloorDetails"]</h3>
                 </div>
-                <div class="text-end col-6 ">
-                    <a asp-controller="Home" asp-action="Index"
-                       class="btn btn-sm btn-outline-danger" style="width:200px;">
-                        <i class="bi bi-arrow-left-square"></i> &nbsp; Modify Selection
+
+                <div class="@(isRTL ? "text-start" : "text-end") col-6 ">
+                    <a asp-area="" asp-controller="Home" asp-action="Index"
+                       class="btn btn-sm btn-outline-danger" style="width:150px;">
+                        @Localizer["ModifySelection"] <i class="bi bi-arrow-left-square ms-2"></i> &nbsp;
                     </a>
                 </div>
+
                 <hr />
                 <partial name="_FloorDetail" model="@Model.Floor" />
                 <hr />
-                <div class="text-end">
+
+                <div class="@(isRTL ? "text-start" : "text-end")">
                     <h4 class="text-danger font-weight-bold ">
-                        Booking Total :
+                        @Localizer["BookingTotal"] :
+                        @{
+                            var culture = new System.Globalization.CultureInfo("en-US");
+                            culture.NumberFormat.CurrencyPositivePattern = 1; // 0=$n, 1=n$, 2=$ n, 3=n $
+                        }
                         <span style="border-bottom:1px solid #ff6a00">
-                            @Model.TotalCost.ToString("c", new System.Globalization.CultureInfo("en-US"))
+                            @Model.TotalCost.ToString("c", culture)
                         </span>
                     </h4>
                 </div>
+
             </div>
         </div>
-        <div class="col-12 col-lg-5 p-4 2 mt-4 mt-md-0" style="border-left:1px solid #aaa">
+        <div class="col-12 col-lg-5 p-4 2 mt-4 mt-md-0" style="@(isRTL ? "border-right" : "border-left"):1px solid #aaa">
             <form method="post">
                 <input asp-for="VillageId" hidden />
                 <input asp-for="VillaId" hidden />
@@ -41,46 +60,52 @@
                 <input asp-for="Nights" hidden />
                 <div class="row pt-1 mb-3 " style="border-radius:20px; ">
                     <div class="col-12">
-                        <h3 class="text-success">Enter Booking Details</h3>
+                        <h3 class="text-success">@Localizer["EnterBookingDetails"]</h3>
                     </div>
                 </div>
 
                 <div class="form-group pt-0">
-                    <label asp-for="Name" class="text-warning">Name</label>
+                    <label asp-for="Name" class="text-warning mb-1">@Localizer["Name"]</label>
                     <input asp-for="Name" class="form-control" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
+
                 <div class="form-group pt-2">
-                    <label asp-for="Phone" class="text-warning">Phone</label>
-                    <input asp-for="Phone" class="form-control" />
+                    <label asp-for="Phone" class="text-warning mb-1">@Localizer["PhoneNo"]</label>
+                    <input asp-for="Phone"
+                           class="form-control @(isRTL ? "text-end" : "text-start")"
+                           style="direction:ltr; text-align:left;" />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
+
                 <div class="form-group pt-2">
-                    <label asp-for="Email" class="text-warning">Email</label>
+                    <label asp-for="Email" class="text-warning mb-1">@Localizer["Email"]</label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-group pt-2">
-                    <label asp-for="CheckInDate" class="text-warning">Check in Date</label>
-                    <input asp-for="CheckInDate" disabled class="form-control" />
+                    <label asp-for="CheckInDate" class="text-warning mb-1">@Localizer["CheckInDate"]</label>
+                    <input asp-for="CheckInDate" disabled class="form-control @(isRTL ? "text-end" : "text-start")"
+                           style="direction:rtl; text-align:left;" />
 
                 </div>
                 <div class="form-group pt-2">
-                    <label asp-for="CheckOutDate" class="text-warning">Check Out Date</label>
-                    <input asp-for="CheckOutDate" disabled class="form-control" />
+                    <label asp-for="CheckOutDate" class="text-warning mb-1">@Localizer["CheckOutDate"]</label>
+                    <input asp-for="CheckOutDate" disabled class="form-control @(isRTL ? "text-end" : "text-start")"
+                           style="direction:rtl; text-align:left;" />
                 </div>
                 <div class="form-group pt-2">
-                    <label asp-for="Nights" class="text-warning">No. of nights</label>
+                    <label asp-for="Nights" class="text-warning mb-1">@Localizer["NoOfNights"]</label>
                     <input asp-for="Nights" disabled class="form-control" />
                 </div>
                 <div class="form-group pt-2 ">
                     @if (Model.Floor.isAvailable)
                     {
-                        <button type="submit" class="btn btn-success form-control">Looks Good! Book Now</button>
+                        <button type="submit" class="btn btn-success form-control">@Localizer["CompleteBooking"]</button>
                     }
                     else
                     {
-                        <input class="btn btn-danger disabled form-control" value="Sold Out" />
+                        <input class="btn btn-danger disabled form-control" value=@Localizer["SlodOut"] />
                     }
                 </div>
             </form>

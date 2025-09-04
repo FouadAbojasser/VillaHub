@@ -1,11 +1,9 @@
 ﻿
+using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
@@ -14,7 +12,6 @@ using Syncfusion.Pdf;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
-using VillaHub.Web.SignalR;
 using Color = Syncfusion.Drawing.Color;
 
 
@@ -155,20 +152,28 @@ namespace VillaHub.Web.Controllers
 
 
 
-
-
         private async Task<string> CreateStripeSessionUrl(double amount, int bookingId, int villageId, int villaId, int floorNumber, DateOnly checkInDate, int noOfNights)
         {
             var domain = $"{Request.Scheme}://{Request.Host}";
 
             //var formattedCheckIn = checkInDate.ToString("dd-MM-yyyy");
 
+            var safeCheckInDate = checkInDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+
             // If payment canceled, return back to booking confirm
+
+            //var cancelUrl = $"{domain}/Booking/FinalizeBooking" +
+            //                $"?villageId={villageId}" +
+            //                $"&villaId={villaId}" +
+            //                $"&floorNumber={floorNumber}" +
+            //                $"&checkInDate={checkInDate}" +
+            //                $"&noOfNights={noOfNights}";
+
             var cancelUrl = $"{domain}/Booking/FinalizeBooking" +
                             $"?villageId={villageId}" +
                             $"&villaId={villaId}" +
                             $"&floorNumber={floorNumber}" +
-                            $"&checkInDate={checkInDate}" +
+                            $"&checkInDate={Uri.EscapeDataString(safeCheckInDate)}" +
                             $"&noOfNights={noOfNights}";
 
             // Retrieve floor with image, villa, and village info

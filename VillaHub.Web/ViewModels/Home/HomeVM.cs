@@ -13,7 +13,7 @@ namespace VillaHub.Web.ViewModels.Home
 
         [Display(Name = "CheckInDate", ResourceType = typeof(SharedResources))]
         [DataType(DataType.Date)] // tells the UI it's a date
-        [DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Date must be greater than today.")]
         public DateOnly CheckInDate { get; set; }
 

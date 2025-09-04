@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -142,3 +142,11 @@ body {
     margin-left: 0; /* reset LTR margin */
     margin-right: 0.5em; /* space between input and label */
 }
+
+/* ================= RTL BookingsDataTables Fix ================= */
+
+
+
+
+
+

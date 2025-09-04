@@ -1,17 +1,24 @@
-﻿@{
-    ViewData["Title"] = "Confirm Booking";
-}
+﻿
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @model int
 
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
 <div class="container  pt-4">
+
     <div class="col-12 text-center">
-        <h1 class="text-success text-center py-1">Your Vacation is Confirmed!</h1>
-        Your Order Number is : @Model <br />
-        <p class="py-2">You can view all order details in Your Bookings Section.</p>
+        <h1 class="text-success text-center py-1">@Localizer["Confirm1"]</h1>
+        @Localizer["OrderNo"] : @Model <br />
+        <p class="py-2">@Localizer["Confirm2"]</p>
         <img src="~/images/others/orderConfirmed.jpg" style="border-radius:20px" width="65%" />
     </div>
+
     <div class="col-12 text-center text-warning">
-        <p class="py-3">Pack your bags! You are one step closer to an amazing vacation!</p>
+        <p class="py-3">@Localizer["Confirm3"]</p>
     </div>
 
 </div> 

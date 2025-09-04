@@ -192,4 +192,8 @@
   <data name="ReceivedOTP" xml:space="preserve">
     <value>Received OTP</value>
   </data>
+  <data name="ExternalLogins" xml:space="preserve">
+    <value>Login Provider</value>
+  </data>
+
 </root>

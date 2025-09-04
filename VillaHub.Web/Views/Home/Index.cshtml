@@ -69,7 +69,7 @@
                     <input asp-for="CheckInDate"
                            type="date"
                            dir="ltr"
-                           value="@(Model.CheckInDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture))"
+                           value="@(Model.CheckInDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))"
                            min="@(DateOnly.FromDateTime(DateTime.Now).AddDays(1).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture))"
                            class="form-control" />
                 </div>

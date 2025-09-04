@@ -1,19 +1,27 @@
-﻿@{
-    ViewData["Title"] = "Update User";
-}
-
+﻿
 @using VillaHub.Web.ViewModels.User
 @using VillaHub.Application.Common.Utility
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+@{
+    var isRTL = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+}
+
 @model EditUserVM
 
 <div class="p-4 mt-0 mt-lg-4">
     <form asp-action="Update" method="post" enctype="multipart/form-data" class="w-100">
         <input type="hidden" asp-for="AppUser.Id" />
 
-        <div class="row" style="border: 1px solid #aaa; padding-top:10px;">
+        <div class="row" style="border: 1px solid #aaa; ">
 
             <!-- Left Column: Avatar and Upload -->
-            <div class="col-12 col-lg-4 p-4 mt-2 mt-md-0 text-center" style="border-right:1px solid #aaa">
+            <div class="col-12 col-lg-4 p-4 mt-2 mt-md-0 text-center" style="@(isRTL ? "border-left:1px" : "border-right:1px") solid #aaa">
 
                 <!-- Profile Image Preview -->
                 <img src="@(string.IsNullOrEmpty(Model.AppUser.ImageUrl)
@@ -27,13 +35,21 @@
                 <h3 class="text-success">@Model.AppUser.Name</h3>
 
                 <!-- Upload Image Button -->
-                <div class="mt-3">
+                <div class="mt-3 text-center">
                     <input type="file" class="form-control d-none" id="profileImageInput" name="ProfileImage" accept="image/*" />
                     <button type="button" class="btn btn-outline-primary btn-sm"
                             onclick="document.getElementById('profileImageInput').click();">
-                        <i class="bi bi-upload"></i> Upload Image
+                        @if (isRTL)
+                        {
+                            @Localizer["UploadImage"] <i class="bi bi-upload ms-2"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-upload me-2"></i> @Localizer["UploadImage"]
+                        }
                     </button>
                 </div>
+
             </div>
 
             <!-- Right Column: User Fields -->
@@ -41,9 +57,9 @@
 
                 <div class="row p-1 mb-2" style="border-radius:20px;">
                     <div class="col-6">
-                        <h3 class="text-success">Update User</h3>
+                        <h3 class="text-success">@Localizer["UpdateUser"]</h3>
                     </div>
-                    <div class="col-6 text-end">
+                    <div class="col-6 @(isRTL?"text-start":"text-end")">
                         @if (User.IsInRole(SD.Role_SuperAdmin))
                         {
                             <a class="btn btn-secondary my-2" asp-controller="User" asp-action="Index">
@@ -53,7 +69,10 @@
                         else
                         {
                             <a class="btn btn-secondary my-2" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-arrow-left-circle"></i> Back to Home
+                                <div class="d-inline-flex  @(isRTL ? "flex-row-reverse" : "")">
+                                    <i class="bi bi-arrow-left-circle me-2"></i>
+                                    <span>@Localizer["BackToHome"]</span>
+                                </div>
                             </a>
                         }
 
@@ -65,34 +84,34 @@
                 <div class="row">
                     <!-- Email (Read Only) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Email</label>
+                        <label class="text-warning mb-1">@Localizer["AppUserEmail"]</label>
                         <input asp-for="AppUser.Email" class="form-control" disabled />
                     </div>
 
                     <!-- Email Confirmed (Read Only) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Email Confirmed?</label>
+                       <label class="text-warning mb-1">@Localizer["AppUserEmailConfirmed"]</label>
                         <select class="form-control" disabled>
-                            <option value="true" selected="@(Model.AppUser.EmailConfirmed)">Yes</option>
-                            <option value="false" selected="@(!Model.AppUser.EmailConfirmed)">No</option>
+                            <option value="true" selected="@(Model.AppUser.EmailConfirmed)">@Localizer["Yes"]</option>
+                            <option value="false" selected="@(!Model.AppUser.EmailConfirmed)">@Localizer["No"]</option>
                         </select>
                     </div>
 
                     <!-- Username (Read Only) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Username</label>
+                        <label class="text-warning mb-1">@Localizer["AppUserUserName"]</label>
                         <input asp-for="AppUser.UserName" class="form-control" disabled />
                     </div>
 
                     <!-- Created At (Read Only) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Created At</label>
+                        <label class="text-warning mb-1">@Localizer["AppUserCreatedAt"]</label>
                         <input value="@Model.AppUser.CreatedAt.ToString("g")" class="form-control" disabled />
                     </div>
 
                     <!-- Login Providers (Read Only) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Login Providers</label>
+                        <label asp-for="@Model.ExternalLogins" class="text-warning mb-1"></label>
                         <input value="@(Model.ExternalLogins != null && Model.ExternalLogins.Any()
                                                                                     ? string.Join(", ", Model.ExternalLogins)
                                                                                     : "Local Account")"
@@ -101,9 +120,19 @@
 
                     <!-- Status (Read Only) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Status</label>
+                        <label class="text-warning mb-1">@Localizer["AppUserStatus"]</label>
                         <select class="form-control" disabled>
-                            <option>@Model.AppUser.Status</option>
+                            @if (isRTL)
+                            {
+                                if (Model.AppUser.Status == "Active")
+                                {
+                                    <option>فعّـال</option>
+                                }
+                            }
+                            else
+                            {
+                                <option>@Model.AppUser.Status</option>
+                            }
                         </select>
                     </div>
 
@@ -111,7 +140,7 @@
                     @if (Model.AppUser.Status != "Active")
                     {
                         <div class="form-group pt-2 col-6">
-                            <label class="text-warning">Deleted At</label>
+                            <label class="text-warning mb-1">Deleted At</label>
                             <input value="@(Model.AppUser.DeletedAt == default ? "-" : Model.AppUser.DeletedAt.ToString("g"))"
                                    class="form-control" disabled />
                         </div>
@@ -119,32 +148,35 @@
 
                     <!-- Full Name (Editable) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Full Name</label>
+                        <label class="text-warning mb-1">@Localizer["FullName"]</label>
                         <input asp-for="AppUser.Name" class="form-control" />
                         <span asp-validation-for="AppUser.Name" class="text-danger"></span>
                     </div>
 
-                    <!-- Phone Number (Editable) -->
+                   <!-- Phone Number (Editable) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Phone Number</label>
-                        <input asp-for="PhoneNumber" class="form-control" />
+                        <label asp-for="PhoneNumber" class="text-warning mb-1"></label>
+                        <input asp-for="PhoneNumber"
+                               class="form-control @(isRTL ? "text-end" : "text-start")"
+                               style="direction:ltr; text-align:left;" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
 
                     <!-- Country (Dropdown Editable) -->
                     <div class="form-group pt-2 col-6">
-                        <label class="text-warning">Country</label>
-                        <select asp-for="AppUser.Country" asp-items="Model.CountryList" class="form-select">
-                            <option disabled selected>-Select Country-</option>
+                        <label class="text-warning mb-1">@Localizer["Country"]</label>
+                        <select asp-for="AppUser.Country" asp-items="Model.CountryList" class="form-select @(isRTL ? "form-select-rtl" : "")">
+                            <option disabled selected>@Localizer["SelectCountry"]</option>
                         </select>
                         <span asp-validation-for="AppUser.Country" class="text-danger"></span>
                     </div>
+
 
                     @if (User.IsInRole(SD.Role_SuperAdmin))
                     {
                         <!-- Roles (Editable) -->
                         <div class="form-group pt-2 col-6">
-                            <label class="text-warning">Roles</label>
+                            <label class="text-warning mb-1">Roles</label>
                             <select asp-for="UserRole" asp-items="Model.RolesList" class="form-select">
                                 <option disabled selected>-Select Role-</option>
                             </select>
@@ -155,8 +187,8 @@
                     {
                         <!-- Roles (Editable) -->
                         <div class="form-group pt-2 col-6">
-                            <label class="text-warning">Roles</label>
-                            <select asp-for="UserRole" asp-items="Model.RolesList" class="form-select" disabled>
+                            <label class="text-warning mb-1">@Localizer["Roles"]</label>
+                            <select asp-for="UserRole" asp-items="Model.RolesList" class="form-select @(isRTL ? "form-select-rtl" : "")" disabled>
                                 <option disabled selected>-Select Role-</option>
                             </select>
                             <span asp-validation-for="UserRole" class="text-danger"></span>
@@ -165,11 +197,15 @@
                     }
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-4 @(isRTL?"text-end":"text-start")">
                     <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-save"></i> Save Changes
+                        <div class="d-inline-flex @(isRTL ? "flex-row-reverse" : "")">
+                            <i class="bi bi-save me-2"></i>
+                            <span>@Localizer["SaveChanges"]</span>
+                         </div>
                     </button>
                 </div>
+
             </div>
         </div>
     </form>
