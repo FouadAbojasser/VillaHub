@@ -1,10 +1,13 @@
-﻿@{
-    ViewData["Title"] = "Floors List";
-}
+﻿
 @using VillaHub.Domain.Entities
 @model IEnumerable<Floor>
 
+@{
+    ViewData["Title"] = "Floors List";
+}
+
 <div class="w-100 card border-0 p-4">
+
     <div class="card-header bg-success bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
@@ -12,6 +15,7 @@
             </div>
         </div>
     </div>
+
     <div class="card-body border p-4">
         <div class="row pb-3">
             @* <div class="col-6 offset-6 text-end">
@@ -33,8 +37,10 @@
                         <th>Price</th>
                         <th>Area<br /><small>(Sqm)</small></th>
                         <th>Capacity<br /><small>(Person)</small></th>
+                        <th>Bookings</th>
                         <th>Amenities</th>
                         <th>Gallery</th>
+                        <th>isDeleted?</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -52,6 +58,13 @@
                             <td>@floor.Capacity</td>
                             <td>
                                 <a href="#" class="text-decoration-none text-primary"
+                                   data-bs-toggle="modal" data-bs-target="#bookingModal"
+                                   onclick="loadBookingBreakdown(@floor.FloorNumber, @floor.VillaId, @floor.VillageId)">
+                                    Bookings (@floor.BookingsCount)
+                                </a>
+                            </td>
+                            <td>
+                                <a href="#" class="text-decoration-none text-primary"
                                    data-bs-toggle="modal" data-bs-target="#amenityModal"
                                    onclick="loadAmenities('@floor.FloorNumber', '@floor.VillaId', '@floor.VillageId')">
                                     Amenities (@floor.Amenities.Count())
@@ -64,6 +77,15 @@
                                 </a>
                             </td>
                             <td>
+                                @if (floor.IsDeleted)
+                                {
+                                    <span class="badge bg-danger px-3 py-2">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success px-3 py-2">No</span>
+                                }   
+                            <td>
                                 <div class="d-inline-flex justify-content-center">
                                     <div class="btn-group" role="group">
                                         <a asp-controller="Floor" asp-action="Update"
@@ -73,13 +95,28 @@
                                            class="btn btn-success mx-1">
                                             <i class="bi bi-pencil-square"></i> Update
                                         </a>
-                                        <a asp-controller="Floor" asp-action="Delete"
-                                           asp-route-floorNumber="@floor.FloorNumber"
-                                           asp-route-villaId="@floor.VillaId"
-                                           asp-route-villageId="@floor.VillageId"
-                                           class="btn btn-danger mx-1">
-                                            <i class="bi bi-trash-fill"></i> Delete
-                                        </a>
+
+                                        @if (!floor.IsDeleted)
+                                        {
+                                            <a asp-controller="Floor" asp-action="Delete"
+                                               asp-route-floorNumber="@floor.FloorNumber"
+                                               asp-route-villaId="@floor.VillaId"
+                                               asp-route-villageId="@floor.VillageId"
+                                               class="btn btn-danger mx-1">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Floor" asp-action="Restore"
+                                               asp-route-floorNumber="@floor.FloorNumber"
+                                               asp-route-villaId="@floor.VillaId"
+                                               asp-route-villageId="@floor.VillageId"
+                                               class="btn btn-warning mx-1">
+                                                <i class="bi bi-arrow-clockwise"></i> Restore
+                                            </a>
+                                        }
+                                        
                                     </div>
                                 </div>
                             </td>
@@ -87,6 +124,21 @@
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Floor Bookings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="bookingList" class="list-group"></ul>
+            </div>
         </div>
     </div>
 </div>
@@ -193,6 +245,40 @@
 
             document.querySelector('#amenityModal .modal-title').textContent =
                 `Amenities for Floor ${floorNumber} in Villa ${floor.villaName}`;
+        }
+
+        // Booking Function
+        const bookingData = @Html.Raw(Json.Serialize(Model.Select(f => new {
+            floorNumber = f.FloorNumber,
+            villaId = f.VillaId,
+            villageId = f.VillageId,
+            bookings = f.BookingsByStatus
+        })));
+
+        function loadBookingBreakdown(floorNumber, villaId, villageId) {
+            const bookingList = document.getElementById("bookingList");
+            bookingList.innerHTML = "";
+
+            const floor = bookingData.find(f =>
+                f.floorNumber === parseInt(floorNumber) &&
+                f.villaId === parseInt(villaId) &&
+                f.villageId === parseInt(villageId)
+            );
+
+            if (!floor || !floor.bookings || Object.keys(floor.bookings).length === 0) {
+                bookingList.innerHTML = "<li class='list-group-item'>No bookings for this floor.</li>";
+                return;
+            }
+
+            for (const [status, count] of Object.entries(floor.bookings)) {
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.innerHTML = `${status} <span class="badge bg-primary rounded-pill">${count}</span>`;
+                bookingList.appendChild(li);
+            }
+
+            document.querySelector('#bookingModal .modal-title').textContent =
+                `Bookings for Floor ${floorNumber}`;
         }
     </script>
 }

@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
@@ -24,15 +25,21 @@ namespace VillaHub.Web.Controllers
         private readonly StripeSettings _stripeSettings;
         private readonly ICustomEmailSender _customEmailSender;
         private readonly INotificationService _notificationService;
+        private readonly IStringLocalizer<BookingController> _localizer;
 
-        public BookingController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager,
-            IOptions<StripeSettings> stripeSettings, ICustomEmailSender customEmailSender, INotificationService notificationService)
+        public BookingController(IUnitOfWork unitOfWork,
+            UserManager<ApplicationUser> userManager,
+            IOptions<StripeSettings> stripeSettings,
+            ICustomEmailSender customEmailSender,
+            INotificationService notificationService,
+            IStringLocalizer<BookingController> localizer)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _stripeSettings = stripeSettings.Value;
             _customEmailSender = customEmailSender;
             _notificationService = notificationService;
+            _localizer = localizer;
         }
 
 
@@ -340,7 +347,9 @@ namespace VillaHub.Web.Controllers
                 bookingInDb.ActualCheckInDate = DateTime.UtcNow;
                 _unitOfWork.Booking.Update(bookingInDb);
                 await _unitOfWork.Booking.CommitAsync();
-                TempData["success"] = "Booking has ben changed to Checked-In";
+
+                //TempData["success"] = "Booking has ben changed to Checked-In";
+                TempData["success"] = _localizer["Checked_In"].Value;
             }
 
            return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
@@ -363,7 +372,9 @@ namespace VillaHub.Web.Controllers
                 bookingInDb.ActualCheckOutDate = DateTime.UtcNow;
                 _unitOfWork.Booking.Update(bookingInDb);
                 await _unitOfWork.Booking.CommitAsync();
-                TempData["success"] = "Booking has ben changed to Completed";
+
+                //TempData["success"] = "Booking has ben changed to Completed";
+                TempData["success"] = _localizer["Completed"].Value;
             }
             
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
@@ -386,7 +397,9 @@ namespace VillaHub.Web.Controllers
                 bookingInDb.Status = SD.StatusCancelled;
                 _unitOfWork.Booking.Update(bookingInDb);
                 await _unitOfWork.Booking.CommitAsync();
-                TempData["success"] = "Booking has ben changed to Cancelled";
+
+                //TempData["success"] = "Booking has ben changed to Cancelled";
+                TempData["success"] = _localizer["Cancelled"].Value;
             }
 
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
@@ -441,7 +454,7 @@ namespace VillaHub.Web.Controllers
 
                 textSelection = documnet.Find("xx_booking_total", false, true);
                 textRange = textSelection.GetAsOneRange();
-                textRange.Text = bookingInDb.TotalCost.ToString("c");
+                textRange.Text = bookingInDb.TotalCost.ToString("c", new System.Globalization.CultureInfo("en-US"));
 
 
                 if (applicationUser is not null)
@@ -516,7 +529,9 @@ namespace VillaHub.Web.Controllers
                         await _customEmailSender.SendEmailWithAttachmentAsync(applicationUser!.Email!, "VillaHub - Booking Invoice", emailBody, pdfBytes, $"Invoice-{bookingId}.pdf");
 
                         // Redirect to a confirmation page or return a success message
-                        TempData["success"] = "Invoice has been emailed successfully.";
+
+                        //TempData["success"] = "Invoice has been emailed successfully.";
+                        TempData["success"] = _localizer["InvoiceEmail"].Value;
                         
                         //return View("BookingConfirmation", new { bookingId }); // or any other relevant redirect
 

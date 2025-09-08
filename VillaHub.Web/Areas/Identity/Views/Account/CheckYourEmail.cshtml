@@ -1,9 +1,10 @@
-﻿@{
-    ViewData["Title"] = "Email Check";
-}
-
+﻿
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
 
 <div class="container pt-5">
     <div class="card shadow border">

@@ -71,6 +71,7 @@ namespace VillaHub.Web.Controllers
             _unitOfWork.Review.CommitAsync();
 
             TempData["success"] = "Review Deleted Successfully";
+
             return RedirectToAction(nameof(Index));
 
         }

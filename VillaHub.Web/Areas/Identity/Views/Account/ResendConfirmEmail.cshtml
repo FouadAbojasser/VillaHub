@@ -1,13 +1,13 @@
-﻿@{
-   ViewData["Title"] = "Resend Confirmation Email";
-}
-
+﻿
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.Extensions.Localization
 @using VillaHub.Web.ViewModels
 @using VillaHub.Web.ViewModels.Identity
 @inject IViewLocalizer Localizer
 
+@{
+   ViewData["Title"] = Localizer["Title"];
+}
 
 @model ResendConfirmationEmailVM
 

@@ -1,11 +1,7 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Syncfusion.Presentation;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
-using VillaHub.Domain.Entities;
-using VillaHub.Infrastructure.Repository;
-using VillaHub.Web.Models;
 using VillaHub.Web.ViewModels.Home;
 
 namespace VillaHub.Web.Controllers
@@ -24,9 +20,9 @@ namespace VillaHub.Web.Controllers
 
         public IActionResult Index()
         {
-            var villageList = _unitOfWork.Village.Get(null, [e => e.Villas, e=>e.Floors]);
-            var villaList = _unitOfWork.Villa.Get(null, [e => e.Images, e=>e.Floors, e=>e.Amenities]);
-            var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e =>e.Amenities, e=>e.Reviews]);
+            var villageList = _unitOfWork.Village.Get(e => e.IsDeleted == false, [e => e.Villas, e=>e.Floors]);
+            var villaList = _unitOfWork.Villa.Get(e => e.IsDeleted == false, [e => e.Images, e=>e.Floors, e=>e.Amenities]);
+            var floorList = _unitOfWork.Floor.Get(e=>e.IsDeleted==false, [e => e.Village, e => e.Villa, e => e.Images, e =>e.Amenities, e=>e.Reviews]);
 
             HomeVM homeVM = new HomeVM()
             {
@@ -82,7 +78,7 @@ namespace VillaHub.Web.Controllers
             var x = homeVM.CheckInDate;
             
             //Get All floors
-            var floorList = _unitOfWork.Floor.Get(null, [e => e.Village, e => e.Villa, e => e.Images, e => e.Amenities, e=>e.Reviews]);
+            var floorList = _unitOfWork.Floor.Get(e => e.IsDeleted == false, [e => e.Village, e => e.Villa, e => e.Images, e => e.Amenities, e=>e.Reviews]);
 
             //Get All Bookings with status "Approved"
             var AllBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved);
@@ -131,7 +127,8 @@ namespace VillaHub.Web.Controllers
         {
             var FloorInDb = _unitOfWork.Floor.GetOne(f=>f.FloorNumber==floorNumber
                                                   && f.VillaId==villaId
-                                                  && f.VillageId==villageId,
+                                                  && f.VillageId==villageId
+                                                  && f.IsDeleted == false,
                                                   [v=>v.Village, v=>v.Villa,v=>v.Images,v=>v.Amenities]);
 
             if (FloorInDb is null)
@@ -233,10 +230,6 @@ namespace VillaHub.Web.Controllers
 
 
         }
-
-
-
-
 
 
         public IActionResult Privacy()

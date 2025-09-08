@@ -416,6 +416,19 @@ namespace VillaHub.Web.Controllers
         {
             var villaInDb = _unitOfWork.Villa.GetOne(a => a.Id == villa.Id, [m => m.Images], true);
 
+            if (villaInDb is not null)
+            {
+                var hasRelatedFloors = _unitOfWork.Floor.Get(e => e.VillaId == villaInDb.Id);
+                foreach (var floor in hasRelatedFloors)
+                {
+                    if (!floor.IsDeleted)
+                    {
+                        TempData["error"] = "Cannot delete villa. Related floors are not deleted.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+
             if (villaInDb is null)
             {
                 return RedirectToAction("Error", "Home");
@@ -469,8 +482,9 @@ namespace VillaHub.Web.Controllers
                 }
             }
 
-            _unitOfWork.Villa.Delete(villaInDb);
-
+            //_unitOfWork.Villa.Delete(villaInDb);
+            villaInDb.IsDeleted = true;
+            _unitOfWork.Villa.Update(villaInDb);
             await _unitOfWork.Villa.CommitAsync();
 
             TempData["success"] = "Villa Deleted Successfully";

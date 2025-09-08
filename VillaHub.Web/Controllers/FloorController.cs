@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using VillaHub.Application.Common.Interfaces;
+using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
 using VillaHub.Web.ViewModels.Floor;
 using VillaHub.Web.ViewModels.Villa;
@@ -28,6 +29,22 @@ namespace VillaHub.Web.Controllers
                 null,
                 [f => f.Villa!, f=>f.Villa.Village, f=>f.Images, f=>f.Amenities]
                 );
+
+            foreach (var floor in floorList)
+            {
+                var bookings = _unitOfWork.Booking.Get(b => b.FloorNumber == floor.FloorNumber && b.VillaId == floor.VillaId && b.VillageId == floor.VillageId);
+                
+                floor.BookingsCount = bookings.Count();
+
+                floor.BookingsByStatus = new Dictionary<string, int>
+                {
+                    { SD.StatusPending,   bookings.Count(b => b.Status == SD.StatusPending) },
+                    { SD.StatusApproved,  bookings.Count(b => b.Status == SD.StatusApproved) },
+                    { SD.StatusCheckedIn, bookings.Count(b => b.Status == SD.StatusCheckedIn) },
+                    { SD.StatusCompleted, bookings.Count(b => b.Status == SD.StatusCompleted) },
+                    { SD.StatusCancelled, bookings.Count(b => b.Status == SD.StatusCancelled) }
+                };
+            }
             return View(floorList);
         }
 
@@ -351,10 +368,9 @@ namespace VillaHub.Web.Controllers
         {
             var floorInDb = _unitOfWork.Floor.GetOne(
                 e => e.FloorNumber == floorNumber
-                &&
-                e.VillaId == villaId
-                &&
-                e.VillageId == villageId,
+                && e.VillaId == villaId
+                && e.VillageId == villageId
+                && e.IsDeleted == false,
                 [v => v.Village, m => m.Villa, e => e.Images]);
 
             if (floorInDb is not null)
@@ -370,13 +386,34 @@ namespace VillaHub.Web.Controllers
         public async Task<IActionResult> Delete(Floor floor)
         {
 
-            var floorInDb = _unitOfWork.Floor.GetOne(a => a.FloorNumber == floor.FloorNumber, [m => m.Images], true);
+            var floorInDb = _unitOfWork.Floor.GetOne(
+                a => a.FloorNumber == floor.FloorNumber
+                && a.VillaId == floor.VillaId
+                && a.VillageId == floor.VillageId
+                && a.IsDeleted == false, [m => m.Images], true);
+
+            if (floorInDb is not null)
+            {
+                var hasActiveBookings = _unitOfWork.Booking.Get(b =>
+                    b.FloorNumber == floorInDb.FloorNumber &&
+                    b.VillaId == floorInDb.VillaId &&
+                    b.VillageId == floorInDb.VillageId &&
+                    (b.Status == SD.StatusApproved || b.Status == SD.StatusCheckedIn)
+                ).Any();
+
+                if (hasActiveBookings)
+                {
+                    TempData["error"] = "Cannot delete floor with approved or checked-in bookings.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
 
             if (floorInDb is null)
             {
                 return RedirectToAction("Error", "Home");
             }
 
+            // Delete associated images from the server
             if (floorInDb.Images is not null && floorInDb.Images.Count > 0)
             {
                 foreach (var image in floorInDb.Images)
@@ -396,17 +433,49 @@ namespace VillaHub.Web.Controllers
                         // Log exception
                         Console.WriteLine($"Error deleting file: {ex.Message}");
                     }
+                    _unitOfWork.Image.Delete(image);
                 }
+                await _unitOfWork.Image.CommitAsync();
             }
 
-            _unitOfWork.Floor.Delete(floorInDb);
-
+            //_unitOfWork.Floor.Delete(floorInDb);
+           
+            floorInDb.IsDeleted = true;
+            _unitOfWork.Floor.Update(floorInDb);
             await _unitOfWork.Floor.CommitAsync();
-
-            TempData["success"] = "Floor Deleted Successfully";
+            
+            TempData["success"] = "Floor Soft-Deleted Successfully";
 
             return RedirectToAction(nameof(Index));
 
         }
+
+       
+        public async Task<IActionResult> RestoreAsync(int floorNumber, int villaId, int villageId)
+        {
+            var floorInDb = _unitOfWork.Floor.GetOne(
+                   e=>e.FloorNumber==floorNumber
+                && e.VillaId == villaId
+                && e.VillageId == villageId
+                && e.IsDeleted==true,null,true);
+
+            if(floorInDb is null)
+            {
+                return NotFound();
+            }
+
+            floorInDb.IsDeleted=false;
+            _unitOfWork.Floor.Update(floorInDb);
+            await _unitOfWork.Floor.CommitAsync();
+
+            TempData["success"] = "Floor Data has been restored successfully!";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
     }
+    
 }

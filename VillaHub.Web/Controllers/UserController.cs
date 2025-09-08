@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
@@ -20,12 +21,17 @@ namespace VillaHub.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IStringLocalizer<UserController> _localizer;
 
-        public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork)
+        public UserController(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IUnitOfWork unitOfWork,
+            IStringLocalizer<UserController> localizer)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _unitOfWork = unitOfWork;
+            _localizer = localizer;
         }
 
         [Authorize(Roles = SD.Role_SuperAdmin)]
@@ -259,6 +265,8 @@ namespace VillaHub.Web.Controllers
                     }
 
                     applicationUserInDB.ImageUrl = newFileName; // Update to new image
+
+                    //TempData["success"] = _localizer["ImgUploaded"].Value;
                 }
                 else
                 {
@@ -284,7 +292,8 @@ namespace VillaHub.Web.Controllers
 
                 await _userManager.UpdateAsync(applicationUserInDB);
 
-                TempData["success"] = "User Updated Successfully";
+                //TempData["success"] = "User Updated Successfully";
+                TempData["success"] = _localizer["UserUpdated"].Value;
 
                 
                 if (User.IsInRole(SD.Role_SuperAdmin))

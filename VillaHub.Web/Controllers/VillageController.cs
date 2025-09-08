@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Domain.Entities;
+using VillaHub.Infrastructure.Repository;
 
 namespace VillaHub.Web.Controllers
 {
@@ -175,10 +176,25 @@ namespace VillaHub.Web.Controllers
 
             var villageInDb = _unitOfWork.Village.GetOne(a => a.Id == village.Id,null,true);
 
+            if (villageInDb is not null)
+            {
+                var hasRelatedVillas = _unitOfWork.Villa.Get(e => e.VillageId == villageInDb.Id);
+                foreach (var villa in hasRelatedVillas)
+                { 
+                    if (!villa.IsDeleted)
+                    {
+                        TempData["error"] = "Cannot delete village. Related villas not deleted.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+            
+
             if (villageInDb is null)
             {
                 return RedirectToAction("Error", "Home");
             }
+
 
             if (!string.IsNullOrEmpty(villageInDb.ImgUrl))
             {
@@ -196,11 +212,16 @@ namespace VillaHub.Web.Controllers
                 {
                     // Log exception
                     Console.WriteLine($"Error deleting file: {ex.Message}");
+                   
                 }
+                
             }
 
-            _unitOfWork.Village.Delete(villageInDb);
+            //_unitOfWork.Village.Delete(villageInDb);
 
+            villageInDb.ImgUrl = string.Empty;
+            villageInDb.IsDeleted = true;
+            _unitOfWork.Village.Update(villageInDb);
             await _unitOfWork.Village.CommitAsync();
 
             TempData["success"] = "Village Deleted Successfully";

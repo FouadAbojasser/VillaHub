@@ -5,7 +5,12 @@
 @inject IViewLocalizer Localizer
 @model Floor
 
-
+@if (Model.IsDeleted)
+{
+    <div class="alert alert-danger text-center fw-bold" role="alert" style="border-radius:8px;">
+        @Localizer["Note"]: @Localizer["NoteData"]
+    </div>
+}
 
 <div class="row">
 
@@ -24,14 +29,18 @@
                     }
                 }
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#floorImagesCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#floorImagesCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+           @if(Model.Images.Count() > 1)
+           {
+               <button class="carousel-control-prev" type="button" data-bs-target="#floorImagesCarousel" data-bs-slide="prev">
+                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                   <span class="visually-hidden">@Localizer["Previous"]</span>
+               </button>
+               <button class="carousel-control-next" type="button" data-bs-target="#floorImagesCarousel" data-bs-slide="next">
+                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                   <span class="visually-hidden">@Localizer["Next"]</span>
+               </button>
+			}
+            
         </div>
     </div>
 

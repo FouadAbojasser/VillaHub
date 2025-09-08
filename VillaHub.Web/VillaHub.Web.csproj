@@ -16,6 +16,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.19" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Stripe.net" Version="48.3.0" />
     <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="30.1.41" />
@@ -28,7 +29,6 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Views\" />
-    <Folder Include="Resources\Areas\Identity\Controllers\" />
     <Folder Include="Resources\ViewModels\Identity\" />
     <Folder Include="wwwroot\images\users\" />
   </ItemGroup>

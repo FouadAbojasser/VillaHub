@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
-using VillaHub.Web.Resources;
 using VillaHub.Web.ViewModels.Identity;
 
 
@@ -26,13 +26,13 @@ namespace VillaHub.Web.Areas.Identity.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IUnitOfWork _unitOfWork;
         private readonly TwilioService _twilioService;
-        private readonly IStringLocalizer<SharedResources> _localizer;
+        private readonly IStringLocalizer<AccountController> _localizer;
 
         public AccountController(
                         UserManager<ApplicationUser> userManager,
                         SignInManager<ApplicationUser> signInManager,
                         RoleManager<IdentityRole> roleManager,
-                        IStringLocalizer<SharedResources> localizer,
+                        IStringLocalizer<AccountController> localizer,
                         IEmailSender emailSender, IUnitOfWork unitOfWork,
                         TwilioService twilioService)
         {
@@ -136,7 +136,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     //Sending Confirmation Email
                     await _emailSender.SendEmailAsync(applicationUser.Email, "Confirmation Email", emailBody);
 
-                    TempData["success"] = "User Registered Successfully!, Please Confirm Your Email";
+                    //TempData["success"] = "User Registered Successfully!, Please Confirm Your Email";
+                    TempData["success"] = _localizer["UserRegisteredSuccess"].Value;
 
                      
                     if (string.IsNullOrEmpty(registerVM.Role))
@@ -154,7 +155,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                 }
                 else
                 {
-                    TempData["error"] = "You Have Perviuosly Confirmed Your Email Address!!";
+                    //TempData["error"] = "You Have Perviuosly Confirmed Your Email Address!";
+                    TempData["error"] = _localizer["EmailAlreadyConfirmed"].Value;
                 }
 
 
@@ -227,7 +229,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                         {
                             await _signInManager.SignInAsync(applicationUser, loginVM.RememberMe);
 
-                            TempData["success"] = "Login Successfully";
+                            //TempData["success"] = "Login Successfully";
+                            TempData["success"] = _localizer["LoginSuccess"].Value;
 
                             var chk1 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_Admin);
                             var chk2 = await _userManager.IsInRoleAsync(applicationUser, SD.Role_SuperAdmin);
@@ -262,26 +265,30 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                         }
                         else
                         {
-                            TempData["error"] = "Please Confirm Your Email First!";
+                            //TempData["error"] = "Please Confirm Your Email First!";
+                            TempData["error"] = _localizer["ConfirmEmailFirst"].Value;
+
                             return RedirectToAction("Index", "Home", new { area = "" });
                         }
                     }
                     else
                     {
                         //Wrong Password
-                        ModelState.AddModelError("Password", "Invalid Password!");
+                        ModelState.AddModelError("Password", _localizer["InvalidPassword"]);
                         return View(loginVM);
                     }
                 }
                 else
                 {
                     //User status is not Active
-                    ModelState.AddModelError("UserNameOrEmail", "User status is not Active!");
+                    //ModelState.AddModelError("UserNameOrEmail", "User status is not Active!");
+                    ModelState.AddModelError("UserNameOrEmail", _localizer["UserNotActive"]);
                     return View(loginVM);
                 }
             }
 
-            ModelState.AddModelError("UserNameOrEmail", "Invalid User Name or Email!");
+            //ModelState.AddModelError("UserNameOrEmail", "Invalid User Name or Email!");
+            ModelState.AddModelError("UserNameOrEmail", _localizer["InvalidUserNameOrEmail"]);
 
             return View(loginVM);
         }
@@ -291,7 +298,9 @@ namespace VillaHub.Web.Areas.Identity.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            TempData["success"] = "Logout Successfully!";
+            //TempData["success"] = "Logout Successfully!";
+            TempData["success"] = _localizer["LogoutSuccess"].Value;
+            
 
             return RedirectToAction("Index", "Home", new {area = "" });
         }
@@ -335,18 +344,21 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                         //Sending Confirmation Email
                         await _emailSender.SendEmailAsync(confirmEmailVM.Email, "Resend Confirmation Email", emailBody);
 
-                        TempData["success"] = "Confirmation Emial Sent Successfully!, Please Check Your Email";
+                        //TempData["success"] = "Confirmation Emial Sent Successfully!, Please Check Your Email";
+                        TempData["success"] = _localizer["ConfirmationEmailSent"].Value;
 
                        return RedirectToAction("Index", "Home" , new { area = "" });
                     }
                     else
                     {
-                        TempData["error"] = "You Email is Already Confirmed!";
+                        //TempData["error"] = "You Email is Already Confirmed!";
+                        TempData["error"] = _localizer["EmailAlreadyConfirmedInfo"].Value;
                     }
                 }
                 else
                 {
-                    TempData["error"] = "User Not Found!";
+                    //TempData["error"] = "User Not Found!";
+                    TempData["error"] = _localizer["UserNotFound"].Value;
                 }
             }
 
@@ -367,7 +379,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
             if (applicationUser.EmailConfirmed)
             {
-                TempData["info"] = "Your Email is Already Confirmed!";
+                //TempData["info"] = "Your Email is Already Confirmed!";
+                TempData["info"] = _localizer["EmailAlreadyConfirmedInfo"].Value;
 
                 return RedirectToAction("Index", "Home", new { area = "" });
 
@@ -376,7 +389,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
             if (result.Succeeded)
             {
-                TempData["success"] = "Email Confirmed Successfully!";
+                //TempData["success"] = "Email Confirmed Successfully!";
+                TempData["success"] = _localizer["EmailConfirmedSuccess"].Value;
 
                 return RedirectToAction("Index", "Home", new { area = "" });
 
@@ -412,7 +426,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
             if (applicationUser is null)
             {
-                ModelState.AddModelError(string.Empty, "Username or Email does not exist!");
+                ModelState.AddModelError(string.Empty, _localizer["UserNameOrEmailNotFound"]);
 
                 return View(resetPasswordRequestVM);
             }
@@ -446,7 +460,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                             await _twilioService.SendWhatsAppMessage(applicationUser.PhoneNumber!, WhatsAppMessage);
 
-                            TempData["success"] = "Password Reset has been requested successfully. Please check your WhatsApp for OTP.";
+                            //TempData["success"] = "Password Reset has been requested successfully. Please check your WhatsApp for OTP.";
+                            TempData["success"] = _localizer["PasswordResetOTPWhatsApp"].Value;
                         }
                         else
                         {
@@ -459,7 +474,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                             //Sending Confirmation Email
                             await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBodyOTP);
 
-                            TempData["success"] = "Password Reset has been requested successfully!";
+                            //TempData["success"] = "Password Reset has been requested successfully!";
+                            TempData["success"] = _localizer["PasswordReset"].Value;
                         }
                         
                         TempData["_validationToken"] = Guid.NewGuid().ToString();
@@ -491,7 +507,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                             var WhatsAppMessage = $"Your OTP is {GenOTP.ToString()}";
                             await _twilioService.SendWhatsAppMessage(applicationUser.PhoneNumber!, WhatsAppMessage);
 
-                            TempData["success"] = "Password Reset has been requested successfully. Please check your WhatsApp for OTP.";
+                            //TempData["success"] = "Password Reset has been requested successfully. Please check your WhatsApp for OTP.";
+                            TempData["success"] = _localizer["PasswordResetOTPWhatsApp"].Value;
                         }
                         else
                         {
@@ -504,7 +521,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                             await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBodyOTP);
 
-                            TempData["success"] = "Password Reset has been requested successfully. Please check your Email for OTP.";
+                            //TempData["success"] = "Password Reset has been requested successfully. Please check your Email for OTP.";
+                            TempData["success"] = _localizer["PasswordResetOTPEmail"].Value;
 
                         }
 
@@ -519,7 +537,9 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                         var remainingTime = TimeSpan.FromMinutes(30) - (DateTime.UtcNow - userLastOTP!.RequestDateTime);
 
-                        ModelState.AddModelError(string.Empty, $"You can use OTP after {remainingTime.ToString("mm\\:ss")} mm:ss!");
+                        //ModelState.AddModelError(string.Empty, $"You can use OTP after {remainingTime.ToString("mm\\:ss")} mm:ss!");
+                        ModelState.AddModelError(string.Empty, string.Format(_localizer["OTPWaitMessage"].Value, remainingTime.ToString("mm\\:ss")));
+
 
                         return View(resetPasswordRequestVM);
                     }
@@ -542,7 +562,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     //Sending Confirmation Email
                     await _emailSender.SendEmailAsync(applicationUser.Email!, "Reset Password Email", emailBody);
 
-                    TempData["success"] = "Password Reset has been requested successfully!";
+                    //TempData["success"] = "Password Reset has been requested successfully!";
+                    TempData["success"] = _localizer["PasswordReset"].Value;
 
                     //used to prevent accessing Password reset page from the link directly
                     TempData["_validationToken"] = Guid.NewGuid().ToString();
@@ -588,7 +609,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                 if (result.Succeeded)
                 {
-                    TempData["success"] = "Yor Password has been reset Successfully!";
+                    //TempData["success"] = "Yor Password has been reset Successfully!";
+                    TempData["success"] = _localizer["PasswordResetSuccess"].Value;
 
                     return RedirectToAction("Index", "Home", new { area = "" });
 
@@ -636,7 +658,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
                     if (result.Succeeded)
                     {
-                        TempData["success"] = "Yor Password has been reset Successfully!";
+                        //TempData["success"] = "Yor Password has been reset Successfully!";
+                        TempData["success"] = _localizer["PasswordResetSuccess"].Value;
 
                         OTPinDB.UsedByUser = true;
 
@@ -658,13 +681,13 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                 }
                 else if (OTPinDB != null && OTPinDB.OTP_Number == newPasswordOTPVM.OTP && DateTime.UtcNow > OTPinDB.ExpairationDateTime)
                 {
-                    ModelState.AddModelError(string.Empty, "OTP Expired!");
+                    ModelState.AddModelError(string.Empty, _localizer["OTPExpired"]);
 
                     return View(newPasswordOTPVM);
                 }
                 else if (OTPinDB != null && OTPinDB.OTP_Number != newPasswordOTPVM.OTP)
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid OTP!");
+                    ModelState.AddModelError(string.Empty, _localizer["InvalidOTP"]);
 
                     return View(newPasswordOTPVM);
                 }
@@ -717,8 +740,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     // Optionally: log attempt
                     //ModelState.AddModelError(string.Empty, "This account has been deleted and cannot log in.");
                     //TempData["error"] = "This account has been deleted and cannot log in.";
-                    ModelState.AddModelError(string.Empty, _localizer["AccountDeletedError"]);
-                    TempData["error"] = _localizer["AccountDeletedError"];
+                    ModelState.AddModelError(string.Empty, _localizer["AccountDeletedError"].Value);
+                    TempData["error"] = _localizer["AccountDeletedError"].Value;
                     return View("AccessDenied"); // or RedirectToAction("Login")
                 }
             }
@@ -728,7 +751,8 @@ namespace VillaHub.Web.Areas.Identity.Controllers
 
             if (result.Succeeded)
             {
-                TempData["success"] = $"Login Successful Using {info.LoginProvider}";
+                //TempData["success"] = $"Login Successful Using {info.LoginProvider}";
+                TempData["success"] = _localizer["ExternalLoginSuccess"].Value + " " + info.LoginProvider;
                 return LocalRedirect(returnUrl ?? "/");
             }
 
@@ -782,7 +806,7 @@ namespace VillaHub.Web.Areas.Identity.Controllers
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(applicationUser, isPersistent: false);
-                        TempData["success"] = $"User Account Created Using {info.LoginProvider}";
+                        TempData["success"] =  _localizer["ExternalLoginSuccess"].Value + " " + info.LoginProvider;
                         return LocalRedirect(returnUrl ?? "/");
                     }
                 }

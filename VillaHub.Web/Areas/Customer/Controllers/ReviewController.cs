@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Domain.Entities;
 using VillaHub.Infrastructure.Migrations;
@@ -15,14 +16,18 @@ namespace VillaHub.Web.Areas.Customer.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly INotificationService _notificationService;
-
+        private readonly IStringLocalizer<ReviewController> _localizer;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ReviewController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, INotificationService notificationService)
+        public ReviewController(IUnitOfWork unitOfWork,
+            UserManager<ApplicationUser> userManager,
+            INotificationService notificationService,
+            IStringLocalizer<ReviewController> localizer)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _notificationService = notificationService;
+            _localizer = localizer;
         }
 
 
@@ -31,8 +36,6 @@ namespace VillaHub.Web.Areas.Customer.Controllers
         {
             return View();
         }
-
-
 
 
 
@@ -119,7 +122,8 @@ namespace VillaHub.Web.Areas.Customer.Controllers
 
                 await _unitOfWork.Review.CommitAsync();
 
-               
+                TempData["success"] = _localizer["ReviewSubmitted"].Value;
+
             }
 
             return PartialView("_ThankYouMessage");

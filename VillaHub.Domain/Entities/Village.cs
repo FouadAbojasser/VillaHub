@@ -20,6 +20,7 @@ namespace VillaHub.Domain.Entities
         public string? ImgUrl { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [NotMapped]
         public bool isAvailable { get; set; } = true;

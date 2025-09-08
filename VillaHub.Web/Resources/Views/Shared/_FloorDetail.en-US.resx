@@ -135,6 +135,12 @@
   <data name="NoRatingsAvailable" xml:space="preserve">
     <value>No Ratings Available</value>
   </data>
+  <data name="Note" xml:space="preserve">
+    <value>Note </value>
+  </data>
+  <data name="NoteData" xml:space="preserve">
+    <value>This Floor has been deleted and is no longer Available</value>
+  </data>
   <data name="sqft" xml:space="preserve">
     <value>sqft</value>
   </data>

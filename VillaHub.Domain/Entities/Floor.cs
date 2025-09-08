@@ -23,7 +23,7 @@ namespace VillaHub.Domain.Entities
         public int Capacity { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
-
+        public bool IsDeleted { get; set; } = false;
         //===> Relations
         public int VillaId { get; set; }
         [ValidateNever]
@@ -41,7 +41,11 @@ namespace VillaHub.Domain.Entities
         public bool isAvailable { get; set; } = true;
         [NotMapped]
         public bool isInPriceRange { get; set; } = true;
-
+        [NotMapped]
+        public int BookingsCount { get; set; } = 0;
+        [NotMapped]
+        public Dictionary<string, int> BookingsByStatus { get; set; } = [];
         
+
     }
 }

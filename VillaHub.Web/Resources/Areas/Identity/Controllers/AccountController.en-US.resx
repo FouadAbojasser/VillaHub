@@ -117,28 +117,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Cancel" xml:space="preserve">
-    <value>إلغاء</value>
+  <data name="LogoutSuccess" xml:space="preserve">
+    <value>Logout Successfully !</value>
   </data>
-  <data name="Title" xml:space="preserve">
-    <value>تعيين كلمة المرور</value>
+  <data name="UserRegisteredSuccess" xml:space="preserve">
+    <value>User Registered Successfully!, Please Confirm Your Email</value>
   </data>
-  <data name="RequestReset" xml:space="preserve">
-    <value>طلب إعادة التعيين</value>
+  <data name="EmailAlreadyConfirmed" xml:space="preserve">
+    <value>You Have Previously Confirmed Your Email Address!!</value>
   </data>
-  <data name="ResetPasswordRequest" xml:space="preserve">
-    <value>إعادة تعيين كلمة المرور</value>
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>Login Successfully</value>
   </data>
-  <data name="ResetPasswordUsingConfirmationLink" xml:space="preserve">
-    <value>إعادة تعيين كلمة المرور باستخدام رابط التحقق</value>
+  <data name="ConfirmEmailFirst" xml:space="preserve">
+    <value>Please Confirm Your Email First !</value>
   </data>
-  <data name="ResetPasswordUsingOTPViaEmail" xml:space="preserve">
-    <value>إعادة تعيين كلمة المرور باستخدام رمز التحقق عن طريق البريد الإلكتروني</value>
+  <data name="ConfirmationEmailSent" xml:space="preserve">
+    <value>Confirmation Email Sent Successfully!, Please Check Your Email</value>
   </data>
-  <data name="ResetPasswordUsingOTPViaWhatsApp" xml:space="preserve">
-    <value>إعادة تعيين كلمة المرور باستخدام رمز التحقق عن طريق الواتساب</value>
+  <data name="EmailAlreadyConfirmedInfo" xml:space="preserve">
+    <value>Your Email is Already Confirmed !</value>
   </data>
-  <data name="SelectResetMethod" xml:space="preserve">
-    <value>اختر طريقة إعادة التعيين *</value>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User Not Found!</value>
+  </data>
+  <data name="EmailConfirmedSuccess" xml:space="preserve">
+    <value>Email Confirmed Successfully !</value>
+  </data>
+  <data name="PasswordResetOTPWhatsApp" xml:space="preserve">
+    <value>Password Reset has been requested successfully. Please check your WhatsApp for OTP.</value>
+  </data>
+  <data name="PasswordResetOTPEmail" xml:space="preserve">
+    <value>Password Reset has been requested successfully. Please check your Email for OTP.</value>
+  </data>
+  <data name="PasswordReset" xml:space="preserve">
+    <value>Password Reset has been requested successfully!</value>
+  </data>
+  <data name="PasswordResetSuccess" xml:space="preserve">
+    <value>Your Password has been reset Successfully!</value>
+  </data>
+  <data name="ExternalLoginSuccess" xml:space="preserve">
+    <value>Login Successful Using {0}</value>
+  </data>
+  <data name="ExternalAccountCreated" xml:space="preserve">
+    <value>User Account Created Using {0}</value>
+  </data>
+  <data name="AccountDeletedError" xml:space="preserve">
+    <value>This account has been deleted and cannot log in.</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Invalid Password!</value>
+  </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value>User status is not Active !</value>
+  </data>
+  <data name="InvalidUserNameOrEmail" xml:space="preserve">
+    <value>Invalid User Name or Email !</value>
+  </data>
+  <data name="UserNameOrEmailNotFound" xml:space="preserve">
+    <value>Username or Email does not exist !</value>
+  </data>
+  <data name="OTPWaitMessage" xml:space="preserve">
+    <value>You can use OTP after {0} mm:ss</value>
+  </data>
+  <data name="OTPExpired" xml:space="preserve">
+    <value>"OTP Expired !"</value>
+  </data>
+  <data name="InvalidOTP" xml:space="preserve">
+    <value>"Invalid OTP !"</value>
+  </data>
+  <data name="UserAccountCreatedUsing" xml:space="preserve">
+    <value>"User Account Created Using"</value>
   </data>
 </root>

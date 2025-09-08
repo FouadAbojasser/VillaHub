@@ -195,5 +195,10 @@
   <data name="ExternalLogins" xml:space="preserve">
     <value>مصدر تسجيل الدخول</value>
   </data>
-
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>تم تسجيل الدخول بنجاح بواسطة </value>
+  </data>
+  <data name="LogoutSuccessfully" xml:space="preserve">
+    <value>تم تسجيل الخروج بنجاح!</value>
+  </data>
 </root>

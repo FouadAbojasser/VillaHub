@@ -135,6 +135,12 @@
   <data name="NoRatingsAvailable" xml:space="preserve">
     <value>لا يوجد تقييم حاليا</value>
   </data>
+  <data name="Note" xml:space="preserve">
+    <value>مٌلاحظة </value>
+  </data>
+  <data name="NoteData" xml:space="preserve">
+    <value>تم حذف هذا الطابق من قاعدة البيانات ولم يعد مُتاح</value>
+  </data>
   <data name="sqft" xml:space="preserve">
     <value>متر²</value>
   </data>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Web.ViewModels.ContactUs;
 
@@ -12,10 +13,12 @@ namespace VillaHub.Web.Areas.Customer.Controllers
     {
 
         private readonly IEmailSender _emailSender;
+        private readonly IStringLocalizer<ContactUsController> _localizer;
 
-        public ContactUsController(IEmailSender emailSender)
+        public ContactUsController(IEmailSender emailSender, IStringLocalizer<ContactUsController> localizer)
         {
             _emailSender = emailSender;
+            _localizer = localizer;
         }
 
         public IActionResult ContactUsForm()
@@ -36,7 +39,8 @@ namespace VillaHub.Web.Areas.Customer.Controllers
                     $"<b>Message:</b><br/>{contactUs.Message}"
                 );
 
-                TempData["success"] = "Your message has been sent successfully!";
+                //TempData["success"] = "Your message has been sent successfully!";
+                TempData["success"] = _localizer["MsgSent"].Value;
 
                 return RedirectToAction("Index", "Home", new {Area=""});
             }

@@ -1,13 +1,14 @@
-﻿@{
-    ViewData["Title"] = "External Login Confirmation";
-}
-
-@using System.Globalization
+﻿@using System.Globalization
 @using VillaHub.Web.ViewModels
 @using VillaHub.Web.ViewModels.Identity
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @model ExternalLoginConfirmationVM
+
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+
 
 <div class="container pt-5">
     <div class="card shadow border">
