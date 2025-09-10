@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
 using VillaHub.Domain.Entities;
-using VillaHub.Web.ViewModels.Identity;
 using VillaHub.Web.ViewModels.User;
 
 namespace VillaHub.Web.Controllers
@@ -54,6 +52,7 @@ namespace VillaHub.Web.Controllers
                 return SD.CountryList_en;
             }
         }
+
 
         [Authorize(Roles = SD.Role_SuperAdmin)]
         public async Task<IActionResult> UserDetailsAsync(string Id)
@@ -219,7 +218,10 @@ namespace VillaHub.Web.Controllers
         public async Task<IActionResult> UpdateAsync(EditUserVM user, IFormFile ProfileImage)
         {
             var applicationUserInDB = await _userManager.FindByIdAsync(user.AppUser.Id);
-            
+
+            var countryPrefix = SD.CountryCodes.TryGetValue(user.AppUser.Country, out var code)? code : "";
+
+
             ModelState.Remove("ProfileImage");
 
             if (ModelState.IsValid && applicationUserInDB != null)
@@ -277,6 +279,10 @@ namespace VillaHub.Web.Controllers
                 applicationUserInDB.Name = user.AppUser.Name;
                 applicationUserInDB.Country = user.AppUser.Country;
                 applicationUserInDB.PhoneNumber = user.PhoneNumber;
+                if (!user.PhoneNumber!.Contains('+'))
+                {
+                    applicationUserInDB.PhoneNumber = countryPrefix + user.PhoneNumber.Substring(1, user.PhoneNumber.Length - 1);
+                }
 
                 var currentUserRole = await _userManager.GetRolesAsync(applicationUserInDB);
 

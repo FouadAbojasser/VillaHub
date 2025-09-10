@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.17" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
       <PrivateAssets>all</PrivateAssets>
@@ -23,5 +24,9 @@
     <ProjectReference Include="..\VillaHub.Application\VillaHub.Application.csproj" />
     <ProjectReference Include="..\VillaHub.Domain\VillaHub.Domain.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+	</ItemGroup>
+
 
 </Project>

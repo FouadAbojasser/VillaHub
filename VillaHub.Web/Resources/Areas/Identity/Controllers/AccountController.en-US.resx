@@ -157,10 +157,10 @@
     <value>Your Password has been reset Successfully!</value>
   </data>
   <data name="ExternalLoginSuccess" xml:space="preserve">
-    <value>Login Successful Using {0}</value>
+    <value>Login Successful Using</value>
   </data>
   <data name="ExternalAccountCreated" xml:space="preserve">
-    <value>User Account Created Using {0}</value>
+    <value>User Account Created Using</value>
   </data>
   <data name="AccountDeletedError" xml:space="preserve">
     <value>This account has been deleted and cannot log in.</value>

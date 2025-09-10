@@ -58,7 +58,14 @@ namespace VillaHub.Web
             // Database & Identity
             // -----------------------------
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("PublishConnection"),
+                
+                sqlOptions => sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,              // Number of retries
+                    maxRetryDelay: TimeSpan.FromSeconds(10), // Delay between retries
+                    errorNumbersToAdd: null       // Additional SQL error numbers to retry
+                )
+             ));
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -145,6 +152,13 @@ namespace VillaHub.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapHub<BookingHub>("/bookingHub");
+
+            // Apply migrations at startup
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            //    db.Database.Migrate(); // applies any pending migrations
+            //}
 
             app.Run();
         }

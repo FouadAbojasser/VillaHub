@@ -36,22 +36,31 @@ namespace VillaHub.Application.Common.Utility
 
 
         public static List<SelectListItem> CountryList_en => new()
-        {
-            new SelectListItem { Text = "Egypt", Value = "+20" },
-            new SelectListItem { Text = "Palestine", Value = "+970" },
-            new SelectListItem { Text = "Germany", Value = "+49" },
-            new SelectListItem { Text = "United States", Value = "+1" }, 
-            new SelectListItem { Text = "Saudi Arabia", Value = "+966" }
-        };
+            {
+                new SelectListItem { Text = "Egypt", Value = "Egypt" },
+                new SelectListItem { Text = "Palestine", Value = "Palestine" },
+                new SelectListItem { Text = "Germany", Value = "Germany" },
+                new SelectListItem { Text = "United States", Value = "United States" },
+                new SelectListItem { Text = "Saudi Arabia", Value = "Saudi Arabia" }
+            };
 
         public static List<SelectListItem> CountryList_ar => new()
-        {
-            new SelectListItem { Text = "مصر", Value = "+20" },
-            new SelectListItem { Text = "فلسطين", Value = "+970" },
-            new SelectListItem { Text = "ألمانيا", Value = "+49" },
-            new SelectListItem { Text = "الولايات المتحدة الأمريكية", Value = "+1" },
-            new SelectListItem { Text = "المملكة العربية السعودية", Value = "+966" }
-        };
+            {
+                new SelectListItem { Text = "مصر", Value = "مصر" },
+                new SelectListItem { Text = "فلسطين", Value = "فلسطين" },
+                new SelectListItem { Text = "ألمانيا", Value = "ألمانيا" },
+                new SelectListItem { Text = "الولايات المتحدة الأمريكية", Value = "الولايات المتحدة الأمريكية" },
+                new SelectListItem { Text = "المملكة العربية السعودية", Value = "المملكة العربية السعودية" }
+            };
 
+
+        public static readonly Dictionary<string, string> CountryCodes = new()
+            {
+                { "Egypt", "+20" },
+                { "Palestine", "+970" },
+                { "Germany", "+49" },
+                { "United States", "+1" },
+                { "Saudi Arabia", "+966" }
+            };
     }
 }
