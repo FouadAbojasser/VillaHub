@@ -40,7 +40,10 @@
                         </div>
 
                         <div class="form-floating mb-3 col-md-6">
-                            <input asp-for="PhoneNumber" class="form-control" />
+                            <input asp-for="PhoneNumber" class="form-control" 
+                                type="tel" 
+                                pattern="\d*"
+                                inputmode="numeric" />
                             <label asp-for="PhoneNumber" class="ms-2 text-muted">@Localizer["PhoneNumber"]</label>
                             <span asp-validation-for="PhoneNumber" class="text-danger" />
                         </div>

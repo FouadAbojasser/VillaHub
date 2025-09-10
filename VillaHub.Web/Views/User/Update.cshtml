@@ -158,7 +158,10 @@
                         <label asp-for="PhoneNumber" class="text-warning mb-1"></label>
                         <input asp-for="PhoneNumber"
                                class="form-control @(isRTL ? "text-end" : "text-start")"
-                               style="direction:ltr; text-align:left;" />
+                               style="direction:ltr; text-align:left;"
+                               type="tel" 
+                                pattern="\d*"
+                                inputmode="numeric"/>
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
 

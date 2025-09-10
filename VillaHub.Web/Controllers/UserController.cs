@@ -219,9 +219,6 @@ namespace VillaHub.Web.Controllers
         {
             var applicationUserInDB = await _userManager.FindByIdAsync(user.AppUser.Id);
 
-            var countryPrefix = SD.CountryCodes.TryGetValue(user.AppUser.Country, out var code)? code : "";
-
-
             ModelState.Remove("ProfileImage");
 
             if (ModelState.IsValid && applicationUserInDB != null)
@@ -279,10 +276,14 @@ namespace VillaHub.Web.Controllers
                 applicationUserInDB.Name = user.AppUser.Name;
                 applicationUserInDB.Country = user.AppUser.Country;
                 applicationUserInDB.PhoneNumber = user.PhoneNumber;
+
                 if (!user.PhoneNumber!.Contains('+'))
                 {
-                    applicationUserInDB.PhoneNumber = countryPrefix + user.PhoneNumber.Substring(1, user.PhoneNumber.Length - 1);
+                    var dict = SD.CountryCodes_en;
+                    var countryPrefix = dict.TryGetValue(user.AppUser.Country, out var code) ? code : "";
+                    applicationUserInDB.PhoneNumber = countryPrefix + user.PhoneNumber[1..];
                 }
+
 
                 var currentUserRole = await _userManager.GetRolesAsync(applicationUserInDB);
 

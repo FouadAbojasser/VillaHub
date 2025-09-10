@@ -141,4 +141,7 @@
   <data name="PasswordMismatch" xml:space="preserve">
     <value>The password and confirmation password do not match.</value>
   </data>
+  <data name="PhoneNumberDigitsOnly" xml:space="preserve">
+    <value>The phone number is not valid.</value>
+  </data>
 </root>

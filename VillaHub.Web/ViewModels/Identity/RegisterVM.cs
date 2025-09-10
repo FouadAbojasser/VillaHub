@@ -10,6 +10,7 @@ namespace VillaHub.Web.ViewModels.Identity
         [Display(Name = "Name", ResourceType = typeof(Resources.SharedResources))]
         public string Name { get; set; } = string.Empty;
 
+
         [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
         [DataType(DataType.EmailAddress)]
         [EmailAddress(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "InvalidEmail")]
@@ -27,8 +28,11 @@ namespace VillaHub.Web.ViewModels.Identity
         [Display(Name = "ConfirmPassword", ResourceType = typeof(Resources.SharedResources))]
         public string ConfirmPassword { get; set; } = string.Empty;
 
+        [MaxLength(12)]
         [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
+        [DataType(DataType.PhoneNumber)]
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.SharedResources))]
+        [RegularExpression(@"^\d+$", ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "PhoneNumberDigitsOnly")]
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "SelectCountry")]

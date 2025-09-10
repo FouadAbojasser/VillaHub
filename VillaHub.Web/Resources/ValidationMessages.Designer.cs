@@ -115,6 +115,15 @@ namespace VillaHub.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The phone number is not valid..
+        /// </summary>
+        public static string PhoneNumberDigitsOnly {
+            get {
+                return ResourceManager.GetString("PhoneNumberDigitsOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field is required..
         /// </summary>
         public static string Required {

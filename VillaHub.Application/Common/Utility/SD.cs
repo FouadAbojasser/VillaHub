@@ -46,15 +46,15 @@ namespace VillaHub.Application.Common.Utility
 
         public static List<SelectListItem> CountryList_ar => new()
             {
-                new SelectListItem { Text = "مصر", Value = "مصر" },
-                new SelectListItem { Text = "فلسطين", Value = "فلسطين" },
-                new SelectListItem { Text = "ألمانيا", Value = "ألمانيا" },
-                new SelectListItem { Text = "الولايات المتحدة الأمريكية", Value = "الولايات المتحدة الأمريكية" },
-                new SelectListItem { Text = "المملكة العربية السعودية", Value = "المملكة العربية السعودية" }
+                new SelectListItem { Text = "مصر", Value = "Egypt" },
+                new SelectListItem { Text = "فلسطين", Value = "Palestine" },
+                new SelectListItem { Text = "ألمانيا", Value = "Germany" },
+                new SelectListItem { Text = "الولايات المتحدة الأمريكية", Value = "United States" },
+                new SelectListItem { Text = "المملكة العربية السعودية", Value = "Saudi Arabia" }
             };
 
 
-        public static readonly Dictionary<string, string> CountryCodes = new()
+        public static readonly Dictionary<string, string> CountryCodes_en = new()
             {
                 { "Egypt", "+20" },
                 { "Palestine", "+970" },
@@ -62,5 +62,14 @@ namespace VillaHub.Application.Common.Utility
                 { "United States", "+1" },
                 { "Saudi Arabia", "+966" }
             };
+
+        //public static readonly Dictionary<string, string> CountryCodes_ar = new()
+        //    {
+        //        { "مصر", "+20" },
+        //        { "فلسطين", "+970" },
+        //        { "ألمانيا", "+49" },
+        //        { "الولايات المتحدة الأمريكية", "+1" },
+        //        { "المملكة العربية السعودية", "+966" }
+        //    };
     }
 }

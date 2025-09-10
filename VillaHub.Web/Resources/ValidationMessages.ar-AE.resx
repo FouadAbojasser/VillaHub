@@ -141,4 +141,7 @@
   <data name="PasswordMismatch" xml:space="preserve">
     <value>كلمة المرور وتأكيد كلمة المرور غير متطابقين</value>
   </data>
+  <data name="PhoneNumberDigitsOnly" xml:space="preserve">
+    <value>رقم الهاتف غير صالح</value>
+  </data>
 </root>

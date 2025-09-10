@@ -21,8 +21,11 @@ namespace VillaHub.Web.ViewModels.User
         public string? UserRole { get; set; }
         public IEnumerable<SelectListItem>? RolesList { get; set; }
 
+        [MaxLength(12)]
         [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
+        [DataType(DataType.PhoneNumber)]
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.SharedResources))]
+        [RegularExpression(@"^\d+$", ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "PhoneNumberDigitsOnly")]
         public string? PhoneNumber { get; set; }
     }
 }
