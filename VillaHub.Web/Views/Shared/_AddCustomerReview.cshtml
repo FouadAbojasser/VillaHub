@@ -12,7 +12,7 @@
     <div class="row mt-4" style="border-top: 2px dashed #ccc;">
         <div class="col-12">
             <h4 class="text-primary mt-3">@Localizer["RateYourStay"]</h4>
-            <form method="post" asp-area="Customer" asp-controller="Review" asp-action="AddCustomerReview">
+            <form id="reviewForm" method="post" asp-area="Customer" asp-controller="Review" asp-action="AddCustomerReview">
 
                 <input asp-for="FloorNumber" hidden id="FloorNumber" />
                 <input asp-for="VillaId" hidden id="VillaId" />
@@ -21,11 +21,18 @@
 
                 <div class="mb-3">
                     <label class="form-label text-warning">@Localizer["YourReview"]</label>
-                    <textarea name="reviewText" id="reviewText" class="form-control" rows="4" placeholder="@Localizer["FeedBackPlaceHolder"]" required></textarea>
-                </div>
+                    <textarea 
+                              name="reviewText"
+                              id="reviewText"
+                              class="form-control"
+                              rows="4"
+                              placeholder="@Localizer["FeedBackPlaceHolder"]"
+                              required></textarea>
+                    <div>
+                        <span class="text-danger d-none" id="reviewError">@Localizer["ReviewRequired"]</span>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label text-warning">@Localizer["YourRating"]</label>
+                    <label class="form-label text-warning mt-3">@Localizer["YourRating"]</label>
                     <div id="starRating">
                         @for (int i = 1; i <= 5; i++)
                         {
@@ -33,41 +40,78 @@
                         }
                     </div>
                     <input type="hidden" name="ratingValue" id="ratingValue" value="0" required />
+                    <span class="text-danger d-none" id="ratingError">@Localizer["RatingRequired"]</span>
                 </div>
 
                 <button type="button" onclick="submitCustomerReview()" class="btn btn-success">
-                    <span>@Localizer["SubmitReview"]</span> <i class="bi bi-send-check ms-auto" style="transform: scaleY(-1);"></i>
-
+                    <span>@Localizer["SubmitReview"]</span>
+                    <i class="bi bi-send-check ms-auto" style="transform: scaleY(-1);"></i>
                 </button>
             </form>
         </div>
     </div>
 </div>
 
+<script>
+    // Star rating selection
+    document.querySelectorAll("#starRating i").forEach(star => {
+        star.addEventListener("click", function () {
+            let value = this.getAttribute("data-value");
+            document.getElementById("ratingValue").value = value;
 
-    <script>
-        function submitCustomerReview() {
-            const data = {
-                FloorNumber: $('#FloorNumber').val(),
-                VillaId: $('#VillaId').val(),
-                VillageId: $('#VillageId').val(),
-                UserId: $('#UserId').val(),
-                reviewText: $('#reviewText').val(),
-                ratingValue: $('#ratingValue').val()
-            };
+            // Reset star colors
+            document.querySelectorAll("#starRating i").forEach(s => s.style.color = "#ccc");
+            // Highlight selected stars
+            for (let i = 1; i <= value; i++) {
+                document.getElementById("star-" + i).style.color = "#ffc107";
+            }
+        });
+    });
 
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("AddCustomerReview", "Review", new { area = "Customer" })",
-                data: data,
-                success: function (result) {
-                    $("#customerReviewSection").html(result); // Replace with thank-you
-                },
-                error: function (xhr) {
-                    alert("Error submitting review. Please try again.");
-                }
-            });
+    // Submit with validation
+    function submitCustomerReview() {
+        let reviewText = document.getElementById("reviewText").value.trim();
+        let ratingValue = document.getElementById("ratingValue").value;
+        let isValid = true;
+
+        // Validate review
+        if (reviewText.length < 5) {
+            document.getElementById("reviewError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("reviewError").classList.add("d-none");
         }
-    </script>
 
+        // Validate rating
+        if (ratingValue === "0") {
+            document.getElementById("ratingError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("ratingError").classList.add("d-none");
+        }
 
+        if (!isValid) return; // stop if invalid
+
+        // Collect data
+        const data = {
+            FloorNumber: $('#FloorNumber').val(),
+            VillaId: $('#VillaId').val(),
+            VillageId: $('#VillageId').val(),
+            UserId: $('#UserId').val(),
+            reviewText: reviewText,
+            ratingValue: ratingValue
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("AddCustomerReview", "Review", new { area = "Customer" })",
+            data: data,
+            success: function (result) {
+                $("#userReviewSection").html(result); // Replace section with thank-you or updated reviews
+            },
+            error: function () {
+                alert("Error submitting review. Please try again.");
+            }
+        });
+    }
+</script>

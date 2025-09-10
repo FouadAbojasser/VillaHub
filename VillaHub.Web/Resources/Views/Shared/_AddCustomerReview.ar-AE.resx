@@ -123,6 +123,12 @@
   <data name="RateYourStay" xml:space="preserve">
     <value>قيم فترة مكوثك</value>
   </data>
+  <data name="RatingRequired" xml:space="preserve">
+    <value>يرجى اختيار التقييم قبل الإرسال.</value>
+  </data>
+  <data name="ReviewRequired" xml:space="preserve">
+    <value>يرجى إدخال تقييمك (على الأقل ٥ أحرف).</value>
+  </data>
   <data name="SubmitReview" xml:space="preserve">
     <value>أرسل مُراجعتك</value>
   </data>

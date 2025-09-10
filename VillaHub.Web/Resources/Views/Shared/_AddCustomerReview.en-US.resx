@@ -123,6 +123,12 @@
   <data name="RateYourStay" xml:space="preserve">
     <value>Rate Your Stay</value>
   </data>
+  <data name="RatingRequired" xml:space="preserve">
+    <value>Please select a rating before submitting.</value>
+  </data>
+  <data name="ReviewRequired" xml:space="preserve">
+    <value>Please enter your review (at least 5 characters).</value>
+  </data>
   <data name="SubmitReview" xml:space="preserve">
     <value>Submit Review</value>
   </data>
