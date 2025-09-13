@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MaxPricePerNight" xml:space="preserve">
-    <value>max Price / Night</value>
+    <value>Max Price / Night</value>
   </data>
   <data name="MinPricePerNight" xml:space="preserve">
     <value>Min Price / Night</value>
@@ -195,5 +195,10 @@
   <data name="ExternalLogins" xml:space="preserve">
     <value>Login Provider</value>
   </data>
- 
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>You have logged in successfully</value>
+  </data>
+  <data name="LogoutSuccessfully" xml:space="preserve">
+    <value>You have logged out successfully</value>
+  </data>
 </root>

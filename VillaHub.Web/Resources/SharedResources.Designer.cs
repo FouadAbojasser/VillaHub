@@ -115,7 +115,25 @@ namespace VillaHub.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to max Price / Night.
+        ///   Looks up a localized string similar to You have logged in successfully.
+        /// </summary>
+        public static string LoginSuccess {
+            get {
+                return ResourceManager.GetString("LoginSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have logged out successfully.
+        /// </summary>
+        public static string LogoutSuccessfully {
+            get {
+                return ResourceManager.GetString("LogoutSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max Price / Night.
         /// </summary>
         public static string MaxPricePerNight {
             get {

@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="PrivacyIntro" xml:space="preserve">
+    <value>This Privacy Policy describes how VillaHub ("we", "us", or "our") collects, uses, and protects your personal information when you use our website and services.</value>
+  </data>
+  <data name="InfoWeCollect" xml:space="preserve">
+    <value>Information We Collect</value>
+  </data>
+  <data name="PersonalInfo" xml:space="preserve">
+    <value>Personal Information: Name, email address, phone number, and other information you provide when registering or using our services.</value>
+  </data>
+  <data name="UsageData" xml:space="preserve">
+    <value>Usage Data: Information about how you use our website, including IP address, browser type, device information, and pages visited.</value>
+  </data>
+  <data name="Cookies" xml:space="preserve">
+    <value>Cookies: We use cookies and similar technologies to enhance your experience and analyze site usage.</value>
+  </data>
+  <data name="HowWeUseInfo" xml:space="preserve">
+    <value>How We Use Your Information</value>
+  </data>
+  <data name="ProvideServices" xml:space="preserve">
+    <value>To provide, operate, and maintain our services.</value>
+  </data>
+  <data name="ImproveServices" xml:space="preserve">
+    <value>To improve, personalize, and expand our website and services.</value>
+  </data>
+  <data name="Communicate" xml:space="preserve">
+    <value>To communicate with you, including sending updates and notifications.</value>
+  </data>
+  <data name="ProcessTransactions" xml:space="preserve">
+    <value>To process transactions and manage bookings.</value>
+  </data>
+  <data name="LegalCompliance" xml:space="preserve">
+    <value>To comply with legal obligations and protect our rights.</value>
+  </data>
+  <data name="HowWeShareInfo" xml:space="preserve">
+    <value>How We Share Your Information</value>
+  </data>
+  <data name="NoSellInfo" xml:space="preserve">
+    <value>We do not sell your personal information.</value>
+  </data>
+  <data name="TrustedPartners" xml:space="preserve">
+    <value>We may share information with trusted third parties who assist us in operating our website and providing services, subject to confidentiality agreements.</value>
+  </data>
+  <data name="LegalDisclosure" xml:space="preserve">
+    <value>We may disclose information if required by law or to protect our rights and safety.</value>
+  </data>
+  <data name="DataSecurity" xml:space="preserve">
+    <value>Data Security</value>
+  </data>
+  <data name="DataSecurityDesc" xml:space="preserve">
+    <value>We implement appropriate technical and organizational measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.</value>
+  </data>
+  <data name="YourRights" xml:space="preserve">
+    <value>Your Rights</value>
+  </data>
+  <data name="ManagePersonalInfo" xml:space="preserve">
+    <value>You may access, update, or delete your personal information by contacting us.</value>
+  </data>
+  <data name="OptOutMarketing" xml:space="preserve">
+    <value>You may opt out of receiving marketing communications at any time.</value>
+  </data>
+  <data name="ChangesPolicy" xml:space="preserve">
+    <value>Changes to This Policy</value>
+  </data>
+  <data name="ChangesPolicyDesc" xml:space="preserve">
+    <value>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.</value>
+  </data>
+  <data name="ContactUs" xml:space="preserve">
+    <value>Contact Us</value>
+  </data>
+  <data name="ContactDesc" xml:space="preserve">
+    <value>If you have any questions or concerns about this Privacy Policy or your data, please contact the project owner:</value>
+  </data>
+  <data name="OwnerName" xml:space="preserve">
+    <value>Name: Fouad AboJasser</value>
+  </data>
+  <data name="OwnerEmail" xml:space="preserve">
+    <value>Email:</value>
+  </data>
+  <data name="EffectiveDate" xml:space="preserve">
+    <value>Effective Date</value>
+  </data>
+	
+	<data name="PrivacyPolicy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+		<data name="PrivacyIntro" xml:space="preserve">
+    <value>This Privacy Policy describes how VillaHub ("we", "us", or "our") collects, uses, and protects your personal information when you use our website and services.</value>
+  </data>
+		<data name="InfoWeCollect" xml:space="preserve">
+    <value>Information We Collect</value>
+  </data>
+		<data name="PersonalInfo" xml:space="preserve">
+    <value>Personal Information: Name, email address, phone number, and other information you provide when registering or using our services.</value>
+  </data>
+		<data name="UsageData" xml:space="preserve">
+    <value>Usage Data: Information about how you use our website, including IP address, browser type, device information, and pages visited.</value>
+  </data>
+		<data name="Cookies" xml:space="preserve">
+    <value>Cookies: We use cookies and similar technologies to enhance your experience and analyze site usage.</value>
+  </data>
+		<data name="HowWeUseInfo" xml:space="preserve">
+    <value>How We Use Your Information</value>
+  </data>
+		<data name="ProvideServices" xml:space="preserve">
+    <value>To provide, operate, and maintain our services.</value>
+  </data>
+		<data name="ImproveServices" xml:space="preserve">
+    <value>To improve, personalize, and expand our website and services.</value>
+  </data>
+		<data name="Communicate" xml:space="preserve">
+    <value>To communicate with you, including sending updates and notifications.</value>
+  </data>
+		<data name="ProcessTransactions" xml:space="preserve">
+    <value>To process transactions and manage bookings.</value>
+  </data>
+		<data name="LegalCompliance" xml:space="preserve">
+    <value>To comply with legal obligations and protect our rights.</value>
+  </data>
+		<data name="HowWeShareInfo" xml:space="preserve">
+    <value>How We Share Your Information</value>
+  </data>
+		<data name="NoSellInfo" xml:space="preserve">
+    <value>We do not sell your personal information.</value>
+  </data>
+		<data name="TrustedPartners" xml:space="preserve">
+    <value>We may share information with trusted third parties who assist us in operating our website and providing services, subject to confidentiality agreements.</value>
+  </data>
+		<data name="LegalDisclosure" xml:space="preserve">
+    <value>We may disclose information if required by law or to protect our rights and safety.</value>
+  </data>
+		<data name="DataSecurity" xml:space="preserve">
+    <value>Data Security</value>
+  </data>
+		<data name="DataSecurityDesc" xml:space="preserve">
+    <value>We implement appropriate technical and organizational measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.</value>
+  </data>
+		<data name="YourRights" xml:space="preserve">
+    <value>Your Rights</value>
+  </data>
+		<data name="ManagePersonalInfo" xml:space="preserve">
+    <value>You may access, update, or delete your personal information by contacting us.</value>
+  </data>
+		<data name="OptOutMarketing" xml:space="preserve">
+    <value>You may opt out of receiving marketing communications at any time.</value>
+  </data>
+		<data name="ChangesPolicy" xml:space="preserve">
+    <value>Changes to This Policy</value>
+  </data>
+		<data name="ChangesPolicyDesc" xml:space="preserve">
+    <value>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.</value>
+  </data>
+		<data name="ContactUs" xml:space="preserve">
+    <value>Contact Us</value>
+  </data>
+		<data name="ContactDesc" xml:space="preserve">
+    <value>If you have any questions or concerns about this Privacy Policy or your data, please contact the project owner:</value>
+  </data>
+		<data name="OwnerName" xml:space="preserve">
+    <value>Name: Fouad AboJasser</value>
+  </data>
+		<data name="OwnerEmail" xml:space="preserve">
+    <value>Email:</value>
+  </data>
+		<data name="EffectiveDate" xml:space="preserve">
+    <value>Effective Date</value>
+  </data>
+
+</root>

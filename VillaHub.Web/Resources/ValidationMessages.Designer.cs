@@ -88,6 +88,15 @@ namespace VillaHub.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maximum length is 12 digits.
+        /// </summary>
+        public static string MaxLength {
+            get {
+                return ResourceManager.GetString("MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The password is invalid..
         /// </summary>
         public static string Password {

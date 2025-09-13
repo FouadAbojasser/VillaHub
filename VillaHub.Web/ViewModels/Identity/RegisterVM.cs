@@ -28,7 +28,7 @@ namespace VillaHub.Web.ViewModels.Identity
         [Display(Name = "ConfirmPassword", ResourceType = typeof(Resources.SharedResources))]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-        [MaxLength(12)]
+        [MaxLength(12, ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "MaxLength")]
         [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
         [DataType(DataType.PhoneNumber)]
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.SharedResources))]

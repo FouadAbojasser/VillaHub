@@ -52,14 +52,14 @@
 
 <div class="container-fluid px-0">
     <form method="post" asp-action="GetVillagesByDate">
-        <div class="d-flex flex-column flex-md-row flex-wrap gap-3 px-3 px-md-5 m-lg-4 m-0 justify-content-center">
+        <div class="d-flex flex-column flex-md-row flex-wrap gap-3 px-3 px-md-5 m-lg-4 m-0 mt-3 mt-md-0 justify-content-center">
             <div class="flex-fill">
-                <label asp-for="minPrice" class="form-label mb-1"></label>
+                <label asp-for="minPrice" class="form-label mb-1"></label><span> ($) </span>
                 <input asp-for="minPrice" type="number" min="0" class="form-control" placeholder="@Localizer["minPricePlaceHolder"]" />
                 <span asp-validation-for="minPrice" class="text-danger"></span>
             </div>
             <div class="flex-fill">
-                <label asp-for="maxPrice" class="form-label mb-1"></label>
+                <label asp-for="maxPrice" class="form-label mb-1"></label><span> ($) </span>
                 <input asp-for="maxPrice" type="number" min="0" class="form-control" placeholder="@Localizer["maxPricePlaceHolder"]" />
                 <span asp-validation-for="maxPrice" class="text-danger"></span>
             </div>

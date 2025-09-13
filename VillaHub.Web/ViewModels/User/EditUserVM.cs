@@ -21,7 +21,7 @@ namespace VillaHub.Web.ViewModels.User
         public string? UserRole { get; set; }
         public IEnumerable<SelectListItem>? RolesList { get; set; }
 
-        [MaxLength(12)]
+        [MaxLength(12, ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "MaxLength")]
         [Required(ErrorMessageResourceType = typeof(Resources.ValidationMessages), ErrorMessageResourceName = "Required")]
         [DataType(DataType.PhoneNumber)]
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.SharedResources))]

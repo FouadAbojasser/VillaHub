@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MaxPricePerNight" xml:space="preserve">
-    <value>أقصى سعر لليلة</value>
+    <value> أقصى سعر لليلة</value>
   </data>
   <data name="MinPricePerNight" xml:space="preserve">
-    <value>أدنى سعر لليلة</value>
+    <value> أدنى سعر لليلة</value>
   </data>
   <data name="NumberOfNights" xml:space="preserve">
     <value>عدد الليالي</value>
