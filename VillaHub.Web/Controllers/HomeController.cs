@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Syncfusion.Presentation;
 using VillaHub.Application.Common.Interfaces;
 using VillaHub.Application.Common.Utility;
+using VillaHub.Domain.Entities;
 using VillaHub.Web.ViewModels.Home;
 
 namespace VillaHub.Web.Controllers
@@ -80,8 +81,30 @@ namespace VillaHub.Web.Controllers
             //Get All floors
             var floorList = _unitOfWork.Floor.Get(e => e.IsDeleted == false, [e => e.Village, e => e.Villa, e => e.Images, e => e.Amenities, e=>e.Reviews]);
 
-            //Get All Bookings with status "Approved"
-            var AllBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved);
+            //Get All Bookings with status "Approved" or "CheckedIn"
+            var AllBookings = _unitOfWork.Booking.Get(b => b.Status == SD.StatusApproved || b.Status == SD.StatusCheckedIn);
+
+            //If no bookings exist, all floors are available filter by price range only
+            if (AllBookings.Count() == 0)
+            {
+                foreach (var floor in floorList)
+                {
+                    if (floor.Price < homeVM.minPrice || floor.Price > homeVM.maxPrice)
+                    {
+                        floor.isInPriceRange = false;
+                    }
+                }
+                HomeVM returnHomeVM2 = new HomeVM()
+                {
+                    Floors = floorList,
+                    CheckInDate = homeVM.CheckInDate,
+                    minPrice = homeVM.minPrice,
+                    maxPrice = homeVM.maxPrice,
+                    NumberOfNights = homeVM.NumberOfNights
+                };
+
+                return PartialView("_FloorList", returnHomeVM2);
+            }
 
             foreach (var booking in AllBookings) 
             {

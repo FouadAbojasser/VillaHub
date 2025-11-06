@@ -58,7 +58,7 @@ namespace VillaHub.Web
             // Database & Identity
             // -----------------------------
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("PublishConnection"),
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
                 
                 sqlOptions => sqlOptions.EnableRetryOnFailure(
                     maxRetryCount: 5,              // Number of retries
